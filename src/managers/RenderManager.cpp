@@ -40,30 +40,33 @@ void RenderManager::shutDown()
 {
 }
 
+/************************************************************************
+    Load Stuff.
+*************************************************************************/
 Texture* RenderManager::loadTexture(const char* fileName)
 {
     /*
         Loads and returns single Texture object from an image file.
-        Sets the Texture dimensions the same as the file dimensions are.
+        By default ets the Texture dimensions the same as the file dimensions are.
     */
     SDL_Texture* sdl_texture;
     SDL_Rect src_rect;
     sdl_texture = IMG_LoadTexture(renderer, fileName);
-    if ( sdl_texture == NULL )
+    // Load texture.
+    if ( sdl_texture == NULL )  // Given file not found.
     {
         std::cout << "SDL_img Error: " << IMG_GetError() << std::endl;
     }
-    else
+    else    // Texture loaded, get its dimension.
     {
         src_rect.x = 0;
         src_rect.y = 0;
         SDL_QueryTexture(sdl_texture, NULL, NULL, &src_rect.w, &src_rect.h);
-        std::cout << src_rect.w << ", " << src_rect.h << std::endl;
     }
     Texture* texture = new Texture(sdl_texture, src_rect);
-    std::cout << "TADY" << std::endl;
     return texture;
 }
+
 
 std::unordered_map<std::string, Animation> RenderManager::loadSprite(const char* file_name)
 {
@@ -127,12 +130,23 @@ std::unordered_map<std::string, Animation> RenderManager::loadSprite(const char*
     return animations;
 }
 
+
+/************************************************************************
+    Render stuff.
+*************************************************************************/
 void RenderManager::registerTexture(Texture* texture)
 {
-    // Should be able to register various types of Textures
-    // Because I need to be able to handle render order
+    /*
+        Should be able to register various types of Textures, because I need to be able to handle render order.
+        e.g.
+            room background
+            room animation
+            items
+            player
+    */
     texture_stack.push(texture);
 }
+
 
 void RenderManager::render()
 {
@@ -141,10 +155,36 @@ void RenderManager::render()
     while ( !texture_stack.empty() )
     {
         std::cout << "Rendering..." << std::endl;
-        SDL_Rect dest_rect = {0, 0, 1050, 600};
+        // Get Texture to be rendered.
         texture = texture_stack.top();
         texture_stack.pop();
-        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &dest_rect, NULL, NULL, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
     }
     SDL_RenderPresent(renderer);
+}
+
+
+/************************************************************************
+    Helper functions.
+*************************************************************************/
+void RenderManager::scale_full_h(Texture* &texture)
+{
+    /*
+        Sets scale of the given texture so that is fills the whole screen height.
+        Used for loading room textures.
+    */
+    // Get screen dimensions.
+    int w, h;   // Here we will store screen dimensions.
+    SDL_GetRendererOutputSize(renderer, &w, &h);
+    // Scale.
+    float scale = static_cast<float>(h) / texture->src_rect.h;  // Use static_cast to really get a float.
+    texture->set_scale(scale);
+}
+
+
+int RenderManager::get_screen_width()
+{
+    int w, h;
+    SDL_GetRendererOutputSize(renderer, &w, &h);
+    return w;
 }

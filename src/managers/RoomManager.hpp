@@ -7,7 +7,6 @@
 
 #include "../components/Texture.hpp"
 
-
 /*
     When starting up RoomManager, create empty Room (just a field that will hold a pointer to a Room).
     Then implement method LoadRoom(room_file) that will load data into the Rom object.

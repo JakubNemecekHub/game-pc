@@ -21,12 +21,11 @@ private:
     static RenderManager* singleton_;
     // Normal fields
     SDL_Window* window;
+    std::stack<Texture*> room_texture_stack;
     std::stack<Texture*> texture_stack;
-
     // Methods
     // Constructor
     RenderManager() {};
-
 public:
     // Fields
     static SDL_Renderer* renderer;
@@ -36,10 +35,15 @@ public:
     ~RenderManager() {};    // Descturctor that does nothing
     void startUp();         // Method that I can use instead of contructor
     void shutDown();        // Method that I can use instead of desctructor
+    // Load Stuff.
     static Texture* loadTexture(const char* fileName);                                      // Loads Single texture
     static std::unordered_map<std::string, Animation> loadSprite(const char* file_name);    // Loads Spritesheet from a file
+    // Render stuff.
     void registerTexture(Texture* texture);
     void render();
+    // Helper functions.
+    void scale_full_h(Texture* &texture);
+    int get_screen_width();
 };
 
 #endif // RENDER_MANAGER_H
