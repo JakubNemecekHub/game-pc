@@ -31,7 +31,7 @@ void Animation::reset()
     */
     current_frame = 0;
     texture->src_rect = frames[0].src_rect;
-    texture->match_src_dimension();
+    texture->match_src_dimension(); // This should be handeled while loading the animation!
     RenderManager::GetInstance()->register_ambient_texture(texture);
 }
 
@@ -74,6 +74,7 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
     Frame frame; // TO DO: create a temporary vector of frames, populate it and then pass it to Animation constructor
     std::vector<Frame> frames;
     int x {0}, y {0};
+    float scale {1.0f};
     int offset_x, offset_y;
     // Loading loop
     if ( animation_file.is_open() )
@@ -97,7 +98,8 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
             }
             if ( value == "SCALE" )
             {
-                // zatím nic
+                animation_file >> scale;
+                texture->set_scale(scale);
             }
             if ( value == "OFFSET" )
             {

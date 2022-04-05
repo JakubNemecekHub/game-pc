@@ -48,8 +48,8 @@ void Texture::match_src_dimension()
 {
     /*
         Sets the width and height of dest_rect to have the same
-        values as src_rect
+        values as src_rect, scaled by scale
     */
-   dest_rect.w = src_rect.w;
-   dest_rect.h = src_rect.h;
+   dest_rect.w = src_rect.w * scale;
+   dest_rect.h = src_rect.h * scale;
 }
