@@ -1,11 +1,12 @@
-#include "PlayerManager.hpp"
+#include "../PlayerManager.hpp"
 
 #include <iostream>
 
-#include "RenderManager.hpp"
-#include "../math/Vector2D.hpp"
-#include "../components/Transform.hpp"
-#include "../components/Sprite.hpp"
+#include "../RenderManager.hpp"
+#include "../../math/Vector2D.hpp"
+#include "../../components/Transform.hpp"
+#include "../../components/Animation.hpp"
+// #include "../components/Sprite.hpp"
 
 
 // ======= Player =======
@@ -47,6 +48,6 @@ void PlayerManager::load_player(const char* player_file)
     player->transform.speed = 4;
     player->transform.scale = 15;
     // Sprite
-    player->sprite.animations = RenderManager::GetInstance()->loadSprite(player_file);
-    player->sprite.setAnimation("idle");
+    player->sprite.animations = Animation::load_animation(player_file);
+    player->sprite.set_animation("idle");
 }

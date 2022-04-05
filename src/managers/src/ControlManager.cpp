@@ -1,6 +1,6 @@
-#include "ControlManager.hpp"
+#include "../ControlManager.hpp"
 
-#include "WindowManager.hpp"
+#include "../WindowManager.hpp"
 
 #include <iostream>
 

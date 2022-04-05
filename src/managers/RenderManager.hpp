@@ -10,7 +10,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "../components/Texture.hpp"    // For Simple Texture
-#include "../components/Sprite.hpp"     // For Animation
+// #include "../components/Sprite.hpp"     // For Animation
 
 
 class RenderManager
@@ -36,8 +36,8 @@ public:
     void startUp();         // Method that I can use instead of contructor
     void shutDown();        // Method that I can use instead of desctructor
     // Load Stuff.
-    static Texture* loadTexture(const char* fileName);                                      // Loads Single texture
-    static std::unordered_map<std::string, Animation> loadSprite(const char* file_name);    // Loads Spritesheet from a file
+    static Texture* load_texture(std::string fileName);         // Loads Single texture
+    static SDL_Texture* load_sdl_texture(std::string fileName); // Loads Single texture
     // Render stuff.
     void registerTexture(Texture* texture);
     void render();

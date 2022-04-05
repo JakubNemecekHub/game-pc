@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <SDL2/SDL.h>
+
 #include "src/managers/WindowManager.hpp"
 #include "src/managers/RenderManager.hpp"
 #include "src/managers/ControlManager.hpp"
@@ -48,6 +50,8 @@ RoomManager* gRoomManager = RoomManager::GetInstance();
 // Concerning Game
 // ...
 
+uint32_t tick {SDL_GetTicks()};
+
 int main(int argc, char* args[])
 {
     std::cout << "Running" << std::endl;
@@ -60,11 +64,19 @@ int main(int argc, char* args[])
     // Game loop
     while (gWindowManager->isRunning)
     {
+        // Hsndle events
         gControlManager->handleEvents();
+        // Update
+        uint32_t next_tick {SDL_GetTicks()};
+        int dt = next_tick - tick;
+        tick = next_tick;
+        gRoomManager->update(dt);
+        // Render
         gRenderManager->render();
     }
 
     // shut down system in appropriate order (e.g. in reverse)
+    gRoomManager->shutDown();
     gRenderManager->shutDown();
     gWindowManager->shutDown();
 
