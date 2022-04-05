@@ -25,6 +25,10 @@ void ControlManager::handleEvents()
         if ( event.key.keysym.sym == SDLK_ESCAPE )
             WindowManager::GetInstance()->close();
         // Fullscreen
+        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_F11 )  // Should only catch one F11 event
+        {
+            WindowManager::GetInstance()->toggle_fullscreen();
+        }
         // Mouse click
         if ( event.type == SDL_MOUSEBUTTONUP )
         {

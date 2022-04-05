@@ -40,6 +40,22 @@ SDL_Window* WindowManager::window()
     return window_;
 }
 
+void WindowManager::toggle_fullscreen()
+{
+    if ( !(SDL_GetWindowFlags(window_) & SDL_WINDOW_FULLSCREEN) )
+    {
+        // From windowed to fullscreen
+        SDL_GetWindowSize(window_, &width, &height);    // Save current window dimensions
+        SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN);
+    }
+    else
+    {
+        // From fullscreen to windowed
+        SDL_SetWindowFullscreen(window_, 0);                     // set windowed
+        SDL_SetWindowSize(window_, width, height); // Set original dimensions
+    }
+}
+
 void WindowManager::close()
 {
     isRunning = false;

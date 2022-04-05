@@ -14,6 +14,7 @@ private:
     // Normal fields
     SDL_Window* window_;
     const char* title = "Game";
+    int width, height;
     // Methods
     // Constructor
     WindowManager() {};
@@ -30,6 +31,7 @@ public:
     void shutDown();        // Method that I can use instead of desctructor
     // void handleEvents();
     SDL_Window* window();
+    void toggle_fullscreen();
     void close();
 };
 
