@@ -32,7 +32,7 @@ void Animation::reset()
     current_frame = 0;
     texture->src_rect = frames[0].src_rect;
     texture->match_src_dimension();
-    RenderManager::GetInstance()->registerTexture(texture);
+    RenderManager::GetInstance()->register_ambient_texture(texture);
 }
 
 /* TO DO: test animation update code */
@@ -59,7 +59,6 @@ void Animation::update(int dt)
 
 std::unordered_map<std::string, Animation> Animation::load_animation(std::string file_name)
 {
-    std::cout << "Starting to load animations." << std::endl;
     /*
         Loads complete spritesheet with animation from a .anim file into an Animation object.
     */
@@ -125,7 +124,6 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
         }
         // Close file after everything is loaded
         animation_file.close();
-        std::cout << "Animations loaded." << std::endl;
     }
     else
     {

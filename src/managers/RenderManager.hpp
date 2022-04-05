@@ -21,8 +21,8 @@ private:
     static RenderManager* singleton_;
     // Normal fields
     SDL_Window* window;
-    std::stack<Texture*> room_texture_stack;
-    std::stack<Texture*> texture_stack;
+    std::stack<Texture*> room_background;
+    std::stack<Texture*> room_ambient;
     // Methods
     // Constructor
     RenderManager() {};
@@ -39,7 +39,8 @@ public:
     static Texture* load_texture(std::string fileName);         // Loads Single texture
     static SDL_Texture* load_sdl_texture(std::string fileName); // Loads Single texture
     // Render stuff.
-    void registerTexture(Texture* texture);
+    void register_room_texture(Texture* texture);
+    void register_ambient_texture(Texture* texture);
     void render();
     // Helper functions.
     void scale_full_h(Texture* &texture);

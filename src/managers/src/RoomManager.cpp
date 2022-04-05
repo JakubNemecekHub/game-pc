@@ -25,7 +25,7 @@ Room::~Room()
 
 void Room::update(int dt)
 {
-    RenderManager::GetInstance()->registerTexture(texture);
+    RenderManager::GetInstance()->register_room_texture(texture);
 }
 
 void Room::render()
@@ -44,7 +44,7 @@ void Ambient::update(int dt)
    for ( auto &animation : animations )
    {
        animation.second.update(dt);
-       RenderManager::GetInstance()->registerTexture(animation.second.texture);
+       RenderManager::GetInstance()->register_ambient_texture(animation.second.texture);
    }
 }
 

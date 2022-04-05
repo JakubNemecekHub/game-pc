@@ -84,33 +84,49 @@ SDL_Texture* RenderManager::load_sdl_texture(std::string fileName)
     return sdl_texture;
 }
 
+
 /************************************************************************
     Render stuff.
 *************************************************************************/
-void RenderManager::registerTexture(Texture* texture)
+/*
+    Should be able to register various types of Textures, because I need to be able to handle render order.
+    e.g.
+        room background
+        room animation
+        items
+        player
+*/
+void RenderManager::register_room_texture(Texture* texture)
 {
-    /*
-        Should be able to register various types of Textures, because I need to be able to handle render order.
-        e.g.
-            room background
-            room animation
-            items
-            player
-    */
-    texture_stack.push(texture);
+    room_background.push(texture);
 }
 
+void RenderManager::register_ambient_texture(Texture* texture)
+{
+    room_ambient.push(texture);
+}
 
 void RenderManager::render()
 {
+    /*
+        Render order (Work in progress)
+        1) Room background
+        2) Room ambient animations
+    */
     SDL_RenderClear(renderer);
     Texture* texture;
-    while ( !texture_stack.empty() )
+    // ad 1)
+    while ( !room_background.empty() )
     {
-        std::cout << "Rendering..." << std::endl;
-        // Get Texture to be rendered.
-        texture = texture_stack.top();
-        texture_stack.pop();
+        texture = room_background.top();
+        room_background.pop();
+        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
+    }
+    // ad 2)
+    while ( !room_ambient.empty() )
+    {
+        texture = room_ambient.top();
+        room_ambient.pop();
         SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
     }
     SDL_RenderPresent(renderer);
