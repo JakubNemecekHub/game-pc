@@ -17,6 +17,7 @@
 RenderManager* RenderManager::singleton_ = nullptr;
 SDL_Renderer* RenderManager::renderer = nullptr;
 
+
 RenderManager* RenderManager::GetInstance()
 {
     if ( singleton_ == nullptr )
@@ -26,6 +27,7 @@ RenderManager* RenderManager::GetInstance()
     return singleton_;
 }
 
+
 void RenderManager::startUp()
 {
     window = WindowManager::GetInstance()->window();
@@ -34,7 +36,9 @@ void RenderManager::startUp()
     {
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     }
+    static_texture = nullptr;
 }
+
 
 void RenderManager::shutDown()
 {
@@ -44,12 +48,13 @@ void RenderManager::shutDown()
 /************************************************************************
     Load Stuff.
 *************************************************************************/
+
+/*
+    Load and return single Texture object from an image file.
+    By default set the Texture dimensions the same as the file dimensions are.
+*/
 Texture* RenderManager::load_texture(std::string fileName)
 {
-    /*
-        Loads and returns single Texture object from an image file.
-        By default sets the Texture dimensions the same as the file dimensions are.
-    */
     SDL_Texture* sdl_texture;
     SDL_Rect src_rect;
     sdl_texture = IMG_LoadTexture(renderer, fileName.c_str());
@@ -68,12 +73,13 @@ Texture* RenderManager::load_texture(std::string fileName)
     return texture;
 }
 
+
+/*
+    Load and returns single SDL_Texture object from an image file.
+    No src_rect.
+*/
 SDL_Texture* RenderManager::load_sdl_texture(std::string fileName)
 {
-    /*
-        Loads and returns single SDL_Texture object from an image file.
-        No src_rect.
-    */
     SDL_Texture* sdl_texture;
     sdl_texture = IMG_LoadTexture(renderer, fileName.c_str());
     // Load texture.
@@ -84,6 +90,21 @@ SDL_Texture* RenderManager::load_sdl_texture(std::string fileName)
     return sdl_texture;
 }
 
+/*
+    Load a bitmap file into a SDL_Surface. Lock the surface,
+    so that it's pixels can be accessed.
+*/
+SDL_Surface* RenderManager::load_bitmap(std::string file_name)
+{
+    SDL_Surface* surface;
+    surface = SDL_LoadBMP(file_name.c_str());
+    if ( surface == NULL )  // Given file not found.
+    {
+        std::cout << "SDL_img Error: " << IMG_GetError() << std::endl;
+    }
+    SDL_LockSurface(surface);
+    return surface;
+}
 
 /************************************************************************
     Render stuff.
@@ -96,38 +117,74 @@ SDL_Texture* RenderManager::load_sdl_texture(std::string fileName)
         items
         player
 */
+
+// Register given backgroud texture of a room to be rendered.
 void RenderManager::register_room_texture(Texture* texture)
 {
-    room_background.push(texture);
+    // room_background.push(texture);
+    room_background = texture;
 }
 
+
+// Register given texture of ambient animation to be rendered.
 void RenderManager::register_ambient_texture(Texture* texture)
 {
     room_ambient.push(texture);
 }
 
-void RenderManager::render()
+
+/*
+    Register given bitmap surface of a hot-spot map to be rendered.
+    For testing purposes only.
+*/
+void RenderManager::register_static_surface(SDL_Surface* surface)
 {
     /*
-        Render order (Work in progress)
-        1) Room background
-        2) Room ambient animations
+        1) Create SDL_Texture from SDL_Surface
+        2) Create Texture
+        3) Set Texture src_ and destrect to that of the room_background Texture
     */
+    static_texture = new Texture;
+    static_texture->texture = SDL_CreateTextureFromSurface(renderer, surface);
+    static_texture->set_src(room_background->src_rect);
+    static_texture->set_dest(room_background->dest_rect);
+    static_texture->set_scale(room_background->scale);
+}
+
+
+/*
+    Delist the bitmap surface so that it will no longer be rendered.
+    For testing purposes only.
+*/
+void RenderManager::delist_static_surface()
+{
+    delete static_texture;
+    static_texture = nullptr;
+}
+
+
+/*
+    Render order (Work in progress)
+    1) Room background
+    2) Room ambient animations
+    3) Static textures over everything else
+*/
+void RenderManager::render()
+{
     SDL_RenderClear(renderer);
-    Texture* texture;
-    // ad 1)
-    while ( !room_background.empty() )
-    {
-        texture = room_background.top();
-        room_background.pop();
-        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
-    }
+    SDL_RenderCopyEx(renderer, room_background->texture, &room_background->src_rect, &room_background->dest_rect, NULL, NULL, SDL_FLIP_NONE);
     // ad 2)
+    Texture* texture;
     while ( !room_ambient.empty() )
     {
         texture = room_ambient.top();
         room_ambient.pop();
         SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
+    }
+    // ad 3)
+    if ( static_texture != nullptr )
+    {
+        SDL_RenderCopyEx(renderer, static_texture->texture, &static_texture->src_rect, &static_texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
     }
     SDL_RenderPresent(renderer);
 }
@@ -136,12 +193,13 @@ void RenderManager::render()
 /************************************************************************
     Helper functions.
 *************************************************************************/
+
+/*
+    Sets scale of the given texture so that is fills the whole screen height.
+    Used for loading room textures.
+*/
 void RenderManager::scale_full_h(Texture* &texture)
 {
-    /*
-        Sets scale of the given texture so that is fills the whole screen height.
-        Used for loading room textures.
-    */
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer, &w, &h);
@@ -150,7 +208,7 @@ void RenderManager::scale_full_h(Texture* &texture)
     texture->set_scale(scale);
 }
 
-
+// Returns current screen width.
 int RenderManager::get_screen_width()
 {
     int w, h;

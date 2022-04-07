@@ -23,7 +23,13 @@ public:
         : texture{_texture}, src_rect{_src_rect}, scale{_scale} {}
     // Destructor
     // ~Texture();
+
     // Methods
+
+    void set_src(int _x, int _y, int _w, int _h);
+    void set_src(SDL_Rect& source);
+    void set_dest(int _x, int _y, int _w, int _h);
+    void set_dest(SDL_Rect& source);
     void set_position(int _x, int _y);
     void set_scale(float _scale);
     void set_dimension_width(int _w);
@@ -31,5 +37,11 @@ public:
     void set_dimensions(int _w, int _h);
     void match_src_dimension();
 };
+
+class RoomTexture : public Texture
+{
+public:
+    SDL_Surface* click_map;
+}
 
 #endif // TEXTURE_COMPONENT_H

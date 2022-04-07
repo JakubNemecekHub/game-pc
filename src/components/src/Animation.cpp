@@ -4,6 +4,10 @@
 #include <fstream>
 #include <unordered_map>
 #include <string>
+#include <vector>
+
+#include "json.hpp"
+using json = nlohmann::json;
 
 #include "../../managers/RenderManager.hpp"
 
@@ -23,6 +27,7 @@ Animation::~Animation()
     delete texture;
 }
 
+
 void Animation::reset()
 {
     /*
@@ -34,6 +39,7 @@ void Animation::reset()
     texture->match_src_dimension(); // This should be handeled while loading the animation!
     RenderManager::GetInstance()->register_ambient_texture(texture);
 }
+
 
 /* TO DO: test animation update code */
 void Animation::update(int dt)
@@ -56,6 +62,7 @@ void Animation::update(int dt)
         // RenderManager::GetInstance()->registerTexture(texture);
     }
 }
+
 
 std::unordered_map<std::string, Animation> Animation::load_animation(std::string file_name)
 {
@@ -133,4 +140,39 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
         std::cout << "File " << file_name << " cannot be opened." << std::endl;
     }
     return animations;
+}
+
+
+std::vector<Animation> Animation::load_animation_vector(json _json)
+{
+    std::vector<Animation> _animations;
+    for (auto &animation : _json )
+    {
+        // Animation elements
+        // > Texture
+        Texture* texture;
+        texture = RenderManager::GetInstance()->load_texture(animation["file"]);
+        // > Scale
+        float scale {animation["scale"]};
+        texture->set_scale(scale);
+        // > Frames
+        Frame frame;
+        std::vector<Frame> frames;
+        for (auto &frame : animation["frames"] )
+        {
+            // x, y, w, h, duration
+            frames.emplace_back(frame[0], frame[1], frame[2], frame[3], frame[4]);
+        }
+        // > offset
+        int offset_x, offset_y;
+        offset_x = animation["offset"][0];
+        offset_y = animation["offset"][1];
+        // > Position
+        int x, y;
+        x = animation["position"][0];
+        y = animation["position"][1];
+        // Emplace new Animation
+        _animations.emplace_back(texture, frames, offset_x, offset_y, x, y);
+    }
+    return _animations;
 }

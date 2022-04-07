@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 #include <SDL2/SDL.h>
 
 #include "../managers/RenderManager.hpp"
@@ -19,6 +22,9 @@ class Frame
 public:
     SDL_Rect src_rect;
     int duration;
+    Frame() {};
+    Frame(int _x, int _y, int _w, int _h, int _duration)
+        : src_rect{_x, _y, _w, _h}, duration{_duration} {};
 };
 
 /*
@@ -67,7 +73,10 @@ public:
     // Desctuctor
     ~Animation();
     // Static Class Methods
+
     static std::unordered_map<std::string, Animation> load_animation(std::string file_name);
+    static std::vector<Animation> load_animation_vector(json _json);
+
     // Methods
     void reset();
     void update(int dt);
