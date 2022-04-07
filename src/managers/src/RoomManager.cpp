@@ -12,6 +12,23 @@ using json = nlohmann::json;
 
 
 /************************************************************************
+    Ambient
+*************************************************************************/
+
+/*
+    Update each ambient animation and register it to the renderer
+*/
+void Ambient::update(int dt)
+{
+   for ( auto &animation : animations )
+   {
+       animation.update(dt);
+       RenderManager::GetInstance()->register_ambient_texture(animation.texture);
+   }
+}
+
+
+/************************************************************************
     Room
 *************************************************************************/
 
@@ -21,19 +38,17 @@ using json = nlohmann::json;
     Rooms wider than screen size should sroll. TO DO.
     <- Room must keep track of its destination (position and dimensions) on its own. Maybe this is true for all objects.
 */
-Room::Room()
-{
-}
-
 Room::~Room()
 {
-    texture = new Texture;
+    delete texture;
+    delete click_map;
 }
 
 
 void Room::update(int dt)
 {
     RenderManager::GetInstance()->register_room_texture(texture);
+    ambient->update(dt);
 }
 
 
@@ -90,23 +105,6 @@ Uint32 Room::get_mapped_object(int x, int y)
 
 
 /************************************************************************
-    Ambient
-*************************************************************************/
-
-/*
-    Update each ambient animation and register it to the renderer
-*/
-void Ambient::update(int dt)
-{
-   for ( auto &animation : animations )
-   {
-       animation.update(dt);
-       RenderManager::GetInstance()->register_ambient_texture(animation.texture);
-   }
-}
-
-
-/************************************************************************
     Room Manager
 *************************************************************************/
 RoomManager* RoomManager::singleton_ = nullptr;
@@ -124,100 +122,118 @@ RoomManager* RoomManager::GetInstance()
 
 void RoomManager::startUp()
 {
-    room = new Room;
-    ambient = new Ambient;
-    load_room("summer-room");
+    // room = new Room;
+    // ambient = new Ambient;
+    active_room = nullptr;
+    load_rooms("suite-house");
+    activate_room("Bedroom");
 }
 
 
 void RoomManager::shutDown()
 {
-    delete ambient;
-    delete room;
+    // delete ambient;
+    // delete room;
 }
 
 
 /*
-    Load necessary room data. All information is stored in a .room file.
+    Load necessary room data. All information is stored in a .json file.
     This include:
-        -> texture
-        -> ambient animation
-        also
-        -> texture size (probably do not need, RenderManager can get it from the
-                            texture itself)
-        -> wlaking area (some kind of polygon, need to investigate)
-        -> items present in the room
-        -> general active spots
+    -> room background texture
+    -> room hot-spots map
+    -> room actions
+    -> room ambient animations
+    TO DO: add
+    -> wlaking area (some kind of polygon, need to investigate)
+    -> items present in the room
 */
-// void RoomManager::load_room_XXX(std::string room_file)
-// {
-//     // Load Room background texture
-//     std::string full_texture_path {path + room_file + ".png"};
-//     room->texture = RenderManager::GetInstance()->load_texture(full_texture_path);
-//     // Fit to screen height.
-//     RenderManager::GetInstance()->scale_full_h(room->texture);
-//     // Set default position.
-//     int x;
-//     x = (RenderManager::GetInstance()->get_screen_width() - room->texture->dest_rect.w) / 2;
-//     room->texture->set_position(x, 0);
-//     // Load click map -> move to RenderManager
-//     std::string click_map_file_path {path + room_file + "-map.bmp"};
-//     room->click_map = SDL_LoadBMP(click_map_file_path.c_str());
-//     if ( room->click_map == NULL )
-//         std::cout << "SDL_img Error: " << IMG_GetError() << std::endl;
-//     SDL_LockSurface(room->click_map); // So that I can read pixels
-//     // Load ambient animations
-//     std::string full_anim_path {path + room_file + ".anim"};
-//     ambient->animations = Animation::load_animation(full_anim_path);
-// }
-
-void RoomManager::load_room(std::string room_file)
+void RoomManager::load_rooms(std::string suite_file)
 {
-    /*
-        Plan of action:
-        > Load json file with all the information
-        > Load room background texture (in Room, Texture* texture)
-        > Load room hot-spots map (in Room, SDL_Surface click_map)
-        > Load room actions (in Room, std::unordered_map<Uint32, std::string> actions)
-        > load room ambient animations (in object Ambient, std::unordered_map<std::string, Animation> animations)
-    */
 
+    // std::unordered_map<std::string, Room> rooms;
     // Open json file
-    json room_data;
-    std::ifstream animation_json(path + room_file + ".json");
-    animation_json >> room_data;
-    // Load room background texture
-    room->texture = RenderManager::GetInstance()->load_texture(room_data["texture"]);
-    // Fit to screen height.
-    RenderManager::GetInstance()->scale_full_h(room->texture);
-    // Set default position.
-    int x;
-    x = (RenderManager::GetInstance()->get_screen_width() - room->texture->dest_rect.w) / 2;
-    room->texture->set_position(x, 0);
-    // Load room hot-spots map
-    room->click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
-    // Load room hot-spots map
-    for ( auto &action : room_data["actions"] )
+    json suite_data;
+    std::ifstream animation_json(path + suite_file + ".json");
+    animation_json >> suite_data;
+
+    for ( auto &room_data : suite_data["rooms"] )
     {
-        room->actions.insert({{action[0], action[1]}});
+        /*
+            Potřebuji jiný přístup:
+            Sesbírat informace a pak emplace novou místnost do unordered_map
+        */
+
+        // Load room name
+        std::string _name;
+        _name = room_data["name"];
+        // Load room background texture
+        Texture* _texture;
+        _texture = RenderManager::GetInstance()->load_texture(room_data["texture"]);
+        // Fit to screen height.
+        RenderManager::GetInstance()->scale_full_h(_texture);
+        // Set default position.
+        int x;
+        x = (RenderManager::GetInstance()->get_screen_width() - _texture->dest_rect.w) / 2;
+        _texture->set_position(x, 0);
+        // Load room hot-spots map
+        SDL_Surface* _click_map;
+        _click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
+        // Load room hot-spots map
+        std::unordered_map<Uint32, std::string> _actions;
+        for ( auto &action : room_data["actions"] )
+        {
+            _actions.insert({{action[0], action[1]}});
+        }
+        // load room ambient animations
+        std::vector<Animation> _animations;
+        _animations = Animation::load_animation_vector(room_data["ambient"]);
+        // Emplace new Room Object
+        rooms.emplace(std::piecewise_construct,
+                      std::forward_as_tuple(_name),
+                      std::forward_as_tuple(_texture, _click_map, _actions, _animations));
+
+
     }
-    // load room ambient animations
-    ambient->animations = Animation::load_animation_vector(room_data["ambient"]);
+
+    // // Load room background texture
+    // room->texture = RenderManager::GetInstance()->load_texture(room_data["texture"]);
+    // // Fit to screen height.
+    // RenderManager::GetInstance()->scale_full_h(room->texture);
+    // // Set default position.
+    // int x;
+    // x = (RenderManager::GetInstance()->get_screen_width() - room->texture->dest_rect.w) / 2;
+    // room->texture->set_position(x, 0);
+    // // Load room hot-spots map
+    // room->click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
+    // // Load room hot-spots map
+    // for ( auto &action : room_data["actions"] )
+    // {
+    //     room->actions.insert({{action[0], action[1]}});
+    // }
+    // // load room ambient animations
+    // ambient->animations = Animation::load_animation_vector(room_data["ambient"]);
+}
+
+
+void RoomManager::activate_room(std::string room_name)
+{
+    active_room = &rooms[room_name];
 }
 
 
 void RoomManager::update(int dt)
 {
-    room->update(dt);
-    ambient->update(dt);
+    active_room->update(dt);
+    // ambient->update(dt);
 }
 
 
 void RoomManager::handle_click(int x, int y)
 {
     Uint32 response;
-    response = room->get_mapped_object(x, y);
-    std::cout << response << " >> " << room->actions[response] << std::endl;
+    response = active_room->get_mapped_object(x, y);
+    std::cout << response << " >> " << active_room->actions[response] << std::endl;
 }
 
 
@@ -226,11 +242,11 @@ void RoomManager::handle_keyboard(std::string key)
     // Use enum?
     if ( key == "show" )
     {
-        room->render_click_map();
+        active_room->render_click_map();
     }
     if ( key == "hide" )
     {
-        room->hide_click_map();
+        active_room->hide_click_map();
     }
 
 }

@@ -38,10 +38,10 @@ public:
     void match_src_dimension();
 };
 
-class RoomTexture : public Texture
-{
-public:
-    SDL_Surface* click_map;
-}
+// class RoomTexture : public Texture
+// {
+// public:
+//     SDL_Surface* click_map;
+// }
 
 #endif // TEXTURE_COMPONENT_H
