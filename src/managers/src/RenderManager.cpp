@@ -172,19 +172,19 @@ void RenderManager::delist_static_surface()
 void RenderManager::render()
 {
     SDL_RenderClear(renderer);
-    SDL_RenderCopyEx(renderer, room_background->texture, &room_background->src_rect, &room_background->dest_rect, NULL, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(renderer, room_background->texture, &room_background->src_rect, &room_background->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
     // ad 2)
     Texture* texture;
     while ( !room_ambient.empty() )
     {
         texture = room_ambient.top();
         room_ambient.pop();
-        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
     }
     // ad 3)
     if ( static_texture != nullptr )
     {
-        SDL_RenderCopyEx(renderer, static_texture->texture, &static_texture->src_rect, &static_texture->dest_rect, NULL, NULL, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, static_texture->texture, &static_texture->src_rect, &static_texture->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
     }
     SDL_RenderPresent(renderer);
 }
