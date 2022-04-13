@@ -40,7 +40,7 @@ bool Polygon::point_in_polygon(int x, int y)
         We now maybe check all crossing on a vertical line going through the point.
     */
     unsigned int i;
-    unsigned int j {vertices.size() - 1};
+    long long unsigned int j {vertices.size() - 1};
     bool odd_nodes {false};
     for ( i = 0; i < vertices.size(); i++ )
     {

@@ -205,7 +205,7 @@ void RenderManager::render()
     if ( polygon != nullptr )
     {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-        int i, j;
+        unsigned int i, j;
         j = polygon->size() - 1;
         for ( i = 0; i < polygon->size(); i++ )
         {
