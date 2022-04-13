@@ -1,4 +1,4 @@
-#include "Vector2D.hpp"
+#include "../Vector2D.hpp"
 
 #include <iostream> // ostream
 #include <math.h>   // sqrt
@@ -6,7 +6,7 @@
 // Constructor ====================================================================================
 Vector2D::Vector2D(float x, float y)
     : x(x), y(y) {}
-    
+
 // Methods ========================================================================================
 void Vector2D::zero()
 {

@@ -37,6 +37,7 @@ void RenderManager::startUp()
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     }
     static_texture = nullptr;
+    polygon = nullptr;
 }
 
 
@@ -152,6 +153,12 @@ void RenderManager::register_static_surface(SDL_Surface* surface)
 }
 
 
+void RenderManager::register_polygon(Polygon* _polygon)
+{
+    polygon = _polygon;
+}
+
+
 /*
     Delist the bitmap surface so that it will no longer be rendered.
     For testing purposes only.
@@ -163,11 +170,18 @@ void RenderManager::delist_static_surface()
 }
 
 
+void RenderManager::delist_polygon()
+{
+    polygon = nullptr;
+}
+
+
 /*
     Render order (Work in progress)
     1) Room background
     2) Room ambient animations
     3) Static textures over everything else
+    4) and on top af that polygon
 */
 void RenderManager::render()
 {
@@ -187,6 +201,20 @@ void RenderManager::render()
         SDL_RenderCopyEx(renderer, static_texture->texture, &static_texture->src_rect, &static_texture->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
     }
     SDL_RenderPresent(renderer);
+    // ad 4)
+    if ( polygon != nullptr )
+    {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+        int i, j;
+        j = polygon->size() - 1;
+        for ( i = 0; i < polygon->size(); i++ )
+        {
+            SDL_RenderDrawLine(renderer,
+                            polygon->vertices[j].x, polygon->vertices[j].y,
+                            polygon->vertices[i].x, polygon->vertices[i].y);
+            j = i;
+        }
+    }
 }
 
 

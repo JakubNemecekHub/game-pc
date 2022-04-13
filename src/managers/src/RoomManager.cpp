@@ -9,6 +9,7 @@ using json = nlohmann::json;
 
 #include "../RenderManager.hpp"
 #include "../../components/Animation.hpp"
+#include "../../math/Polygon.hpp"
 
 
 /************************************************************************
@@ -68,11 +69,11 @@ Uint32 Room::get_mapped_object(int x, int y)
 {
     // First need to convert x, y to source image coordinates
     // that means scaling it and also moving x coordinates
-    int _x, _y;
-    _x = (x - texture->dest_rect.x) / texture->scale;
-    _y = y / texture->scale;
+    // int _x, _y;
+    // _x = (x - texture->dest_rect.x) / texture->scale;
+    // _y = y / texture->scale;
     int bpp = click_map->format->BytesPerPixel; // bytes per pixel, depeds on loaded image
-    Uint8 *p = (Uint8 *)click_map->pixels + _y * click_map->pitch + _x * bpp;
+    Uint8 *p = (Uint8 *)click_map->pixels + y * click_map->pitch + x * bpp;
     switch (bpp)
     {
         case 1:
@@ -176,6 +177,12 @@ void RoomManager::load_rooms(std::string suite_file)
         int x;
         x = (RenderManager::GetInstance()->get_screen_width() - _texture->dest_rect.w) / 2;
         _texture->set_position(x, 0);
+        // Load walk area polygon
+        Polygon* _walk_area = new Polygon;
+        for ( auto &vertex : room_data["walkarea"] )
+        {
+            _walk_area->add_vertex(vertex[0], vertex[1]);
+        }
         // Load room hot-spots map
         SDL_Surface* _click_map;
         _click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
@@ -197,7 +204,7 @@ void RoomManager::load_rooms(std::string suite_file)
         // Emplace new Room Object
         rooms.emplace(std::piecewise_construct,
                       std::forward_as_tuple(_name),
-                      std::forward_as_tuple(_texture, _click_map, _doors, _actions, _animations));
+                      std::forward_as_tuple(_texture, _walk_area,_click_map, _doors, _actions, _animations));
 
 
     }
@@ -237,9 +244,19 @@ void RoomManager::update(int dt)
 
 void RoomManager::handle_click(int x, int y)
 {
-    Uint32 response;
-    response = active_room->get_mapped_object(x, y);
+    // Convert viewport coordinates into world coordinates
+    int world_x, world_y;
+    world_x = (x - active_room->texture->dest_rect.x) / active_room->texture->scale;
+    world_y = y / active_room->texture->scale;
+    std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
+    // Check walk area
+    if ( active_room->walk_area->point_in_polygon(world_x, world_y) )
+    {
+        std::cout << "I am inside." << std::endl;
+    }
     // Print out action
+    Uint32 response;
+    response = active_room->get_mapped_object(world_x, world_y);
     std::cout << response << " >> " << active_room->actions[response];
     if ( active_room->doors.find(response) != active_room->doors.end() )
     {
@@ -261,6 +278,19 @@ void RoomManager::handle_keyboard(std::string key)
     if ( key == "hide" )
     {
         active_room->hide_click_map();
+    }
+    static bool state {false};
+    if ( key == "p" )
+    {
+        state = !state;
+        if ( state )
+        {
+            RenderManager::GetInstance()->register_polygon(active_room->walk_area);
+        }
+        else
+        {
+            RenderManager::GetInstance()->delist_polygon();
+        }
     }
 
 }

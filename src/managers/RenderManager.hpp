@@ -11,6 +11,7 @@
 
 #include "../components/Texture.hpp"    // For Simple Texture
 // #include "../components/Sprite.hpp"     // For Animation
+#include "../math/Polygon.hpp"
 
 
 class RenderManager
@@ -24,6 +25,7 @@ private:
     Texture* room_background;           // Toto bude vlastně jen nedna textura
     std::stack<Texture*> room_ambient;  // Zde více textur
     Texture* static_texture;            // Toto zatím také jedna textura
+    Polygon* polygon;                    // taktéž zatím jen jeden statický
     // Methods
     // Constructor
     RenderManager() {};
@@ -48,10 +50,12 @@ public:
     void register_room_texture(Texture* texture);
     void register_ambient_texture(Texture* texture);
     void register_static_surface(SDL_Surface* surface);
+    void register_polygon(Polygon* polygon);
     // Overload?
     // void register_texture(RoomTexture *texture);
     // void register_texture(SDL_Surface* surface);
     void delist_static_surface();
+    void delist_polygon();
     void render();
 
     // Helper functions.

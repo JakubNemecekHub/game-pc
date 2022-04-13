@@ -11,6 +11,7 @@
 
 #include "../components/Texture.hpp"
 #include "../components/Animation.hpp"
+#include "../math/Polygon.hpp"
 
 /*
     When starting up RoomManager, create empty Room (just a field that will hold a pointer to a Room).
@@ -52,6 +53,7 @@ private:
 public:
     // Fields
     Texture* texture;                                   // Backgroud texture.
+    Polygon* walk_area;
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
     std::unordered_map<Uint32, std::string> doors;      // A map of doors and their destinations.
     std::unordered_map<Uint32, std::string> actions;    // A map of hot-spots indexes and their actions.
@@ -59,12 +61,13 @@ public:
     // Constructor
     Room() {};
     Room(Texture* _texture,
+         Polygon* _walk_area,
          SDL_Surface* _click_map,
          std::unordered_map<Uint32, std::string> _doors,
          std::unordered_map<Uint32, std::string> _actions,
          std::vector<Animation> _animations
         )
-        : texture{_texture}, click_map{_click_map}, doors{_doors}, actions{_actions}
+        : texture{_texture}, walk_area{_walk_area}, click_map{_click_map}, doors{_doors}, actions{_actions}
     {
         ambient = new Ambient{_animations};
     };
