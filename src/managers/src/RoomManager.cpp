@@ -126,7 +126,7 @@ void RoomManager::startUp()
     // ambient = new Ambient;
     active_room = nullptr;
     load_rooms("suite-house");
-    activate_room("Bedroom");
+    activate_room("Hall");
 }
 
 
@@ -179,7 +179,13 @@ void RoomManager::load_rooms(std::string suite_file)
         // Load room hot-spots map
         SDL_Surface* _click_map;
         _click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
-        // Load room hot-spots map
+        // Load doors
+        std::unordered_map<Uint32, std::string> _doors;
+        for ( auto &door : room_data["doors"] )
+        {
+            _doors.insert({{door[0], door[1]}});
+        }
+        // Load room actions
         std::unordered_map<Uint32, std::string> _actions;
         for ( auto &action : room_data["actions"] )
         {
@@ -191,7 +197,7 @@ void RoomManager::load_rooms(std::string suite_file)
         // Emplace new Room Object
         rooms.emplace(std::piecewise_construct,
                       std::forward_as_tuple(_name),
-                      std::forward_as_tuple(_texture, _click_map, _actions, _animations));
+                      std::forward_as_tuple(_texture, _click_map, _doors, _actions, _animations));
 
 
     }
@@ -233,7 +239,15 @@ void RoomManager::handle_click(int x, int y)
 {
     Uint32 response;
     response = active_room->get_mapped_object(x, y);
-    std::cout << response << " >> " << active_room->actions[response] << std::endl;
+    // Print out action
+    std::cout << response << " >> " << active_room->actions[response];
+    if ( active_room->doors.find(response) != active_room->doors.end() )
+    {
+        // Change room
+        std::cout << "| Changing room to " << active_room->doors[response] << std::endl;
+        activate_room(active_room->doors[response]);
+    }
+    std::cout << std::endl;
 }
 
 

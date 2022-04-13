@@ -53,12 +53,18 @@ public:
     // Fields
     Texture* texture;                                   // Backgroud texture.
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
+    std::unordered_map<Uint32, std::string> doors;      // A map of doors and their destinations.
     std::unordered_map<Uint32, std::string> actions;    // A map of hot-spots indexes and their actions.
     Ambient* ambient;                                   // Manager of ambient animations. Is it hecessary to have separate class for this?
     // Constructor
     Room() {};
-    Room(Texture* _texture, SDL_Surface* _click_map, std::unordered_map<Uint32, std::string> _actions, std::vector<Animation> _animations)
-        : texture{_texture}, click_map{_click_map}, actions{_actions}
+    Room(Texture* _texture,
+         SDL_Surface* _click_map,
+         std::unordered_map<Uint32, std::string> _doors,
+         std::unordered_map<Uint32, std::string> _actions,
+         std::vector<Animation> _animations
+        )
+        : texture{_texture}, click_map{_click_map}, doors{_doors}, actions{_actions}
     {
         ambient = new Ambient{_animations};
     };

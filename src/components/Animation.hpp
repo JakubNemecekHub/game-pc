@@ -50,6 +50,8 @@ public:
 
     TO DO in distant future:
     přidat pole speed: abych mohl měnit rychlost přehrávání animace (něco jako frame.duration * speed)
+
+    Asi by se přece jen hodil move constructor.
 */
 class Animation
 {

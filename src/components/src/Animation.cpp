@@ -24,7 +24,8 @@ Animation::Animation(Texture* _texture, std::vector<Frame> _frames, int _offset_
 // Destructor
 Animation::~Animation()
 {
-    delete texture;
+    std::cout << "Hemlo" << std::endl;
+    // delete texture;
 }
 
 
