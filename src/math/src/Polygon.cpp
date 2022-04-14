@@ -6,6 +6,11 @@
 Polygon::Polygon(std::vector<Vector2D> _vertices)
     : vertices{_vertices} {}
 
+Polygon::Polygon(const Polygon &source)
+{
+    std::cout << "Polygon copy constructor" << std::endl;
+    vertices = source.vertices;
+}
 
 // Add vertex at the end of the list of verticies.
 void Polygon::add_vertex(Vector2D vertex)
@@ -26,6 +31,16 @@ void Polygon::add_vertex(int x, int y)
 unsigned int Polygon::size()
 {
     return vertices.size();
+}
+
+bool Polygon::empty()
+{
+    return size() == 0;
+}
+
+void Polygon::clear()
+{
+    vertices.clear();
 }
 
 

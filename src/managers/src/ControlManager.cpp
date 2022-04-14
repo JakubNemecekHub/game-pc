@@ -43,13 +43,14 @@ void ControlManager::handleEvents()
             RoomManager::GetInstance()->handle_click(x, y);
         }
         // Toggle Static texture
-        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_s )
+        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_b )
         {
-            RoomManager::GetInstance()->handle_keyboard("show");
+            RoomManager::GetInstance()->handle_keyboard("bitmap");
         }
-        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_h )
+        // Toggle polygon rendering
+        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_p )
         {
-            RoomManager::GetInstance()->handle_keyboard("hide");
+            RoomManager::GetInstance()->handle_keyboard("polygon");
         }
     }
 }

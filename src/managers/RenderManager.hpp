@@ -50,7 +50,7 @@ public:
     void register_room_texture(Texture* texture);
     void register_ambient_texture(Texture* texture);
     void register_static_surface(SDL_Surface* surface);
-    void register_polygon(Polygon* polygon);
+    void register_polygon(Polygon* polygon, float _scale = 1, int _dx = 0, int _dy = 0);
     // Overload?
     // void register_texture(RoomTexture *texture);
     // void register_texture(SDL_Surface* surface);

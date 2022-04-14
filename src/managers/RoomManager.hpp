@@ -78,9 +78,14 @@ public:
 
     void handleEvents(SDL_Event event);
     void update(int dt);
+    Uint32 get_mapped_object(int x, int y);
+
+    // Methods to test various thigs
+
     void render_click_map();
     void hide_click_map();
-    Uint32 get_mapped_object(int x, int y);
+    void render_walk_area();    // TO DO
+    void hide_walk_area();      // TO DO
 };
 
 

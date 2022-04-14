@@ -55,6 +55,9 @@ void Room::update(int dt)
 
 void Room::render_click_map()
 {
+    // Probably should handle scaling and positioning here
+    // either create texture here and register it
+    // or pass along necessary values
     RenderManager::GetInstance()->register_static_surface(click_map);
 }
 
@@ -62,6 +65,20 @@ void Room::render_click_map()
 void Room::hide_click_map()
 {
     RenderManager::GetInstance()->delist_static_surface();
+}
+
+
+void Room::render_walk_area()
+{
+    RenderManager::GetInstance()->register_polygon(walk_area,
+                                                   texture->scale,
+                                                   texture->dest_rect.x,
+                                                   texture->dest_rect.y);
+}
+
+void Room::hide_walk_area()
+{
+    RenderManager::GetInstance()->delist_polygon();
 }
 
 
@@ -232,6 +249,16 @@ void RoomManager::load_rooms(std::string suite_file)
 void RoomManager::activate_room(std::string room_name)
 {
     active_room = &rooms[room_name];
+    // Must refresh bitmap and polygon in the renderer
+    // But only if they are already shown
+    // The scaling of click map doesn't get updated
+    // One way is (probably not) to not handle bitmap and polygon as static
+    // active_room->render_click_map();
+    // RenderManager::GetInstance()->register_polygon(active_room->walk_area);
+
+    // For now hide old stuff
+    active_room->hide_click_map();
+    RenderManager::GetInstance()->delist_polygon();
 }
 
 
@@ -271,25 +298,33 @@ void RoomManager::handle_click(int x, int y)
 void RoomManager::handle_keyboard(std::string key)
 {
     // Use enum?
-    if ( key == "show" )
+    static bool state_bitmap {false};
+    if ( key == "bitmap" )
     {
-        active_room->render_click_map();
-    }
-    if ( key == "hide" )
-    {
-        active_room->hide_click_map();
-    }
-    static bool state {false};
-    if ( key == "p" )
-    {
-        state = !state;
-        if ( state )
+        state_bitmap = !state_bitmap;
+        if ( state_bitmap )
         {
-            RenderManager::GetInstance()->register_polygon(active_room->walk_area);
+            active_room->render_click_map();
         }
         else
         {
-            RenderManager::GetInstance()->delist_polygon();
+            active_room->hide_click_map();
+        }
+    }
+    static bool state_polygon {false};
+    if ( key == "polygon" )
+    {
+        std::cout << "P pressed";
+        state_polygon = !state_polygon;
+        if ( state_polygon )
+        {
+            std::cout << ", trying to render polgon." << std::endl;
+            active_room->render_walk_area();
+        }
+        else
+        {
+            std::cout << ", hiding polgon." << std::endl;
+            active_room->hide_walk_area();
         }
     }
 

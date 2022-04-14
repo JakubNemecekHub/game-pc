@@ -37,7 +37,8 @@ void RenderManager::startUp()
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     }
     static_texture = nullptr;
-    polygon = nullptr;
+    // polygon = nullptr;
+    polygon = new Polygon();
 }
 
 
@@ -153,9 +154,16 @@ void RenderManager::register_static_surface(SDL_Surface* surface)
 }
 
 
-void RenderManager::register_polygon(Polygon* _polygon)
+void RenderManager::register_polygon(Polygon* _polygon, float _scale, int _dx, int _dy)
 {
-    polygon = _polygon;
+    // Make a deep copy of the given polygon
+    // otherwise we would scale and move the original walkarea
+    // Polygon* polygon = new Polygon();
+    *polygon = Polygon(*_polygon);
+    // polygon = Polygon(_polygon);
+    polygon->scale(_scale);
+    polygon->move(_dx, _dy);
+    std::cout << "Polygon registered" << std::endl;
 }
 
 
@@ -172,7 +180,9 @@ void RenderManager::delist_static_surface()
 
 void RenderManager::delist_polygon()
 {
-    polygon = nullptr;
+    // polygon = nullptr;
+    polygon->clear();
+    std::cout << "Polygon delisted" << std::endl;
 }
 
 
@@ -200,10 +210,11 @@ void RenderManager::render()
     {
         SDL_RenderCopyEx(renderer, static_texture->texture, &static_texture->src_rect, &static_texture->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
     }
-    SDL_RenderPresent(renderer);
+
     // ad 4)
-    if ( polygon != nullptr )
+    if ( !polygon->empty() )
     {
+        // std::cout << "Rendering polygon." << std::endl;
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
         unsigned int i, j;
         j = polygon->size() - 1;
@@ -215,6 +226,8 @@ void RenderManager::render()
             j = i;
         }
     }
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderPresent(renderer);
 }
 
 
