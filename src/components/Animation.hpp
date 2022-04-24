@@ -1,5 +1,3 @@
-// TO DO: probably need to implement a copy construnctur for loading to work
-
 #ifndef ANIMATION_COMPONENT_H
 #define ANIMATION_COMPONENT_H
 
@@ -74,12 +72,14 @@ public:
             );
     // Desctuctor
     ~Animation();
+
     // Static Class Methods
 
     static std::unordered_map<std::string, Animation> load_animation(std::string file_name);
     static std::vector<Animation> load_animation_vector(json _json);
 
     // Methods
+
     void reset();
     void update(int dt);
     void set_position(int _x, int _y);

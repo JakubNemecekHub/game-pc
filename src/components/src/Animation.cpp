@@ -64,11 +64,13 @@ void Animation::update(int dt)
 }
 
 
+/*
+    Loads complete spritesheet with animation from a .anim file into an Animation object.
+    Return a map of animation name and animation objects pairs. Used for Player object,
+    where we set specific animation based, among other thigs, on user input.
+*/
 std::unordered_map<std::string, Animation> Animation::load_animation(std::string file_name)
 {
-    /*
-        Loads complete spritesheet with animation from a .anim file into an Animation object.
-    */
     // Open file
     std::ifstream animation_file {file_name, std::ios::in};
     // Temporary variables
@@ -142,7 +144,10 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
     return animations;
 }
 
-
+/*
+    Load animation specified in a json object.
+    Returns a vector of animations. Used fo room's ambient animations.
+*/
 std::vector<Animation> Animation::load_animation_vector(json _json)
 {
     std::vector<Animation> _animations;
