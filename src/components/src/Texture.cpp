@@ -3,6 +3,15 @@
 #include <SDL2/SDL.h>
 
 
+Texture::Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale, int _z_index)
+    : RenderableObject(_z_index), texture{_texture}, src_rect{_src_rect}, scale{_scale}
+{
+    dest_rect.x = 0;
+    dest_rect.y = 0;
+    dest_rect.w = src_rect.w * _scale;
+    dest_rect.h = src_rect.h * _scale;
+}
+
 Texture::~Texture()
 {
     SDL_DestroyTexture(texture);

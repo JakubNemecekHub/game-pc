@@ -22,9 +22,7 @@ public:
     // Constructors
     Texture() {};
     // Default scale is 1, default z_index is 0.
-    // For a given scale. -> Should rework so that dest_rect is correct
-    Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale = 1, int _z_index = 0)
-        : RenderableObject(_z_index), texture{_texture}, src_rect{_src_rect}, scale{_scale} {}
+    Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale = 1, int _z_index = 0);
     // Destructor
     ~Texture();
 
