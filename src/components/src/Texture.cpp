@@ -3,9 +3,11 @@
 #include <SDL2/SDL.h>
 
 
-// Texture::~Texture()
-// {
-// }
+Texture::~Texture()
+{
+    SDL_DestroyTexture(texture);
+}
+
 
 /*
     Set src_rect values.
@@ -110,4 +112,12 @@ void Texture::match_src_dimension()
 {
    dest_rect.w = src_rect.w * scale;
    dest_rect.h = src_rect.h * scale;
+}
+
+/*
+    Render texture using given renderer.
+*/
+void Texture::render(SDL_Renderer* renderer)
+{
+    SDL_RenderCopyEx(renderer, texture, &src_rect, &dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
 }

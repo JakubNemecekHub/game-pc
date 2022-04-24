@@ -37,7 +37,7 @@ void Animation::reset()
     current_frame = 0;
     texture->src_rect = frames[0].src_rect;
     texture->match_src_dimension(); // This should be handeled while loading the animation!
-    RenderManager::GetInstance()->register_ambient_texture(texture);
+    RenderManager::GetInstance()->register_object(texture);
 }
 
 
@@ -152,6 +152,8 @@ std::vector<Animation> Animation::load_animation_vector(json _json)
         // > Texture
         Texture* texture;
         texture = RenderManager::GetInstance()->load_texture(animation["file"]);
+        // > Texture's z_index
+        texture->set_z_index(1);
         // > Scale
         float scale {animation["scale"]};
         texture->set_scale(scale);

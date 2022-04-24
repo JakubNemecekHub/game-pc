@@ -3,28 +3,32 @@
 
 #include <SDL2/SDL.h>
 
+#include "RenderableObject.h"
 
-class Texture
+
+/*
+    SDL_Texture, together with source rectangle and its scale.
+    Used for static visual elements, e.g. room background.
+*/
+class Texture : public RenderableObject
 {
-    // SDL_Texture, together with source rectangle and its scale
-    // Used for static visual elements, e.g. room background
 public:
+    // It shows too much stuff to the outside world
     SDL_Texture* texture;
     SDL_Rect src_rect;
     SDL_Rect dest_rect;
     float scale;
+
     // Constructors
     Texture() {};
-    // Default scale is 1.
-    Texture(SDL_Texture* _texture, SDL_Rect _src_rect)
-        : texture{_texture}, src_rect{_src_rect}, dest_rect{_src_rect}, scale{1} {}
+    // Default scale is 1, default z_index is 0.
     // For a given scale. -> Should rework so that dest_rect is correct
-    Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale)
-        : texture{_texture}, src_rect{_src_rect}, scale{_scale} {}
+    Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale = 1, int _z_index = 0)
+        : RenderableObject(_z_index), texture{_texture}, src_rect{_src_rect}, scale{_scale} {}
     // Destructor
-    // ~Texture();
+    ~Texture();
 
-    // Methods
+    // Position, size and scale methods.
 
     void set_src(int _x, int _y, int _w, int _h);
     void set_src(SDL_Rect& source);
@@ -36,12 +40,11 @@ public:
     void set_dimension_height(int _h);
     void set_dimensions(int _w, int _h);
     void match_src_dimension();
-};
 
-// class RoomTexture : public Texture
-// {
-// public:
-//     SDL_Surface* click_map;
-// }
+    // Render methods.
+
+    void render(SDL_Renderer* renderer);
+
+};
 
 #endif // TEXTURE_COMPONENT_H

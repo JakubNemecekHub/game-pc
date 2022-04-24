@@ -9,6 +9,7 @@ using json = nlohmann::json;
 
 #include "../RenderManager.hpp"
 #include "../../components/Animation.hpp"
+#include "../../math_objects/PolygonObject.hpp"
 #include "../../math/Polygon.hpp"
 
 
@@ -24,7 +25,7 @@ void Ambient::update(int dt)
    for ( auto &animation : animations )
    {
        animation.update(dt);
-       RenderManager::GetInstance()->register_ambient_texture(animation.texture);
+       RenderManager::GetInstance()->register_object(animation.texture);
    }
 }
 
@@ -48,47 +49,84 @@ Room::~Room()
 
 void Room::update(int dt)
 {
-    RenderManager::GetInstance()->register_room_texture(texture);
+    // Register background
+    RenderManager::GetInstance()->register_object(texture);
+    // Register Click map if should be visible
+    if ( visible_click_map )
+    {
+        RenderManager::GetInstance()->register_object(click_map_texture);
+    }
+    // Register Walk area if should be visible
+    if ( visible_walk_area )
+    {
+        RenderManager::GetInstance()->register_object(screen_walk_area);
+    }
     ambient->update(dt);
 }
 
 
-void Room::render_click_map()
+/*
+    Create renderable click map texture from the click map bitmap.
+    For testing purposes.
+*/
+void Room::create_click_map_texture()
 {
-    // Probably should handle scaling and positioning here
-    // either create texture here and register it
-    // or pass along necessary values
-    RenderManager::GetInstance()->register_static_surface(click_map);
+    // could return bool about result
+    // probably should check if click_map_texture doesn't already exists
+    click_map_texture = new Texture;
+    click_map_texture->texture = RenderManager::GetInstance()->texture_from_surface(click_map);
+    click_map_texture->set_src(texture->src_rect);
+    click_map_texture->set_dest(texture->dest_rect);
+    click_map_texture->set_scale(texture->scale);
+    click_map_texture->set_z_index(2);
 }
 
 
-void Room::hide_click_map()
+/*
+    Toggle rendering of click map.
+*/
+void Room::toggle_click_map()
 {
-    RenderManager::GetInstance()->delist_static_surface();
+    visible_click_map = !visible_click_map;
+    if ( visible_click_map && click_map_texture == nullptr )
+    {
+        create_click_map_texture();
+    }
 }
 
 
-void Room::render_walk_area()
+/*
+    Create renderable PolygonObject from walk area math polygon.
+    For testing purposes.
+*/
+void Room::create_screen_walk_area()
 {
-    RenderManager::GetInstance()->register_polygon(walk_area,
-                                                   texture->scale,
-                                                   texture->dest_rect.x,
-                                                   texture->dest_rect.y);
+    // could return bool about result
+    // probably should check if screen_walk_area doesn't already exists
+    Polygon* _polygon = new Polygon();
+    *_polygon = Polygon(*walk_area);
+    _polygon->scale(texture->scale);
+    _polygon->move(texture->dest_rect.x, texture->dest_rect.y);
+    screen_walk_area = new PolygonObject(_polygon);
+    screen_walk_area->set_z_index(3);
 }
 
-void Room::hide_walk_area()
+
+/*
+    Toggle rendering of walkarea.
+*/
+void Room::toggle_walk_area()
 {
-    RenderManager::GetInstance()->delist_polygon();
+    visible_walk_area = !visible_walk_area;
+    if ( visible_walk_area && screen_walk_area == nullptr )
+    {
+        create_screen_walk_area();
+    }
 }
 
 
 Uint32 Room::get_mapped_object(int x, int y)
 {
-    // First need to convert x, y to source image coordinates
-    // that means scaling it and also moving x coordinates
-    // int _x, _y;
-    // _x = (x - texture->dest_rect.x) / texture->scale;
-    // _y = y / texture->scale;
     int bpp = click_map->format->BytesPerPixel; // bytes per pixel, depeds on loaded image
     Uint8 *p = (Uint8 *)click_map->pixels + y * click_map->pitch + x * bpp;
     switch (bpp)
@@ -140,8 +178,6 @@ RoomManager* RoomManager::GetInstance()
 
 void RoomManager::startUp()
 {
-    // room = new Room;
-    // ambient = new Ambient;
     active_room = nullptr;
     load_rooms("suite-house");
     activate_room("Hall");
@@ -162,14 +198,13 @@ void RoomManager::shutDown()
     -> room hot-spots map
     -> room actions
     -> room ambient animations
+    -> wlaking area
     TO DO: add
-    -> wlaking area (some kind of polygon, need to investigate)
     -> items present in the room
 */
 void RoomManager::load_rooms(std::string suite_file)
 {
 
-    // std::unordered_map<std::string, Room> rooms;
     // Open json file
     json suite_data;
     std::ifstream animation_json(path + suite_file + ".json");
@@ -178,10 +213,8 @@ void RoomManager::load_rooms(std::string suite_file)
     for ( auto &room_data : suite_data["rooms"] )
     {
         /*
-            Potřebuji jiný přístup:
-            Sesbírat informace a pak emplace novou místnost do unordered_map
+            Collect necessary information and then emplace new Room into a unordered_map.
         */
-
         // Load room name
         std::string _name;
         _name = room_data["name"];
@@ -194,13 +227,15 @@ void RoomManager::load_rooms(std::string suite_file)
         int x;
         x = (RenderManager::GetInstance()->get_screen_width() - _texture->dest_rect.w) / 2;
         _texture->set_position(x, 0);
+        // set z_index to 0, which is the layer reserved for room background
+        _texture->set_z_index(0);
         // Load walk area polygon
         Polygon* _walk_area = new Polygon;
         for ( auto &vertex : room_data["walkarea"] )
         {
             _walk_area->add_vertex(vertex[0], vertex[1]);
         }
-        // Load room hot-spots map
+        // Load room click map
         SDL_Surface* _click_map;
         _click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
         // Load doors
@@ -222,50 +257,19 @@ void RoomManager::load_rooms(std::string suite_file)
         rooms.emplace(std::piecewise_construct,
                       std::forward_as_tuple(_name),
                       std::forward_as_tuple(_texture, _walk_area,_click_map, _doors, _actions, _animations));
-
-
     }
-
-    // // Load room background texture
-    // room->texture = RenderManager::GetInstance()->load_texture(room_data["texture"]);
-    // // Fit to screen height.
-    // RenderManager::GetInstance()->scale_full_h(room->texture);
-    // // Set default position.
-    // int x;
-    // x = (RenderManager::GetInstance()->get_screen_width() - room->texture->dest_rect.w) / 2;
-    // room->texture->set_position(x, 0);
-    // // Load room hot-spots map
-    // room->click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
-    // // Load room hot-spots map
-    // for ( auto &action : room_data["actions"] )
-    // {
-    //     room->actions.insert({{action[0], action[1]}});
-    // }
-    // // load room ambient animations
-    // ambient->animations = Animation::load_animation_vector(room_data["ambient"]);
 }
 
 
 void RoomManager::activate_room(std::string room_name)
 {
     active_room = &rooms[room_name];
-    // Must refresh bitmap and polygon in the renderer
-    // But only if they are already shown
-    // The scaling of click map doesn't get updated
-    // One way is (probably not) to not handle bitmap and polygon as static
-    // active_room->render_click_map();
-    // RenderManager::GetInstance()->register_polygon(active_room->walk_area);
-
-    // For now hide old stuff
-    active_room->hide_click_map();
-    RenderManager::GetInstance()->delist_polygon();
 }
 
 
 void RoomManager::update(int dt)
 {
     active_room->update(dt);
-    // ambient->update(dt);
 }
 
 
@@ -288,44 +292,27 @@ void RoomManager::handle_click(int x, int y)
     if ( active_room->doors.find(response) != active_room->doors.end() )
     {
         // Change room
-        std::cout << "| Changing room to " << active_room->doors[response] << std::endl;
+        std::cout << "| Changing room to " << active_room->doors[response];
         activate_room(active_room->doors[response]);
     }
     std::cout << std::endl;
 }
 
 
+/*
+    Handle keyboars inputs concerning room an room management.
+    b: Toggle renderinf of click map.
+    p: Toggle rendreing of walk area.
+*/
 void RoomManager::handle_keyboard(std::string key)
 {
     // Use enum?
-    static bool state_bitmap {false};
     if ( key == "bitmap" )
     {
-        state_bitmap = !state_bitmap;
-        if ( state_bitmap )
-        {
-            active_room->render_click_map();
-        }
-        else
-        {
-            active_room->hide_click_map();
-        }
+        active_room->toggle_click_map();
     }
-    static bool state_polygon {false};
     if ( key == "polygon" )
     {
-        std::cout << "P pressed";
-        state_polygon = !state_polygon;
-        if ( state_polygon )
-        {
-            std::cout << ", trying to render polgon." << std::endl;
-            active_room->render_walk_area();
-        }
-        else
-        {
-            std::cout << ", hiding polgon." << std::endl;
-            active_room->hide_walk_area();
-        }
+        active_room->toggle_walk_area();
     }
-
 }

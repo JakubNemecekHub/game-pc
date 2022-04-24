@@ -1,16 +1,17 @@
 #include "../RenderManager.hpp"
-#include "../WindowManager.hpp"
 
 #include <iostream>
 #include <string>
-#include <stack>            // Stack to store Textures to render
-#include <unordered_map>    // Map of animations for a sprite
+#include <array>
+#include <queue>
 #include <iostream>
 #include <fstream>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "../WindowManager.hpp"
+#include "../../components/RenderableObject.h"
 #include "../../components/Texture.hpp"
 
 
@@ -36,9 +37,6 @@ void RenderManager::startUp()
     {
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     }
-    static_texture = nullptr;
-    // polygon = nullptr;
-    polygon = new Polygon();
 }
 
 
@@ -92,6 +90,7 @@ SDL_Texture* RenderManager::load_sdl_texture(std::string fileName)
     return sdl_texture;
 }
 
+
 /*
     Load a bitmap file into a SDL_Surface. Lock the surface,
     so that it's pixels can be accessed.
@@ -108,6 +107,15 @@ SDL_Surface* RenderManager::load_bitmap(std::string file_name)
     return surface;
 }
 
+/*
+    Convert SDL_Surface into SDL_Texture.
+*/
+SDL_Texture* RenderManager::texture_from_surface(SDL_Surface* surface)
+{
+    return SDL_CreateTextureFromSurface(renderer, surface);
+}
+
+
 /************************************************************************
     Render stuff.
 *************************************************************************/
@@ -120,110 +128,41 @@ SDL_Surface* RenderManager::load_bitmap(std::string file_name)
         player
 */
 
-// Register given backgroud texture of a room to be rendered.
-void RenderManager::register_room_texture(Texture* texture)
-{
-    // room_background.push(texture);
-    room_background = texture;
-}
-
-
-// Register given texture of ambient animation to be rendered.
-void RenderManager::register_ambient_texture(Texture* texture)
-{
-    room_ambient.push(texture);
-}
-
 
 /*
-    Register given bitmap surface of a hot-spot map to be rendered.
-    For testing purposes only.
+    Register a RenderableObject based on its z_index.
 */
-void RenderManager::register_static_surface(SDL_Surface* surface)
+void RenderManager::register_object(RenderableObject* r)
 {
-    /*
-        1) Create SDL_Texture from SDL_Surface
-        2) Create Texture
-        3) Set Texture src_ and destrect to that of the room_background Texture
-    */
-    static_texture = new Texture;
-    static_texture->texture = SDL_CreateTextureFromSurface(renderer, surface);
-    static_texture->set_src(room_background->src_rect);
-    static_texture->set_dest(room_background->dest_rect);
-    static_texture->set_scale(room_background->scale);
-}
-
-
-void RenderManager::register_polygon(Polygon* _polygon, float _scale, int _dx, int _dy)
-{
-    // Make a deep copy of the given polygon
-    // otherwise we would scale and move the original walkarea
-    // Polygon* polygon = new Polygon();
-    *polygon = Polygon(*_polygon);
-    // polygon = Polygon(_polygon);
-    polygon->scale(_scale);
-    polygon->move(_dx, _dy);
-    std::cout << "Polygon registered" << std::endl;
+    if ( r->z_index() < MAX_LAYERS )
+        render_objects.at(r->z_index()).push(r);
+    else
+        std::cout << "Can't handle that." << std::endl;
 }
 
 
 /*
-    Delist the bitmap surface so that it will no longer be rendered.
-    For testing purposes only.
-*/
-void RenderManager::delist_static_surface()
-{
-    delete static_texture;
-    static_texture = nullptr;
-}
-
-
-void RenderManager::delist_polygon()
-{
-    // polygon = nullptr;
-    polygon->clear();
-    std::cout << "Polygon delisted" << std::endl;
-}
-
-
-/*
-    Render order (Work in progress)
-    1) Room background
-    2) Room ambient animations
-    3) Static textures over everything else
-    4) and on top af that polygon
+    Render objects in order based on z-index of each object.
+    z-index: 0 - room's background
+             1 - room's ambient animations
+             2..(N-1) - various stuff
+             N - bitmaps
+            (N+1) - polygons
+    TO DO: The layering rules shouldn't be so strict. For exaplme, we may want to show
+    parts of the backgroud above player. This way we create a feeling of "depth".
+    Player object will move between various layers.
 */
 void RenderManager::render()
 {
     SDL_RenderClear(renderer);
-    SDL_RenderCopyEx(renderer, room_background->texture, &room_background->src_rect, &room_background->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
-    // ad 2)
-    Texture* texture;
-    while ( !room_ambient.empty() )
+    RenderableObject* object;
+    for ( unsigned int i = 0; i < render_objects.size(); i++ )
     {
-        texture = room_ambient.top();
-        room_ambient.pop();
-        SDL_RenderCopyEx(renderer, texture->texture, &texture->src_rect, &texture->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
-    }
-    // ad 3)
-    if ( static_texture != nullptr )
-    {
-        SDL_RenderCopyEx(renderer, static_texture->texture, &static_texture->src_rect, &static_texture->dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
-    }
-
-    // ad 4)
-    if ( !polygon->empty() )
-    {
-        // std::cout << "Rendering polygon." << std::endl;
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-        unsigned int i, j;
-        j = polygon->size() - 1;
-        for ( i = 0; i < polygon->size(); i++ )
+        while ( !render_objects[i].empty() )
         {
-            SDL_RenderDrawLine(renderer,
-                            polygon->vertices[j].x, polygon->vertices[j].y,
-                            polygon->vertices[i].x, polygon->vertices[i].y);
-            j = i;
+            object = render_objects[i].front();
+            render_objects[i].pop();
+            object->render(renderer);
         }
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
