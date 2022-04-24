@@ -20,11 +20,13 @@ Texture::~Texture()
 
 /*
     Set src_rect values.
-    WIP
 */
 void Texture::set_src(int _x, int _y, int _w, int _h)
 {
-
+    src_rect.x = _x;
+    src_rect.y = _y;
+    src_rect.w = _w;
+    src_rect.h = _h;
 }
 
 
@@ -42,11 +44,13 @@ void Texture::set_src(SDL_Rect& source)
 
 /*
     Set src_dest values.
-    WIP.
 */
 void Texture::set_dest(int _x, int _y, int _w, int _h)
 {
-
+    dest_rect.x = _x;
+    dest_rect.y = _y;
+    dest_rect.w = _w;
+    dest_rect.h = _h;
 }
 
 
