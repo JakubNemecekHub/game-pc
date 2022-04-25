@@ -59,9 +59,9 @@ public:
     // Fields - should move most stuff to be private
     Texture* texture;                                   // Backgroud texture.
     Polygon walk_area;
-    PolygonObject* screen_walk_area;  // Initialized to nullptr, is that correct?
+    PolygonObject* screen_walk_area;                    // It is a pointer to be able to initialize to nullptr and create it dynamically
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
-    Texture* click_map_texture; // Initialized to nullptr, is that correct?
+    Texture* click_map_texture;                         // It is a pointer to be able to initialize to nullptr and create it dynamically
     std::unordered_map<Uint32, std::string> doors;      // A map of doors and their destinations.
     std::unordered_map<Uint32, std::string> actions;    // A map of hot-spots indexes and their actions.
     Ambient* ambient;                                   // Manager of ambient animations. Is it hecessary to have separate class for this?
