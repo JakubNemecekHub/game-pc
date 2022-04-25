@@ -53,7 +53,6 @@ Room::~Room()
     {
         delete click_map_texture;
     }
-    delete ambient;
 }
 
 
@@ -71,7 +70,7 @@ void Room::update(int dt)
     {
         RenderManager::GetInstance()->register_object(screen_walk_area);
     }
-    ambient->update(dt);
+    ambient.update(dt);
 }
 
 

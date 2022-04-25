@@ -64,7 +64,7 @@ public:
     Texture* click_map_texture;                         // It is a pointer to be able to initialize to nullptr and create it dynamically
     std::unordered_map<Uint32, std::string> doors;      // A map of doors and their destinations.
     std::unordered_map<Uint32, std::string> actions;    // A map of hot-spots indexes and their actions.
-    Ambient* ambient;                                   // Manager of ambient animations. Is it hecessary to have separate class for this?
+    Ambient ambient;                                   // Manager of ambient animations. Is it hecessary to have separate class for this?
     // Constructor - move implementation to .cpp
     Room() {};
     Room(Texture* _texture,
@@ -76,7 +76,7 @@ public:
         )
         : texture{_texture}, walk_area{_walk_area}, click_map{_click_map}, doors{_doors}, actions{_actions}
     {
-        ambient = new Ambient{_animations};
+        ambient = Ambient{_animations};
         screen_walk_area = nullptr;
         click_map_texture = nullptr;
     };
