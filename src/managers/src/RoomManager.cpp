@@ -44,7 +44,6 @@ Room::~Room()
 {
     std::cout << "Room destructor" << std::endl;
     delete texture;
-    delete walk_area;
     if ( screen_walk_area != nullptr )
     {
         delete screen_walk_area;
@@ -112,14 +111,11 @@ void Room::toggle_click_map()
 */
 void Room::create_screen_walk_area()
 {
-    // could return bool about result
-    // probably should check if screen_walk_area doesn't already exists
-    Polygon* _polygon = new Polygon();
-    *_polygon = Polygon(*walk_area);
-    _polygon->scale(texture->scale);
-    _polygon->move(texture->dest_rect.x, texture->dest_rect.y);
-    screen_walk_area = new PolygonObject(_polygon);
-    screen_walk_area->set_z_index(3);
+    screen_walk_area = new PolygonObject(walk_area,
+                                         texture->scale,
+                                         texture->dest_rect.x,
+                                         texture->dest_rect.y
+                                        );
 }
 
 
@@ -253,10 +249,10 @@ void RoomManager::load_rooms(std::string suite_file)
         // set z_index to 0, which is the layer reserved for room background
         _texture->set_z_index(0);
         // Load walk area polygon
-        Polygon* _walk_area = new Polygon;
+        Polygon _walk_area;
         for ( auto &vertex : room_data["walkarea"] )
         {
-            _walk_area->add_vertex(vertex[0], vertex[1]);
+            _walk_area.add_vertex(vertex[0], vertex[1]);
         }
         // Load room click map
         SDL_Surface* _click_map;
@@ -304,7 +300,7 @@ void RoomManager::handle_click(int x, int y)
     world_y = y / active_room->texture->scale;
     std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
-    if ( active_room->walk_area->point_in_polygon(world_x, world_y) )
+    if ( active_room->walk_area.point_in_polygon(world_x, world_y) )
     {
         std::cout << "I am inside." << std::endl;
     }

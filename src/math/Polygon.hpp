@@ -16,10 +16,10 @@ public:
 
     // Lifecycle
 
-    Polygon() {};
-    Polygon(std::vector<Vector2D> _vertices);
-    Polygon(const Polygon &source);
-    ~Polygon() {};
+    Polygon() {};                               // No arg constructor
+    Polygon(std::vector<Vector2D> _vertices);   // Constructor with given vertices
+    Polygon(const Polygon &source);             // Copy cobstructor
+    ~Polygon() {};                              // Destructor
 
     // Methods
 

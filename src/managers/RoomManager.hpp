@@ -58,7 +58,7 @@ private:
 public:
     // Fields - should move most stuff to be private
     Texture* texture;                                   // Backgroud texture.
-    Polygon* walk_area;
+    Polygon walk_area;
     PolygonObject* screen_walk_area;  // Initialized to nullptr, is that correct?
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
     Texture* click_map_texture; // Initialized to nullptr, is that correct?
@@ -68,7 +68,7 @@ public:
     // Constructor - move implementation to .cpp
     Room() {};
     Room(Texture* _texture,
-         Polygon* _walk_area,
+         Polygon _walk_area,
          SDL_Surface* _click_map,
          std::unordered_map<Uint32, std::string> _doors,
          std::unordered_map<Uint32, std::string> _actions,
