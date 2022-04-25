@@ -3,13 +3,17 @@
 #include "../Vector2D.hpp"
 
 
+// Constructor
 Polygon::Polygon(std::vector<Vector2D> _vertices)
     : vertices{_vertices} {}
 
+
+// Copy Constructor
 Polygon::Polygon(const Polygon &source)
 {
     vertices = source.vertices;
 }
+
 
 // Add vertex at the end of the list of verticies.
 void Polygon::add_vertex(Vector2D vertex)
@@ -26,17 +30,22 @@ void Polygon::add_vertex(int x, int y)
     // vertices.emplace_back(_x, _y);
 }
 
+
 // Return number of vertices.
 unsigned int Polygon::size()
 {
     return vertices.size();
 }
 
+
+// Return true if polgon has no vertices.
 bool Polygon::empty()
 {
     return size() == 0;
 }
 
+
+// Clear entire Polygon.
 void Polygon::clear()
 {
     vertices.clear();
