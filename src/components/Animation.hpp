@@ -64,12 +64,13 @@ public:
     int offset_y; // How is this used?
 
     // Constructor
-    Animation() {};
+    Animation() {texture = nullptr;};
     Animation(Texture* _texture,
               std::vector<Frame> _frames,
               int _offset_x = 0, int _offset_y = 0,
               int _x = 0, int _y = 0
             );
+    Animation(const Animation &source);
     // Desctuctor
     ~Animation();
 

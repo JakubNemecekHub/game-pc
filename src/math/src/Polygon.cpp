@@ -8,7 +8,6 @@ Polygon::Polygon(std::vector<Vector2D> _vertices)
 
 Polygon::Polygon(const Polygon &source)
 {
-    std::cout << "Polygon copy constructor" << std::endl;
     vertices = source.vertices;
 }
 

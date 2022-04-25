@@ -19,12 +19,32 @@ Animation::Animation(Texture* _texture, std::vector<Frame> _frames, int _offset_
     {
         texture->set_position(_x, _y);
         reset();
+        std::cout << "Animation constructor" << std::endl;
     };
+
+
+// Copy Constructor
+Animation::Animation(const Animation &source)
+{
+    std::cout << "Animation copy constructor" << std::endl;
+    texture = new Texture();
+    *texture = *source.texture;
+    current_frame = source.current_frame;
+    last_updated = source.last_updated;
+    frames = source.frames;
+    offset_x = source.offset_x;
+    offset_y = source.offset_y;
+}
+
 
 // Destructor
 Animation::~Animation()
 {
-    // delete texture;
+    std::cout << "Animations destructor" << std::endl;
+    // if ( texture != nullptr )
+    // {
+    //     delete texture; // Why cannot I delete textur?
+    // }
 }
 
 

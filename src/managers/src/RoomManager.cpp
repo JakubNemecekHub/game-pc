@@ -42,8 +42,19 @@ void Ambient::update(int dt)
 */
 Room::~Room()
 {
+    std::cout << "Room destructor" << std::endl;
     delete texture;
-    delete click_map;
+    delete walk_area;
+    if ( screen_walk_area != nullptr )
+    {
+        delete screen_walk_area;
+    }
+    SDL_FreeSurface(click_map);
+    if ( click_map_texture != nullptr )
+    {
+        delete click_map_texture;
+    }
+    delete ambient;
 }
 
 
@@ -125,9 +136,22 @@ void Room::toggle_walk_area()
 }
 
 
+/*
+    Return the pixel colour value of the click map at a given location.
+
+    The engine works with 32-bit bmp files. This is a bit overkill,only a
+    few colours are needed for the click map. But lower bitrate seems to
+    return unstable results (e.g. the same colour in different images
+    lead to different reults, probably based on other colour in the image)
+
+    Probably:
+    32bits = 2 ^ 32 = 4 294 967 296 colours
+    8bits = 2 ^ 8 = 256 clours, this should be enough
+
+*/
 Uint32 Room::get_mapped_object(int x, int y)
 {
-    int bpp = click_map->format->BytesPerPixel; // bytes per pixel, depeds on loaded image
+    int bpp = click_map->format->BytesPerPixel; // bytes per pixel, depends on loaded image
     Uint8 *p = (Uint8 *)click_map->pixels + y * click_map->pitch + x * bpp;
     switch (bpp)
     {
@@ -186,8 +210,7 @@ void RoomManager::startUp()
 
 void RoomManager::shutDown()
 {
-    // delete ambient;
-    // delete room;
+    active_room = nullptr;
 }
 
 
