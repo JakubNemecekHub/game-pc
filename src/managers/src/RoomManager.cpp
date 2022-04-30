@@ -25,7 +25,7 @@ void Ambient::update(int dt)
    for ( auto &animation : animations )
    {
        animation.update(dt);
-       RenderManager::GetInstance()->register_object(animation.texture);
+       RenderManager::GetInstance()->register_object(&animation.texture);
    }
 }
 
@@ -43,7 +43,6 @@ void Ambient::update(int dt)
 Room::~Room()
 {
     std::cout << "Room destructor" << std::endl;
-    delete texture;
     if ( screen_walk_area != nullptr )
     {
         delete screen_walk_area;
@@ -59,7 +58,7 @@ Room::~Room()
 void Room::update(int dt)
 {
     // Register background
-    RenderManager::GetInstance()->register_object(texture);
+    RenderManager::GetInstance()->register_object(&texture);
     // Register Click map if should be visible
     if ( visible_click_map )
     {
@@ -84,9 +83,9 @@ void Room::create_click_map_texture()
     // probably should check if click_map_texture doesn't already exists
     click_map_texture = new Texture;
     click_map_texture->texture = RenderManager::GetInstance()->texture_from_surface(click_map);
-    click_map_texture->set_src(texture->src_rect);
-    click_map_texture->set_dest(texture->dest_rect);
-    click_map_texture->set_scale(texture->scale);
+    click_map_texture->set_src(texture.src_rect);
+    click_map_texture->set_dest(texture.dest_rect);
+    click_map_texture->set_scale(texture.scale);
     click_map_texture->set_z_index(2);
 }
 
@@ -111,9 +110,9 @@ void Room::toggle_click_map()
 void Room::create_screen_walk_area()
 {
     screen_walk_area = new PolygonObject(walk_area,
-                                         texture->scale,
-                                         texture->dest_rect.x,
-                                         texture->dest_rect.y
+                                         texture.scale,
+                                         texture.dest_rect.x,
+                                         texture.dest_rect.y
                                         );
 }
 
@@ -237,16 +236,16 @@ void RoomManager::load_rooms(std::string suite_file)
         std::string _name;
         _name = room_data["name"];
         // Load room background texture
-        Texture* _texture;
+        Texture _texture;
         _texture = RenderManager::GetInstance()->load_texture(room_data["texture"]);
         // Fit to screen height.
         RenderManager::GetInstance()->scale_full_h(_texture);
         // Set default position.
         int x;
-        x = (RenderManager::GetInstance()->get_screen_width() - _texture->dest_rect.w) / 2;
-        _texture->set_position(x, 0);
+        x = (RenderManager::GetInstance()->get_screen_width() - _texture.dest_rect.w) / 2;
+        _texture.set_position(x, 0);
         // set z_index to 0, which is the layer reserved for room background
-        _texture->set_z_index(0);
+        _texture.set_z_index(0);
         // Load walk area polygon
         Polygon _walk_area;
         for ( auto &vertex : room_data["walkarea"] )
@@ -295,8 +294,8 @@ void RoomManager::handle_click(int x, int y)
 {
     // Convert viewport coordinates into world coordinates
     int world_x, world_y;
-    world_x = (x - active_room->texture->dest_rect.x) / active_room->texture->scale;
-    world_y = y / active_room->texture->scale;
+    world_x = (x - active_room->texture.dest_rect.x) / active_room->texture.scale;
+    world_y = y / active_room->texture.scale;
     std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
     if ( active_room->walk_area.point_in_polygon(world_x, world_y) )

@@ -57,7 +57,7 @@ private:
     bool visible_walk_area {false};
 public:
     // Fields - should move most stuff to be private
-    Texture* texture;                                   // Backgroud texture.
+    Texture texture;                                   // Backgroud texture.
     Polygon walk_area;
     PolygonObject* screen_walk_area;                    // It is a pointer to be able to initialize to nullptr and create it dynamically
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
@@ -67,7 +67,7 @@ public:
     Ambient ambient;                                   // Manager of ambient animations. Is it hecessary to have separate class for this?
     // Constructor - move implementation to .cpp
     Room() {};
-    Room(Texture* _texture,
+    Room(Texture _texture,
          Polygon _walk_area,
          SDL_Surface* _click_map,
          std::unordered_map<Uint32, std::string> _doors,

@@ -132,5 +132,6 @@ void Texture::match_src_dimension()
 */
 void Texture::render(SDL_Renderer* renderer)
 {
+    // std::cout << "Really? " << texture << std::endl;
     SDL_RenderCopyEx(renderer, texture, &src_rect, &dest_rect, 0.0f, NULL, SDL_FLIP_NONE);
 }

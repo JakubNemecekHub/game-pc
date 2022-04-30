@@ -40,7 +40,7 @@ public:
 
     // Load Stuff.
 
-    static Texture* load_texture(std::string file_name);
+    static Texture load_texture(std::string file_name);
     static SDL_Texture* load_sdl_texture(std::string file_name);
     static SDL_Surface* load_bitmap(std::string file_name);
     static SDL_Texture* texture_from_surface(SDL_Surface* surface);
@@ -52,7 +52,7 @@ public:
 
     // Helper functions.
 
-    void scale_full_h(Texture* &texture);
+    void scale_full_h(Texture& texture);
     int get_screen_width();
 };
 

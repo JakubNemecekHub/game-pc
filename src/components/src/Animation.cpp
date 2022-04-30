@@ -13,22 +13,20 @@ using json = nlohmann::json;
 
 
 // Constructor
-Animation::Animation(Texture* _texture, std::vector<Frame> _frames, int _offset_x, int _offset_y, int _x, int _y)
+Animation::Animation(Texture _texture, std::vector<Frame> _frames, int _offset_x, int _offset_y, int _x, int _y)
     : texture{_texture}, current_frame{0}, last_updated{0}, frames{_frames},
       offset_x{_offset_x}, offset_y{_offset_y}
     {
-        texture->set_position(_x, _y);
+        texture.set_position(_x, _y);
         reset();
-        std::cout << "Animation constructor" << std::endl;
     };
 
 
 // Copy Constructor
 Animation::Animation(const Animation &source)
 {
-    std::cout << "Animation copy constructor" << std::endl;
-    texture = new Texture();
-    *texture = *source.texture;
+    // texture = new Texture();
+    texture = source.texture;
     current_frame = source.current_frame;
     last_updated = source.last_updated;
     frames = source.frames;
@@ -40,11 +38,6 @@ Animation::Animation(const Animation &source)
 // Destructor
 Animation::~Animation()
 {
-    std::cout << "Animations destructor" << std::endl;
-    // if ( texture != nullptr )
-    // {
-    //     delete texture; // Why cannot I delete textur?
-    // }
 }
 
 
@@ -55,9 +48,8 @@ void Animation::reset()
         and registers new Texture to renderer
     */
     current_frame = 0;
-    texture->src_rect = frames[0].src_rect;
-    texture->match_src_dimension(); // This should be handeled while loading the animation!
-    RenderManager::GetInstance()->register_object(texture);
+    texture.src_rect = frames[0].src_rect;
+    texture.match_src_dimension(); // This should be handeled while loading the animation!
 }
 
 
@@ -77,9 +69,8 @@ void Animation::update(int dt)
     {
         current_frame = (current_frame + 1) % frames.size();
         last_updated = 0;
-        texture->src_rect = frames[current_frame].src_rect;
-        // TO DO: register new texture
-        // RenderManager::GetInstance()->registerTexture(texture);
+        texture.src_rect = frames[current_frame].src_rect;
+        RenderManager::GetInstance()->register_object(&texture);
     }
 }
 
@@ -99,7 +90,7 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
     std::string animation_name {};
     std::string sprite_sheet_name {};
     // Animation animation; // TO DO: add temporary Texture object and use it in the Animation construction
-    Texture* texture;
+    Texture texture;
     Frame frame; // TO DO: create a temporary vector of frames, populate it and then pass it to Animation constructor
     std::vector<Frame> frames;
     int x {0}, y {0};
@@ -128,7 +119,7 @@ std::unordered_map<std::string, Animation> Animation::load_animation(std::string
             if ( value == "SCALE" )
             {
                 animation_file >> scale;
-                texture->set_scale(scale);
+                texture.set_scale(scale);
             }
             if ( value == "OFFSET" )
             {
@@ -175,13 +166,13 @@ std::vector<Animation> Animation::load_animation_vector(json _json)
     {
         // Animation elements
         // > Texture
-        Texture* texture;
+        Texture texture;
         texture = RenderManager::GetInstance()->load_texture(animation["file"]);
         // > Texture's z_index
-        texture->set_z_index(1);
+        texture.set_z_index(1);
         // > Scale
         float scale {animation["scale"]};
-        texture->set_scale(scale);
+        texture.set_scale(scale);
         // > Frames
         Frame frame;
         std::vector<Frame> frames;

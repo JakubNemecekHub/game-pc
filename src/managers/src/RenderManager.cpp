@@ -53,7 +53,7 @@ void RenderManager::shutDown()
     Load and return single Texture object from an image file.
     By default set the Texture dimensions the same as the file dimensions are.
 */
-Texture* RenderManager::load_texture(std::string fileName)
+Texture RenderManager::load_texture(std::string fileName)
 {
     SDL_Texture* sdl_texture;
     SDL_Rect src_rect;
@@ -69,8 +69,9 @@ Texture* RenderManager::load_texture(std::string fileName)
         src_rect.y = 0;
         SDL_QueryTexture(sdl_texture, NULL, NULL, &src_rect.w, &src_rect.h);
     }
-    Texture* texture = new Texture(sdl_texture, src_rect);
-    return texture;
+    // Texture* texture = new Texture(sdl_texture, src_rect);
+    // return texture;
+    return Texture(sdl_texture, src_rect);
 }
 
 
@@ -135,9 +136,13 @@ SDL_Texture* RenderManager::texture_from_surface(SDL_Surface* surface)
 void RenderManager::register_object(RenderableObject* r)
 {
     if ( r->z_index() < MAX_LAYERS )
+    {
         render_objects.at(r->z_index()).push(r);
+    }
     else
+    {
         std::cout << "Can't handle that." << std::endl;
+    }
 }
 
 
@@ -155,11 +160,15 @@ void RenderManager::register_object(RenderableObject* r)
 void RenderManager::render()
 {
     SDL_RenderClear(renderer);
-    RenderableObject* object;
+    RenderableObject* object {nullptr};
     for ( unsigned int i = 0; i < render_objects.size(); i++ )
     {
         while ( !render_objects[i].empty() )
         {
+            if ( i == 2 )
+            {
+                std::cout << "Break" << std::endl;
+            }
             object = render_objects[i].front();
             render_objects[i].pop();
             object->render(renderer);
@@ -178,14 +187,14 @@ void RenderManager::render()
     Sets scale of the given texture so that is fills the whole screen height.
     Used for loading room textures.
 */
-void RenderManager::scale_full_h(Texture* &texture)
+void RenderManager::scale_full_h(Texture& texture)
 {
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer, &w, &h);
     // Scale.
-    float scale = static_cast<float>(h) / texture->src_rect.h;  // Use static_cast to really get a float.
-    texture->set_scale(scale);
+    float scale = static_cast<float>(h) / texture.src_rect.h;  // Use static_cast to really get a float.
+    texture.set_scale(scale);
 }
 
 // Returns current screen width.

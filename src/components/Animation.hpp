@@ -56,7 +56,7 @@ class Animation
 private:
 public:
     // Fields
-    Texture* texture;
+    Texture texture;
     int current_frame;  //this is src_rect. dest_rect and scale will be provided by RoomManager.
     long last_updated;
     std::vector<Frame> frames;
@@ -64,8 +64,8 @@ public:
     int offset_y; // How is this used?
 
     // Constructor
-    Animation() {texture = nullptr;};
-    Animation(Texture* _texture,
+    Animation() {};
+    Animation(Texture _texture,
               std::vector<Frame> _frames,
               int _offset_x = 0, int _offset_y = 0,
               int _x = 0, int _y = 0
