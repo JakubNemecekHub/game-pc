@@ -6,6 +6,7 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include <memory>   // unique_ptr
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -52,6 +53,8 @@ void RenderManager::shutDown()
 /*
     Load and return single Texture object from an image file.
     By default set the Texture dimensions the same as the file dimensions are.
+    Better use Texture(std::string) constructor, this is very much a Texture
+    method.
 */
 Texture RenderManager::load_texture(std::string fileName)
 {
@@ -69,8 +72,6 @@ Texture RenderManager::load_texture(std::string fileName)
         src_rect.y = 0;
         SDL_QueryTexture(sdl_texture, NULL, NULL, &src_rect.w, &src_rect.h);
     }
-    // Texture* texture = new Texture(sdl_texture, src_rect);
-    // return texture;
     return Texture(sdl_texture, src_rect);
 }
 
@@ -165,10 +166,6 @@ void RenderManager::render()
     {
         while ( !render_objects[i].empty() )
         {
-            if ( i == 2 )
-            {
-                std::cout << "Break" << std::endl;
-            }
             object = render_objects[i].front();
             render_objects[i].pop();
             object->render(renderer);
@@ -195,6 +192,15 @@ void RenderManager::scale_full_h(Texture& texture)
     // Scale.
     float scale = static_cast<float>(h) / texture.src_rect.h;  // Use static_cast to really get a float.
     texture.set_scale(scale);
+}
+void RenderManager::scale_full_h(const std::unique_ptr<Texture>& texture)
+{
+    // Get screen dimensions.
+    int w, h;
+    SDL_GetRendererOutputSize(renderer, &w, &h);
+    // Scale.
+    float scale = static_cast<float>(h) / texture->src_rect.h;  // Use static_cast to really get a float.
+    texture->set_scale(scale);
 }
 
 // Returns current screen width.

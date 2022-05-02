@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <queue>
+#include <memory>   // unique_ptr
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -53,6 +54,7 @@ public:
     // Helper functions.
 
     void scale_full_h(Texture& texture);
+    void scale_full_h(const std::unique_ptr<Texture>& texture); // Can use templates?
     int get_screen_width();
 };
 

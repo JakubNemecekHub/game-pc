@@ -1,6 +1,10 @@
 #include "../Texture.hpp"
 
+#include <string>
+
 #include <SDL2/SDL.h>
+
+#include "../../managers/RenderManager.hpp"
 
 
 Texture::Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale, int _z_index)
@@ -11,6 +15,24 @@ Texture::Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale, int _z
     dest_rect.w = src_rect.w * _scale;
     dest_rect.h = src_rect.h * _scale;
 }
+
+
+Texture::Texture(std::string file_name, float _scale, int _z_index)
+    : RenderableObject(_z_index), scale{_scale}
+{
+    // Load texture
+    texture = RenderManager::GetInstance()->load_sdl_texture(file_name);
+    // Set source rectangle
+    src_rect.x = 0;
+    src_rect.y = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &src_rect.w, &src_rect.h);
+    // Set destination rectengle, so that it doesn't contain garbage
+    dest_rect.x = 0;
+    dest_rect.y = 0;
+    dest_rect.w = 0;
+    dest_rect.h = 0;
+}
+
 
 Texture::~Texture()
 {

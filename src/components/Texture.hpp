@@ -1,6 +1,8 @@
 #ifndef TEXTURE_COMPONENT_H
 #define TEXTURE_COMPONENT_H
 
+#include <string>
+
 #include <SDL2/SDL.h>
 
 #include "RenderableObject.h"
@@ -23,6 +25,7 @@ public:
     Texture() {};
     // Default scale is 1, default z_index is 0.
     Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale = 1, int _z_index = 0);
+    Texture(std::string file_name, float _scale = 1, int _z_index = 0);
     // Destructor
     ~Texture();
 

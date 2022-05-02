@@ -6,6 +6,10 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <memory>   // unique_ptr
+
+#include "json.hpp"
+using json = nlohmann::json;
 
 #include <SDL2/SDL.h>
 
@@ -53,33 +57,20 @@ public:
 class Room
 {
 private:
+public:
     bool visible_click_map {false};
     bool visible_walk_area {false};
-public:
-    // Fields - should move most stuff to be private
-    Texture texture;                                   // Backgroud texture.
+    std::unique_ptr<Texture> texture;
     Polygon walk_area;
-    PolygonObject* screen_walk_area;                    // It is a pointer to be able to initialize to nullptr and create it dynamically
+    std::unique_ptr<PolygonObject> screen_walk_area;
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
-    Texture* click_map_texture;                         // It is a pointer to be able to initialize to nullptr and create it dynamically
+    std::unique_ptr<Texture> click_map_texture;
     std::unordered_map<Uint32, std::string> doors;      // A map of doors and their destinations.
     std::unordered_map<Uint32, std::string> actions;    // A map of hot-spots indexes and their actions.
-    Ambient ambient;                                   // Manager of ambient animations. Is it hecessary to have separate class for this?
+    Ambient ambient;                                    // Manager of ambient animations. Is it hecessary to have separate class for this?
     // Constructor - move implementation to .cpp
     Room() {};
-    Room(Texture _texture,
-         Polygon _walk_area,
-         SDL_Surface* _click_map,
-         std::unordered_map<Uint32, std::string> _doors,
-         std::unordered_map<Uint32, std::string> _actions,
-         std::vector<Animation> _animations
-        )
-        : texture{_texture}, walk_area{_walk_area}, click_map{_click_map}, doors{_doors}, actions{_actions}
-    {
-        ambient = Ambient{_animations};
-        screen_walk_area = nullptr;
-        click_map_texture = nullptr;
-    };
+    void load(json room_meta);
     // Destructor
     ~Room();
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <memory>   // unique_ptr
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -40,34 +41,64 @@ void Ambient::update(int dt)
     Rooms wider than screen size should sroll. TO DO.
     <- Room must keep track of its destination (position and dimensions) on its own. Maybe this is true for all objects.
 */
+
+/*
+    Loads room's data based on info in the room data dictionary.
+*/
+void Room::load(json room_data)
+{
+    // Load room background texture
+    // texture unique pointer is now nullptr
+    std::string _texture_file = room_data["texture"];   // must create temporary string, because
+    texture = std::make_unique<Texture>(_texture_file); // make_unique here doesn't accept json object
+    // Fit to screen height.
+    RenderManager::GetInstance()->scale_full_h(texture);
+    // Set default position.
+    int x;
+    x = (RenderManager::GetInstance()->get_screen_width() - texture->dest_rect.w) / 2;
+    texture->set_position(x, 0);
+    // set z_index to 0, which is the layer reserved for room background
+    texture->set_z_index(0);
+    // Load walk area polygon
+    for ( auto &vertex : room_data["walkarea"] )
+    {
+        walk_area.add_vertex(vertex[0], vertex[1]);
+    }
+    // Load room click map
+    click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
+    // Load doors
+    for ( auto &door : room_data["doors"] )
+    {
+        doors.insert({{door[0], door[1]}});
+    }
+    // Load room actions
+    for ( auto &action : room_data["actions"] )
+    {
+        actions.insert({{action[0], action[1]}});
+    }
+    // load room ambient animations
+    ambient.animations = Animation::load_animation_vector(room_data["ambient"]);
+}
+
 Room::~Room()
 {
-    std::cout << "Room destructor" << std::endl;
-    if ( screen_walk_area != nullptr )
-    {
-        delete screen_walk_area;
-    }
     SDL_FreeSurface(click_map);
-    if ( click_map_texture != nullptr )
-    {
-        delete click_map_texture;
-    }
 }
 
 
 void Room::update(int dt)
 {
     // Register background
-    RenderManager::GetInstance()->register_object(&texture);
+    RenderManager::GetInstance()->register_object(texture.get());
     // Register Click map if should be visible
     if ( visible_click_map )
     {
-        RenderManager::GetInstance()->register_object(click_map_texture);
+        RenderManager::GetInstance()->register_object(click_map_texture.get());
     }
     // Register Walk area if should be visible
     if ( visible_walk_area )
     {
-        RenderManager::GetInstance()->register_object(screen_walk_area);
+        RenderManager::GetInstance()->register_object(screen_walk_area.get());
     }
     ambient.update(dt);
 }
@@ -81,11 +112,11 @@ void Room::create_click_map_texture()
 {
     // could return bool about result
     // probably should check if click_map_texture doesn't already exists
-    click_map_texture = new Texture;
+    click_map_texture = std::make_unique<Texture>();
     click_map_texture->texture = RenderManager::GetInstance()->texture_from_surface(click_map);
-    click_map_texture->set_src(texture.src_rect);
-    click_map_texture->set_dest(texture.dest_rect);
-    click_map_texture->set_scale(texture.scale);
+    click_map_texture->set_src(texture->src_rect);
+    click_map_texture->set_dest(texture->dest_rect);
+    click_map_texture->set_scale(texture->scale);
     click_map_texture->set_z_index(2);
 }
 
@@ -96,7 +127,7 @@ void Room::create_click_map_texture()
 void Room::toggle_click_map()
 {
     visible_click_map = !visible_click_map;
-    if ( visible_click_map && click_map_texture == nullptr )
+    if ( visible_click_map && !click_map_texture )
     {
         create_click_map_texture();
     }
@@ -109,10 +140,10 @@ void Room::toggle_click_map()
 */
 void Room::create_screen_walk_area()
 {
-    screen_walk_area = new PolygonObject(walk_area,
-                                         texture.scale,
-                                         texture.dest_rect.x,
-                                         texture.dest_rect.y
+    screen_walk_area = std::make_unique<PolygonObject>(walk_area,
+                                         texture->scale,
+                                         texture->dest_rect.x,
+                                         texture->dest_rect.y
                                         );
 }
 
@@ -123,7 +154,7 @@ void Room::create_screen_walk_area()
 void Room::toggle_walk_area()
 {
     visible_walk_area = !visible_walk_area;
-    if ( visible_walk_area && screen_walk_area == nullptr )
+    if ( visible_walk_area && !screen_walk_area )
     {
         create_screen_walk_area();
     }
@@ -230,50 +261,14 @@ void RoomManager::load_rooms(std::string suite_file)
     for ( auto &room_data : suite_data["rooms"] )
     {
         /*
-            Collect necessary information and then emplace new Room into a unordered_map.
+            Create empty Room in the rooms map and the use its load method.
         */
-        // Load room name
         std::string _name;
         _name = room_data["name"];
-        // Load room background texture
-        Texture _texture;
-        _texture = RenderManager::GetInstance()->load_texture(room_data["texture"]);
-        // Fit to screen height.
-        RenderManager::GetInstance()->scale_full_h(_texture);
-        // Set default position.
-        int x;
-        x = (RenderManager::GetInstance()->get_screen_width() - _texture.dest_rect.w) / 2;
-        _texture.set_position(x, 0);
-        // set z_index to 0, which is the layer reserved for room background
-        _texture.set_z_index(0);
-        // Load walk area polygon
-        Polygon _walk_area;
-        for ( auto &vertex : room_data["walkarea"] )
-        {
-            _walk_area.add_vertex(vertex[0], vertex[1]);
-        }
-        // Load room click map
-        SDL_Surface* _click_map;
-        _click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
-        // Load doors
-        std::unordered_map<Uint32, std::string> _doors;
-        for ( auto &door : room_data["doors"] )
-        {
-            _doors.insert({{door[0], door[1]}});
-        }
-        // Load room actions
-        std::unordered_map<Uint32, std::string> _actions;
-        for ( auto &action : room_data["actions"] )
-        {
-            _actions.insert({{action[0], action[1]}});
-        }
-        // load room ambient animations
-        std::vector<Animation> _animations;
-        _animations = Animation::load_animation_vector(room_data["ambient"]);
-        // Emplace new Room Object
         rooms.emplace(std::piecewise_construct,
                       std::forward_as_tuple(_name),
-                      std::forward_as_tuple(_texture, _walk_area,_click_map, _doors, _actions, _animations));
+                      std::forward_as_tuple());
+        rooms.at(_name).load(room_data);
     }
 }
 
@@ -294,8 +289,8 @@ void RoomManager::handle_click(int x, int y)
 {
     // Convert viewport coordinates into world coordinates
     int world_x, world_y;
-    world_x = (x - active_room->texture.dest_rect.x) / active_room->texture.scale;
-    world_y = y / active_room->texture.scale;
+    world_x = (x - active_room->texture->dest_rect.x) / active_room->texture->scale;
+    world_y = y / active_room->texture->scale;
     std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
     if ( active_room->walk_area.point_in_polygon(world_x, world_y) )
