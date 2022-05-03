@@ -58,29 +58,18 @@ private:
 public:
     // Fields
     std::unique_ptr<Texture> texture;
-    int current_frame;  //this is src_rect. dest_rect and scale will be provided by RoomManager.
+    int current_frame;                  //this is src_rect. dest_rect and scale will be provided by RoomManager.
     long last_updated;
     std::vector<Frame> frames;
-    int offset_x; // How is this used?
-    int offset_y; // How is this used?
+    int offset_x;                       // How is this used?
+    int offset_y;                       // How is this used?
 
-    // Constructor
-    Animation() {};
-    Animation(const Animation& source);
-    // Animation(Texture _texture,
-    //           std::vector<Frame> _frames,
-    //           int _offset_x = 0, int _offset_y = 0,
-    //           int _x = 0, int _y = 0
-    //         );
-    // Animation(const Animation &source);
-    // Desctuctor
-    ~Animation();
+    Animation() {}                          // No-args Constructor
+    Animation(const Animation&& source) {}  // Copy Constructor
+    Animation(const Animation& source) {}   // Move Constructor
+    ~Animation() {}                         // Desctuctor
 
     // Static Class Methods
-
-    // static std::unordered_map<std::string, Animation> load_animation(std::string file_name);
-    // static std::vector<Animation> load_animation_vector(json _json);
-    // static void populate_vector(std::vector<Animation>& animations, json _json);
 
     // Methods
 
