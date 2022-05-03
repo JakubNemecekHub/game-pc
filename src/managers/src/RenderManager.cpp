@@ -166,6 +166,8 @@ void RenderManager::render()
     {
         while ( !render_objects[i].empty() )
         {
+            if ( i == 1 )
+                std::cout << "Animations" << std::endl;
             object = render_objects[i].front();
             render_objects[i].pop();
             object->render(renderer);

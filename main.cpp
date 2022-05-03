@@ -5,7 +5,6 @@
 #include "src/managers/WindowManager.hpp"
 #include "src/managers/RenderManager.hpp"
 #include "src/managers/ControlManager.hpp"
-#include "src/managers/PlayerManager.hpp"
 #include "src/managers/RoomManager.hpp"
 
 
@@ -28,10 +27,6 @@ RenderManager* gRenderManager = RenderManager::GetInstance();
     Left Mouse Click - passed to room, result: possible action = walh, use, look,..... Pass it to Player.
 */
 ControlManager* gControlManager = ControlManager::GetInstance();
-/* Player Manager
-
-*/
-// PlayerManager* gPlayerManager = PlayerManager::GetInstance();
 /* RoomManager
     Loads room, renders room, checks collisons and player action inside a room
 */
@@ -58,7 +53,6 @@ int main(int argc, char* args[])
     // start up engine systems in the correct order
     gWindowManager->startUp();
     gRenderManager->startUp();
-    // gPlayerManager->startUp();
     gRoomManager->startUp();
 
     // Game loop

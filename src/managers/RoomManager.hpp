@@ -28,16 +28,18 @@ using json = nlohmann::json;
 
 class Ambient
 {
-public:
+private:
     // Fields
     std::vector<Animation> animations;
+public:
     // Constructor
     Ambient() {};
-    Ambient(std::vector<Animation> _animations)
-        : animations{_animations} {};
+    // Ambient(std::vector<Animation> _animations)
+    //     : animations{_animations} {};
     // Destructor
     ~Ambient() {};
     // Methods
+    void load(json ambient_data);
     void update(int dt);
 };
 

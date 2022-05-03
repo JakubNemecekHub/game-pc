@@ -13,26 +13,31 @@ using json = nlohmann::json;
 
 
 // Constructor
-Animation::Animation(Texture _texture, std::vector<Frame> _frames, int _offset_x, int _offset_y, int _x, int _y)
-    : texture{_texture}, current_frame{0}, last_updated{0}, frames{_frames},
-      offset_x{_offset_x}, offset_y{_offset_y}
-    {
-        texture.set_position(_x, _y);
-        reset();
-    };
+// Animation::Animation(Texture _texture, std::vector<Frame> _frames, int _offset_x, int _offset_y, int _x, int _y)
+//     : texture{_texture}, current_frame{0}, last_updated{0}, frames{_frames},
+//       offset_x{_offset_x}, offset_y{_offset_y}
+//     {
+//         texture.set_position(_x, _y);
+//         reset();
+//     };
 
 
 // Copy Constructor
-Animation::Animation(const Animation &source)
+// Animation::Animation(const Animation &source)
+// {
+//     // texture = new Texture();
+//     texture = source.texture;
+//     current_frame = source.current_frame;
+//     last_updated = source.last_updated;
+//     frames = source.frames;
+//     offset_x = source.offset_x;
+//     offset_y = source.offset_y;
+// }
+Animation::Animation(const Animation& source)
 {
-    // texture = new Texture();
-    texture = source.texture;
-    current_frame = source.current_frame;
-    last_updated = source.last_updated;
-    frames = source.frames;
-    offset_x = source.offset_x;
-    offset_y = source.offset_y;
+    std::cout << "Move" << std::endl;
 }
+
 
 
 // Destructor
@@ -48,8 +53,8 @@ void Animation::reset()
         and registers new Texture to renderer
     */
     current_frame = 0;
-    texture.src_rect = frames[0].src_rect;
-    texture.match_src_dimension(); // This should be handeled while loading the animation!
+    texture->src_rect = frames[0].src_rect;
+    texture->match_src_dimension(); // This should be handeled while loading the animation!
 }
 
 
@@ -69,128 +74,128 @@ void Animation::update(int dt)
     {
         current_frame = (current_frame + 1) % frames.size();
         last_updated = 0;
-        texture.src_rect = frames[current_frame].src_rect;
-        RenderManager::GetInstance()->register_object(&texture);
+        texture->src_rect = frames[current_frame].src_rect;
+        RenderManager::GetInstance()->register_object(texture.get());
     }
 }
 
 
-/*
-    Loads complete spritesheet with animation from a .anim file into an Animation object.
-    Return a map of animation name and animation objects pairs. Used for Player object,
-    where we set specific animation based, among other thigs, on user input.
-*/
-std::unordered_map<std::string, Animation> Animation::load_animation(std::string file_name)
-{
-    // Open file
-    std::ifstream animation_file {file_name, std::ios::in};
-    // Temporary variables
-    std::string value {};   // The value loaded from the file , more clever name?
-    std::unordered_map<std::string, Animation> animations {};
-    std::string animation_name {};
-    std::string sprite_sheet_name {};
-    // Animation animation; // TO DO: add temporary Texture object and use it in the Animation construction
-    Texture texture;
-    Frame frame; // TO DO: create a temporary vector of frames, populate it and then pass it to Animation constructor
-    std::vector<Frame> frames;
-    int x {0}, y {0};
-    float scale {1.0f};
-    int offset_x, offset_y;
-    // Loading loop
-    if ( animation_file.is_open() )
-    {
-        while ( !animation_file.eof() )
-        {
-            animation_file >> value;
-            if ( value == "ANIMATION" )
-            {
-                animation_file >> animation_name;
-            }
-            if ( value == "FILENAME" )
-            {
-                animation_file >> sprite_sheet_name;
-                texture = RenderManager::GetInstance()->load_texture(sprite_sheet_name.c_str());
-            }
-            if ( value == "POSITION" )
-            {
-                animation_file >> x;
-                animation_file >> y;
-            }
-            if ( value == "SCALE" )
-            {
-                animation_file >> scale;
-                texture.set_scale(scale);
-            }
-            if ( value == "OFFSET" )
-            {
-                animation_file >> offset_x;
-                animation_file >> offset_y;
-            }
-            if ( value == "FRAME" )
-            {
-                animation_file >> frame.src_rect.x;
-                animation_file >> frame.src_rect.y;
-                animation_file >> frame.src_rect.w;
-                animation_file >> frame.src_rect.h;
-                animation_file >> frame.duration;
-                frames.push_back(frame);
-            }
-            if ( value == "END" )
-            {
-                animations.emplace(std::piecewise_construct,
-                                    std::forward_as_tuple(animation_name),
-                                    std::forward_as_tuple(texture, frames, offset_x, offset_y, x, y));
-                frames.clear();
-            }
+// /*
+//     Loads complete spritesheet with animation from a .anim file into an Animation object.
+//     Return a map of animation name and animation objects pairs. Used for Player object,
+//     where we set specific animation based, among other thigs, on user input.
+// */
+// std::unordered_map<std::string, Animation> Animation::load_animation(std::string file_name)
+// {
+//     // Open file
+//     std::ifstream animation_file {file_name, std::ios::in};
+//     // Temporary variables
+//     std::string value {};   // The value loaded from the file , more clever name?
+//     std::unordered_map<std::string, Animation> animations {};
+//     std::string animation_name {};
+//     std::string sprite_sheet_name {};
+//     // Animation animation; // TO DO: add temporary Texture object and use it in the Animation construction
+//     Texture texture;
+//     Frame frame; // TO DO: create a temporary vector of frames, populate it and then pass it to Animation constructor
+//     std::vector<Frame> frames;
+//     int x {0}, y {0};
+//     float scale {1.0f};
+//     int offset_x, offset_y;
+//     // Loading loop
+//     if ( animation_file.is_open() )
+//     {
+//         while ( !animation_file.eof() )
+//         {
+//             animation_file >> value;
+//             if ( value == "ANIMATION" )
+//             {
+//                 animation_file >> animation_name;
+//             }
+//             if ( value == "FILENAME" )
+//             {
+//                 animation_file >> sprite_sheet_name;
+//                 texture = RenderManager::GetInstance()->load_texture(sprite_sheet_name.c_str());
+//             }
+//             if ( value == "POSITION" )
+//             {
+//                 animation_file >> x;
+//                 animation_file >> y;
+//             }
+//             if ( value == "SCALE" )
+//             {
+//                 animation_file >> scale;
+//                 texture.set_scale(scale);
+//             }
+//             if ( value == "OFFSET" )
+//             {
+//                 animation_file >> offset_x;
+//                 animation_file >> offset_y;
+//             }
+//             if ( value == "FRAME" )
+//             {
+//                 animation_file >> frame.src_rect.x;
+//                 animation_file >> frame.src_rect.y;
+//                 animation_file >> frame.src_rect.w;
+//                 animation_file >> frame.src_rect.h;
+//                 animation_file >> frame.duration;
+//                 frames.push_back(frame);
+//             }
+//             if ( value == "END" )
+//             {
+//                 animations.emplace(std::piecewise_construct,
+//                                     std::forward_as_tuple(animation_name),
+//                                     std::forward_as_tuple(texture, frames, offset_x, offset_y, x, y));
+//                 frames.clear();
+//             }
 
-        }
-        // Close file after everything is loaded
-        animation_file.close();
-    }
-    else
-    {
-        // File not opened
-        std::cout << "File " << file_name << " cannot be opened." << std::endl;
-    }
-    return animations;
-}
+//         }
+//         // Close file after everything is loaded
+//         animation_file.close();
+//     }
+//     else
+//     {
+//         // File not opened
+//         std::cout << "File " << file_name << " cannot be opened." << std::endl;
+//     }
+//     return animations;
+// }
 
-/*
-    Load animation specified in a json object.
-    Returns a vector of animations. Used fo room's ambient animations.
-*/
-std::vector<Animation> Animation::load_animation_vector(json _json)
-{
-    std::vector<Animation> _animations;
-    for (auto &animation : _json )
-    {
-        // Animation elements
-        // > Texture
-        Texture texture;
-        texture = RenderManager::GetInstance()->load_texture(animation["file"]);
-        // > Texture's z_index
-        texture.set_z_index(1);
-        // > Scale
-        float scale {animation["scale"]};
-        texture.set_scale(scale);
-        // > Frames
-        Frame frame;
-        std::vector<Frame> frames;
-        for (auto &frame : animation["frames"] )
-        {
-            // x, y, w, h, duration
-            frames.emplace_back(frame[0], frame[1], frame[2], frame[3], frame[4]);
-        }
-        // > offset
-        int offset_x, offset_y;
-        offset_x = animation["offset"][0];
-        offset_y = animation["offset"][1];
-        // > Position
-        int x, y;
-        x = animation["position"][0];
-        y = animation["position"][1];
-        // Emplace new Animation
-        _animations.emplace_back(texture, frames, offset_x, offset_y, x, y);
-    }
-    return _animations;
-}
+// /*
+//     Load animation specified in a json object.
+//     Returns a vector of animations. Used fo room's ambient animations.
+// */
+// std::vector<Animation> Animation::load_animation_vector(json _json)
+// {
+//     std::vector<Animation> _animations;
+//     for (auto &animation : _json )
+//     {
+//         // Animation elements
+//         // > Texture
+//         Texture texture;
+//         texture = RenderManager::GetInstance()->load_texture(animation["file"]);
+//         // > Texture's z_index
+//         texture.set_z_index(1);
+//         // > Scale
+//         float scale {animation["scale"]};
+//         texture.set_scale(scale);
+//         // > Frames
+//         Frame frame;
+//         std::vector<Frame> frames;
+//         for (auto &frame : animation["frames"] )
+//         {
+//             // x, y, w, h, duration
+//             frames.emplace_back(frame[0], frame[1], frame[2], frame[3], frame[4]);
+//         }
+//         // > offset
+//         int offset_x, offset_y;
+//         offset_x = animation["offset"][0];
+//         offset_y = animation["offset"][1];
+//         // > Position
+//         int x, y;
+//         x = animation["position"][0];
+//         y = animation["position"][1];
+//         // Emplace new Animation
+//         _animations.emplace_back(texture, frames, offset_x, offset_y, x, y);
+//     }
+//     return _animations;
+// }
