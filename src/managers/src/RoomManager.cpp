@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>   // unique_ptr
 
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
 #include "../RenderManager.hpp"

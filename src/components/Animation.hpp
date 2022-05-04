@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>   // unique_ptr
 
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
 #include <SDL2/SDL.h>
