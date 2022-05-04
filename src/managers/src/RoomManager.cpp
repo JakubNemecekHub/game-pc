@@ -335,8 +335,8 @@ void RoomManager::handle_click(int x, int y)
 {
     // Convert viewport coordinates into world coordinates
     int world_x, world_y;
-    world_x = (x - active_room->texture->dest_rect.x) / active_room->texture->scale;
-    world_y = y / active_room->texture->scale;
+    world_x = static_cast<int>((x - active_room->texture->dest_rect.x) / active_room->texture->scale);
+    world_y = static_cast<int>(y / active_room->texture->scale);
     std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
     if ( active_room->walk_area.point_in_polygon(world_x, world_y) )

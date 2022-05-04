@@ -12,8 +12,8 @@ Texture::Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale, int _z
 {
     dest_rect.x = 0;
     dest_rect.y = 0;
-    dest_rect.w = src_rect.w * _scale;
-    dest_rect.h = src_rect.h * _scale;
+    dest_rect.w = static_cast<int>(src_rect.w * _scale);
+    dest_rect.h = static_cast<int>(src_rect.h * _scale);
 }
 
 
@@ -100,8 +100,8 @@ void Texture::set_position(int _x, int _y)
 */
 void Texture::set_scale(float _scale){
     scale = _scale;
-    dest_rect.w = src_rect.w * _scale;
-    dest_rect.h = src_rect.h * _scale;
+    dest_rect.w = static_cast<int>(src_rect.w * _scale);
+    dest_rect.h = static_cast<int>(src_rect.h * _scale);
 }
 
 /*
@@ -112,8 +112,8 @@ void Texture::set_dimension_width(int _w)
 {
     float scale;
     scale = static_cast<float>(dest_rect.w) / _w;
-    dest_rect.w *= scale;
-    dest_rect.h *= scale;
+    dest_rect.w = static_cast<int>(dest_rect.w * scale);
+    dest_rect.h = static_cast<int>(dest_rect.h * scale);
 }
 
 /*
@@ -124,8 +124,8 @@ void Texture::set_dimension_height(int _h)
 {
     float scale;
     scale = static_cast<float>(dest_rect.h) / _h;
-    dest_rect.w *= scale;
-    dest_rect.h *= scale;
+    dest_rect.w = static_cast<int>(dest_rect.w * scale);
+    dest_rect.h = static_cast<int>(dest_rect.h * scale);
 }
 
 
@@ -145,8 +145,8 @@ void Texture::set_dimensions(int _w, int _h)
 */
 void Texture::match_src_dimension()
 {
-   dest_rect.w = src_rect.w * scale;
-   dest_rect.h = src_rect.h * scale;
+   dest_rect.w = static_cast<int>(src_rect.w * scale);
+   dest_rect.h = static_cast<int>(src_rect.h * scale);
 }
 
 /*

@@ -20,7 +20,7 @@ bool Vector2D::is_zero() const
 
 float Vector2D::size() const
 {
-    return sqrt(pow(x, 2) + pow(y, 2));
+    return static_cast<float>(sqrt(pow(x, 2) + pow(y, 2)));
 }
 
 Vector2D Vector2D::unit()
