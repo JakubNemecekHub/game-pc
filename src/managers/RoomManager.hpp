@@ -1,5 +1,4 @@
-#ifndef ROOM_MANAGER_H
-#define ROOM_MANAGER_H
+#pragma once
 
 #include <iostream>
 // #include <array>
@@ -111,5 +110,3 @@ public:
     void handle_click(int x, int y);
     void handle_keyboard(std::string key);
 };
-
-#endif // ROOM_MANAGER_H

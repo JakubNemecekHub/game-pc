@@ -1,5 +1,4 @@
-#ifndef TRANSFORM_COMPONENT_H
-#define TRANSFORM_COMPONENT_H
+#pragma once
 
 #include "../math/Vector2D.hpp"
 
@@ -13,5 +12,3 @@ public:
     int speed;
     int scale;
 };
-
-#endif // TRANSFORM_COMPONENT_H

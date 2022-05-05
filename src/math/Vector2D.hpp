@@ -1,5 +1,4 @@
-#ifndef VECTOR2D_H
-#define VECTOR2D_H
+#pragma once
 
 #include <iostream>
 
@@ -11,7 +10,7 @@ public:
     float y;
     // Methods
     void zero();
-    bool is_zero() const; 
+    bool is_zero() const;
     float size() const;
     Vector2D unit();
 
@@ -37,10 +36,8 @@ public:
     friend bool operator==(const Vector2D& vec1, const Vector2D& vec2);
 
     // Other Methods
-    
+
     friend std::ostream& operator<<(std::ostream& os, const Vector2D& vec);
     // Constructor
     Vector2D(float x = 0.0f, float y = 0.0f);
 };
-
-#endif // VECTOR2D_H

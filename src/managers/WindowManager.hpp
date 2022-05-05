@@ -1,5 +1,4 @@
-#ifndef WINDOW_MANAGER_H
-#define WINDOW_MANAGER_H
+#pragma once
 
 #include <iostream>
 
@@ -34,5 +33,3 @@ public:
     void toggle_fullscreen();
     void close();
 };
-
-#endif // WINDOW_MANAGER_H

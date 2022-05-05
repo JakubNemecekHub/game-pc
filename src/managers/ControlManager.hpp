@@ -1,5 +1,4 @@
-#ifndef CONTROL_MANAGER_H
-#define CONTROL_MANAGER_H
+#pragma once
 
 #include <iostream>
 
@@ -17,6 +16,3 @@ public:
     SDL_Event event;
     void handleEvents();
 };
-
-
-#endif // CONTROL_MANAGER_H

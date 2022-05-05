@@ -1,5 +1,4 @@
-#ifndef TEXTURE_COMPONENT_H
-#define TEXTURE_COMPONENT_H
+#pragma once
 
 #include <string>
 
@@ -48,5 +47,3 @@ public:
     void render(SDL_Renderer* renderer);
 
 };
-
-#endif // TEXTURE_COMPONENT_H

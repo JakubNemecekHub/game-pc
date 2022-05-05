@@ -1,5 +1,4 @@
-#ifndef RENDERABLE_OBJECT_H
-#define RENDERABLE_OBJECT_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -24,5 +23,3 @@ public:
     int z_index();
     void set_z_index(int _z_index);
 };
-
-#endif // RENDERABLE_OBJECT_H

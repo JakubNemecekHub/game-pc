@@ -1,5 +1,4 @@
-#ifndef ANIMATION_COMPONENT_H
-#define ANIMATION_COMPONENT_H
+#pragma once
 
 #include <iostream>
 #include <unordered_map>
@@ -77,5 +76,3 @@ public:
     void update(int dt);
     void set_position(int _x, int _y);
 };
-
-#endif // ANIMATION_COMPONENT_H

@@ -1,5 +1,4 @@
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -29,5 +28,3 @@ public:
 
     void render(SDL_Renderer* renderer);
 };
-
-#endif // POLYGON_OBJECT_H

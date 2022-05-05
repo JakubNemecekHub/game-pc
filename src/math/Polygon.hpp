@@ -1,5 +1,4 @@
-#ifndef POLYGON_H
-#define POLYGON_H
+#pragma once
 
 #include <vector>
 
@@ -32,5 +31,3 @@ public:
     void scale(float _scale);
     void move (int dx, int dy);
 };
-
-#endif // POLYGON_H

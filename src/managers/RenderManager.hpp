@@ -1,5 +1,4 @@
-#ifndef RENDER_MANAGER_H
-#define RENDER_MANAGER_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -57,5 +56,3 @@ public:
     void scale_full_h(const std::unique_ptr<Texture>& texture); // Can use templates?
     int get_screen_width();
 };
-
-#endif // RENDER_MANAGER_H
