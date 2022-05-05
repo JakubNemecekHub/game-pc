@@ -9,10 +9,11 @@ project(
 add_library(
     ${PROJECT_NAME}
     src/ControlManager.cpp
+    src/LogManager.cpp
     src/RenderManager.cpp
     src/RoomManager.cpp
-    src/WindowManager.cpp
     src/TextManager.cpp
+    src/WindowManager.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

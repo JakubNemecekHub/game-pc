@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "src/managers/ControlManager.hpp"
+#include "src/managers/LogManager.hpp"
 #include "src/managers/RenderManager.hpp"
 #include "src/managers/RoomManager.hpp"
 #include "src/managers/TextManager.hpp"
@@ -36,6 +37,10 @@ RoomManager* gRoomManager = RoomManager::GetInstance();
     Loads font and what else:
 */
 TextManager* gTextManager = TextManager::GetInstance();
+/* LogManager
+    Log erors and other information
+*/
+LogManager* gLogManager = LogManager::GetInstance();
 // Other possible systems
 // PhysicsManager
 // AnimationManager
@@ -56,6 +61,7 @@ int main(int argc, char* args[])
 {
     std::cout << "Running" << std::endl;
     // start up engine systems in the correct order
+    gLogManager->startUp();
     gWindowManager->startUp();
     gRenderManager->startUp();
     gTextManager->startUp();
@@ -81,6 +87,7 @@ int main(int argc, char* args[])
     gTextManager->ShutDown();
     gRenderManager->shutDown();
     gWindowManager->shutDown();
+    gLogManager->shutDown();
 
     return 0;
 }
