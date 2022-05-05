@@ -9,6 +9,7 @@
 using json = nlohmann::json;
 
 #include "../RenderManager.hpp"
+#include "../TextManager.hpp"
 #include "../../components/Animation.hpp"
 #include "../../math_objects/PolygonObject.hpp"
 #include "../../math/Polygon.hpp"
@@ -337,6 +338,7 @@ void RoomManager::handle_click(int x, int y)
     int world_x, world_y;
     world_x = static_cast<int>((x - active_room->texture->dest_rect.x) / active_room->texture->scale);
     world_y = static_cast<int>(y / active_room->texture->scale);
+    std::cout << "Screen coordinates: (" << x << ", " << y << "), ";
     std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
     if ( active_room->walk_area.point_in_polygon(world_x, world_y) )
@@ -346,14 +348,13 @@ void RoomManager::handle_click(int x, int y)
     // Print out action
     Uint32 response;
     response = active_room->get_mapped_object(world_x, world_y);
-    std::cout << response << " >> " << active_room->actions[response];
+    TextManager::GetInstance()->register_text(active_room->actions[response], x, y);
     if ( active_room->doors.find(response) != active_room->doors.end() )
     {
         // Change room
-        std::cout << "| Changing room to " << active_room->doors[response];
+        std::cout << "Changing room to " << active_room->doors[response] << std::endl;
         activate_room(active_room->doors[response]);
     }
-    std::cout << std::endl;
 }
 
 

@@ -12,6 +12,7 @@ add_library(
     src/RenderManager.cpp
     src/RoomManager.cpp
     src/WindowManager.cpp
+    src/TextManager.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

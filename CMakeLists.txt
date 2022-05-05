@@ -23,10 +23,11 @@ add_subdirectory(src/math_objects)
 add_executable(${PROJECT_NAME} main.cpp)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(sdl2-image CONFIG REQUIRED)
+find_package(sdl2-ttf CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   SDL2::SDL2 SDL2::SDL2main
-  SDL2::SDL2_image
+  SDL2::SDL2_image SDL2::SDL2_ttf
   nlohmann_json::nlohmann_json
   components managers math math_objects
 )

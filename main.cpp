@@ -2,10 +2,11 @@
 
 #include <SDL2/SDL.h>
 
-#include "src/managers/WindowManager.hpp"
-#include "src/managers/RenderManager.hpp"
 #include "src/managers/ControlManager.hpp"
+#include "src/managers/RenderManager.hpp"
 #include "src/managers/RoomManager.hpp"
+#include "src/managers/TextManager.hpp"
+#include "src/managers/WindowManager.hpp"
 
 
 /* Window Manager
@@ -31,6 +32,10 @@ ControlManager* gControlManager = ControlManager::GetInstance();
     Loads room, renders room, checks collisons and player action inside a room
 */
 RoomManager* gRoomManager = RoomManager::GetInstance();
+/* TextManager
+    Loads font and what else:
+*/
+TextManager* gTextManager = TextManager::GetInstance();
 // Other possible systems
 // PhysicsManager
 // AnimationManager
@@ -53,6 +58,7 @@ int main(int argc, char* args[])
     // start up engine systems in the correct order
     gWindowManager->startUp();
     gRenderManager->startUp();
+    gTextManager->startUp();
     gRoomManager->startUp();
 
     // Game loop
@@ -65,6 +71,7 @@ int main(int argc, char* args[])
         int dt = next_tick - tick;
         tick = next_tick;
         gRoomManager->update(dt);
+        gTextManager->update(dt);
         // Render
         gRenderManager->render();
     }

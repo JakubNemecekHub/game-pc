@@ -37,8 +37,6 @@ void ControlManager::handleEvents()
             SDL_GetMouseState(&x, &y);
             bool left;
             left = ( event.button.button == SDL_BUTTON_LEFT );
-            std::cout << left << " ";
-            std::cout << x << ", " << y << std::endl;
             // Pass mouse click along
             RoomManager::GetInstance()->handle_click(x, y);
         }
