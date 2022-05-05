@@ -78,6 +78,7 @@ int main(int argc, char* args[])
 
     // shut down system in appropriate order (e.g. in reverse)
     gRoomManager->shutDown();
+    gTextManager->ShutDown();
     gRenderManager->shutDown();
     gWindowManager->shutDown();
 
