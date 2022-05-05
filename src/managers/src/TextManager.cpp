@@ -63,9 +63,11 @@ void TextManager::register_text(std::string text, int x, int y)
     {
         display_text.release();
     }
+    // Screen width used in wrapping text and moving it along the x axis
+    int sreen_w{RenderManager::GetInstance()->get_screen_width()};
     SDL_Color color{255, 183, 89};
     // Create surface from text
-    SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), color);
+    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), color, sreen_w);
     if ( text_surface == NULL )
     {
         std::cout << "SDL_ttf Error: " << TTF_GetError() << std::endl;
@@ -96,7 +98,6 @@ void TextManager::register_text(std::string text, int x, int y)
         we are...
     */
     int final_x, final_y;
-    int sreen_w{RenderManager::GetInstance()->get_screen_width()};
     final_x = sreen_w - src_rect.w;
     if ( final_x > x )
     {
