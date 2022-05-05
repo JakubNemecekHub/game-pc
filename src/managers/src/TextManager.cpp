@@ -81,13 +81,7 @@ void TextManager::register_text(std::string text, int x, int y)
         return;
     }
     // Create Texture with SDL_Texture
-    // Source rectangle is the whole texture
-    SDL_Rect src_rect;
-    src_rect.x = 0;
-    src_rect.y = 0;
-    SDL_QueryTexture(text_texture, NULL, NULL, &src_rect.w, &src_rect.h);
-    display_text = std::make_unique<Texture>(text_texture, src_rect); // TO DO: make 1 arg consturctor (SDL_Texture), that sets src_rect to the whole texture
-    display_text->set_z_index(3);
+    display_text = std::make_unique<Texture>(text_texture, 1, 3);
     display_text->match_src_dimension();
     /*
         Set position
@@ -98,12 +92,12 @@ void TextManager::register_text(std::string text, int x, int y)
         we are...
     */
     int final_x, final_y;
-    final_x = sreen_w - src_rect.w;
+    final_x = sreen_w - display_text->src_rect.w;
     if ( final_x > x )
     {
         final_x = x;
     }
-    final_y = y - src_rect.h;
+    final_y = y - display_text->src_rect.h;
     display_text->set_position(final_x, final_y);
     text_timer = 0;
 }
