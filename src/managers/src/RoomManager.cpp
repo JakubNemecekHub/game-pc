@@ -348,12 +348,15 @@ void RoomManager::handle_click(int x, int y)
     // Print out action
     Uint32 response;
     response = active_room->get_mapped_object(world_x, world_y);
-    TextManager::GetInstance()->register_text(active_room->actions[response], x, y);
-    if ( active_room->doors.find(response) != active_room->doors.end() )
+    if ( response )
     {
-        // Change room
-        std::cout << "Changing room to " << active_room->doors[response] << std::endl;
-        activate_room(active_room->doors[response]);
+        TextManager::GetInstance()->register_text(active_room->actions[response], x, y);
+        if ( active_room->doors.find(response) != active_room->doors.end() )
+        {
+            // Change room
+            std::cout << "Changing room to " << active_room->doors[response] << std::endl;
+            activate_room(active_room->doors[response]);
+        }
     }
 }
 
