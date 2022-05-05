@@ -5,7 +5,9 @@
 
 #include <iostream>
 
+
 ControlManager* ControlManager::singleton_ = nullptr;
+
 
 ControlManager* ControlManager::GetInstance()
 {
@@ -15,6 +17,19 @@ ControlManager* ControlManager::GetInstance()
     }
     return singleton_;
 }
+
+
+void ControlManager::startUp()
+{
+    std::cout << "Starting Control Manager." << std::endl;
+}
+
+
+void ControlManager::shutDown()
+{
+    std::cout << "Shuting down Control Manager." << std::endl;
+}
+
 
 void ControlManager::handleEvents()
 {

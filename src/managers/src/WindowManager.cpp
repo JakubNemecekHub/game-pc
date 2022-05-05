@@ -15,15 +15,23 @@ WindowManager* WindowManager::GetInstance()
 
 void WindowManager::startUp()
 {
+    std::cout << "Starting Window Manager." << std::endl;
     window_ = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false);
     if ( window_ )
     {
+        std::cout << "Window created." << std::endl;
         isRunning = true;
+    }
+    else
+    {
+        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
     }
 }
 
 void WindowManager::shutDown()
 {
+    SDL_DestroyWindow(window_);
+    std::cout << "Window destroyed. Shuting down Window Manager." << std::endl;
 }
 
 // void WindowManager::handleEvents()

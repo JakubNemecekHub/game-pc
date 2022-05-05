@@ -274,6 +274,7 @@ RoomManager* RoomManager::GetInstance()
 
 void RoomManager::startUp()
 {
+    std::cout << "Starting Room Manager." << std::endl;
     active_room = nullptr;
     load_rooms("suite-house");
     activate_room("Front gate");
@@ -282,6 +283,7 @@ void RoomManager::startUp()
 
 void RoomManager::shutDown()
 {
+    std::cout << "Shuting down Room Manager." << std::endl;
     active_room = nullptr;
 }
 

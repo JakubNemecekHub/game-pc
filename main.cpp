@@ -64,6 +64,7 @@ int main(int argc, char* args[])
     gLogManager->startUp();
     gWindowManager->startUp();
     gRenderManager->startUp();
+    gControlManager->startUp();
     gTextManager->startUp();
     gRoomManager->startUp();
 
@@ -86,6 +87,7 @@ int main(int argc, char* args[])
     gRoomManager->shutDown();
     gTextManager->ShutDown();
     gRenderManager->shutDown();
+    gControlManager->shutDown();
     gWindowManager->shutDown();
     gLogManager->shutDown();
 
