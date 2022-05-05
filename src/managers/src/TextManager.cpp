@@ -85,7 +85,6 @@ void TextManager::register_text(std::string text, int x, int y)
     src_rect.y = 0;
     SDL_QueryTexture(text_texture, NULL, NULL, &src_rect.w, &src_rect.h);
     display_text = std::make_unique<Texture>(text_texture, src_rect);
-    // Texture* texture = new Texture(text_texture, src_rect);
     display_text->set_z_index(3);
     display_text->match_src_dimension();
     display_text->set_position(x, y - src_rect.h);
