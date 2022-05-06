@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
+#include "../LogManager.hpp"
 #include "../RenderManager.hpp"
 #include "../TextManager.hpp"
 #include "../../components/Animation.hpp"
@@ -274,7 +275,7 @@ RoomManager* RoomManager::GetInstance()
 
 void RoomManager::startUp()
 {
-    std::cout << "Starting Room Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Starting Room Manager.");
     active_room = nullptr;
     load_rooms("suite-house");
     activate_room("Front gate");
@@ -283,7 +284,7 @@ void RoomManager::startUp()
 
 void RoomManager::shutDown()
 {
-    std::cout << "Shuting down Room Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Shutting down Room Manager.");
     active_room = nullptr;
 }
 

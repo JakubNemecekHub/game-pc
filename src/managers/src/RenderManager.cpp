@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "../LogManager.hpp"
 #include "../WindowManager.hpp"
 #include "../../components/RenderableObject.h"
 #include "../../components/Texture.hpp"
@@ -32,17 +33,17 @@ RenderManager* RenderManager::GetInstance()
 
 void RenderManager::startUp()
 {
-    std::cout << "Starting Render Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Starting Render Manager.");
     window = WindowManager::GetInstance()->window();
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if ( renderer )
     {
-        std::cout << "Renderer created." << std::endl;
+        LogManager::GetInstance()->log_message("Renderer created.");
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     }
     else
     {
-        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL Error: ", SDL_GetError());
     }
 }
 
@@ -50,7 +51,7 @@ void RenderManager::startUp()
 void RenderManager::shutDown()
 {
     SDL_DestroyRenderer(renderer);
-    std::cout << "Renderer destroyed. Shuting down Render Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Renderer destroyed. Shutting down Render Manager.");
 }
 
 
@@ -72,7 +73,7 @@ Texture RenderManager::load_texture(std::string fileName)
     // Load texture.
     if ( sdl_texture == NULL )  // Given file not found.
     {
-        std::cerr << "SDL_img Error: " << IMG_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL_img Error: ", IMG_GetError());
     }
     else    // Texture loaded, get its dimension.
     {
@@ -95,7 +96,7 @@ SDL_Texture* RenderManager::load_sdl_texture(std::string fileName)
     // Load texture.
     if ( sdl_texture == NULL )  // Given file not found.
     {
-        std::cerr << "SDL_img Error: " << IMG_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL_img Error: ", IMG_GetError());
     }
     return sdl_texture;
 }
@@ -111,7 +112,7 @@ SDL_Surface* RenderManager::load_bitmap(std::string file_name)
     surface = SDL_LoadBMP(file_name.c_str());
     if ( surface == NULL )  // Given file not found.
     {
-        std::cerr << "SDL_img Error: " << IMG_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL_img Error: ", IMG_GetError());
     }
     SDL_LockSurface(surface);
     return surface;
@@ -150,7 +151,8 @@ void RenderManager::register_object(RenderableObject* r)
     }
     else
     {
-        std::cerr << "Z-index out of scope. May index is " << MAX_LAYERS << ", was given " << r->z_index() << std::endl;
+        LogManager::GetInstance()->log_error("Z-index out of scope. May index is ", MAX_LAYERS,
+                                             ", was given ", r->z_index());
     }
 }
 

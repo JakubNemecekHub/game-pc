@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../LogManager.hpp"
+
 WindowManager* WindowManager::singleton_ = nullptr;
 
 WindowManager* WindowManager::GetInstance()
@@ -15,23 +17,23 @@ WindowManager* WindowManager::GetInstance()
 
 void WindowManager::startUp()
 {
-    std::cout << "Starting Window Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Starting Window Manager.");
     window_ = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false);
     if ( window_ )
     {
-        std::cout << "Window created." << std::endl;
+        LogManager::GetInstance()->log_message("Window created.");
         isRunning = true;
     }
     else
     {
-        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL Error: ", SDL_GetError());
     }
 }
 
 void WindowManager::shutDown()
 {
     SDL_DestroyWindow(window_);
-    std::cout << "Window destroyed. Shuting down Window Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Window destroyed. Shutting down Window Manager.");
 }
 
 // void WindowManager::handleEvents()

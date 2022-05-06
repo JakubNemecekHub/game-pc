@@ -6,6 +6,8 @@ project(
     DESCRIPTION "Very simple point and click adventure game written in c++ using SDL2."
 )
 
+set(CMAKE_CXX_STANDARD 17)
+
 # External lbraries such as SDL2
 INCLUDE_DIRECTORIES(D:/Prog/cpp/vcpkg/installed/x64-windows/include/)
 LINK_DIRECTORIES(D:/Prog/cpp/vcpkg/installed/x64-windows/lib/)

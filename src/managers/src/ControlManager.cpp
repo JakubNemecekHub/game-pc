@@ -1,7 +1,8 @@
 #include "../ControlManager.hpp"
 
-#include "../WindowManager.hpp"
+#include "../LogManager.hpp"
 #include "../RoomManager.hpp"
+#include "../WindowManager.hpp"
 
 #include <iostream>
 
@@ -21,13 +22,13 @@ ControlManager* ControlManager::GetInstance()
 
 void ControlManager::startUp()
 {
-    std::cout << "Starting Control Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Starting Control Manager.");
 }
 
 
 void ControlManager::shutDown()
 {
-    std::cout << "Shuting down Control Manager." << std::endl;
+    LogManager::GetInstance()->log_message("Shutting down Control Manager.");
 }
 
 

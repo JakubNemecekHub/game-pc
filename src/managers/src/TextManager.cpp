@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "../LogManager.hpp"
 #include "../RenderManager.hpp"
 #include "../components/Texture.hpp"
 
@@ -28,11 +29,12 @@ TextManager* TextManager::GetInstance()
 */
 void TextManager::startUp()
 {
+    LogManager::GetInstance()->log_message("Starting Text Manager.");
     text_timer = 0;
     // Initialize SDL_ttf library
     if ( TTF_Init() == -1 )
     {
-        std::cerr << "SDL_ttf Error: " << TTF_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
         // return false;
     }
     else{
@@ -40,7 +42,7 @@ void TextManager::startUp()
         font = TTF_OpenFont("D:/Prog/cpp/game_engine_architecture/res/fonts/Secret of Monkey Island.ttf", 24);  // Full path for debug purposes
         if ( font == NULL )
         {
-            std::cerr << "SDL_ttf Error: " << TTF_GetError() << std::endl;
+            LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
             // return false;
         }
     }
@@ -54,6 +56,7 @@ void TextManager::ShutDown()
 {
     TTF_CloseFont(font);
     TTF_Quit();
+    LogManager::GetInstance()->log_message("Shutting down Text Manager.");
 }
 
 
@@ -70,14 +73,14 @@ void TextManager::register_text(std::string text, int x, int y)
     SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), color, sreen_w);
     if ( text_surface == NULL )
     {
-        std::cerr << "SDL_ttf Error: " << TTF_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
         return;
     }
     // Create SDL_Texture from surface
     SDL_Texture* text_texture = RenderManager::GetInstance()->texture_from_surface(text_surface);
     if ( text_texture == NULL )
     {
-        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+        LogManager::GetInstance()->log_error("SDL Error: ", SDL_GetError());
         return;
     }
     // Create Texture with SDL_Texture
