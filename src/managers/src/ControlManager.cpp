@@ -51,10 +51,10 @@ void ControlManager::handleEvents()
         {
             int x, y;
             SDL_GetMouseState(&x, &y);
-            bool left;
-            left = ( event.button.button == SDL_BUTTON_LEFT );
+            bool right_click;
+            right_click = ( event.button.button == SDL_BUTTON_RIGHT );
             // Pass mouse click along
-            RoomManager::GetInstance()->handle_click(x, y);
+            RoomManager::GetInstance()->handle_click(x, y, right_click);
         }
         // Toggle Static texture
         if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_b )

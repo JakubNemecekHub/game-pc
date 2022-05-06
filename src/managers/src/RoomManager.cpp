@@ -280,7 +280,7 @@ void RoomManager::startUp()
     LogManager::GetInstance()->log_message("Starting Room Manager.");
     active_room = nullptr;
     load_rooms("suite-house");
-    activate_room("Front gate");
+    activate_room("Bedroom");
 }
 
 
@@ -337,7 +337,7 @@ void RoomManager::update(int dt)
 }
 
 
-void RoomManager::handle_click(int x, int y)
+void RoomManager::handle_click(int x, int y, bool right_click)
 {
     // Convert viewport coordinates into world coordinates
     int world_x, world_y;
@@ -355,12 +355,20 @@ void RoomManager::handle_click(int x, int y)
     response = active_room->get_mapped_object(world_x, world_y);
     if ( response )
     {
-        TextManager::GetInstance()->register_text(active_room->actions[response], x, y);
-        if ( active_room->doors.find(response) != active_room->doors.end() )
+        // If right click, then do look. e.g. do action
+        if ( right_click )
         {
-            // Change room
-            std::cout << "Changing room to " << active_room->doors[response] << std::endl;
-            activate_room(active_room->doors[response]);
+            TextManager::GetInstance()->register_text(active_room->actions[response], x, y);
+        }
+        // If left click then use, e.g. use door
+        else
+        {
+            if ( active_room->doors.find(response) != active_room->doors.end() )
+            {
+                // Change room
+                std::cout << "Changing room to " << active_room->doors[response] << std::endl;
+                activate_room(active_room->doors[response]);
+            }
         }
     }
 }

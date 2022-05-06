@@ -107,6 +107,6 @@ public:
     void load_rooms(std::string suite_file);
     void activate_room(std::string room_name);
     void update(int dt);
-    void handle_click(int x, int y);
+    void handle_click(int x, int y, bool right_click);
     void handle_keyboard(std::string key);
 };
