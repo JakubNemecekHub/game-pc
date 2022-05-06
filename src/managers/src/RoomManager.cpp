@@ -15,6 +15,8 @@ using json = nlohmann::json;
 #include "../../math_objects/PolygonObject.hpp"
 #include "../../math/Polygon.hpp"
 
+using animation_counter = std::vector<Animation>::size_type;
+
 
 /************************************************************************
     Ambient
@@ -29,7 +31,7 @@ void Ambient::load(json ambient_data)
     // Set the size if the animations vector
     animations.resize(ambient_data.size()); // This causes a problem
     std::string _texture_file;
-    for ( size_t i = 0; i < animations.size(); i++ )
+    for ( animation_counter i = 0; i < animations.size(); i++ )
     {
         // Texture
         _texture_file = ambient_data[i]["file"];
