@@ -95,12 +95,11 @@ void RoomManager::handle_click(int x, int y, bool right_click)
 {
     // Convert viewport coordinates into world coordinates
     int world_x, world_y;
-    world_x = static_cast<int>((x - active_room->texture->dest_rect.x) / active_room->texture->scale);
-    world_y = static_cast<int>(y / active_room->texture->scale);
+    active_room->get_world_coordinates(x, y, &world_x, &world_y);
     std::cout << "Screen coordinates: (" << x << ", " << y << "), ";
     std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
-    if ( active_room->walk_area.point_in_polygon(world_x, world_y) )
+    if ( active_room->point_in_polygon(world_x, world_y) )
     {
         std::cout << "I am inside." << std::endl;
     }
@@ -112,16 +111,16 @@ void RoomManager::handle_click(int x, int y, bool right_click)
         // If right click, then do look. e.g. do action
         if ( right_click )
         {
-            TextManager::GetInstance()->register_text(active_room->actions[response], x, y);
+            TextManager::GetInstance()->register_text(active_room->get_action(response), x, y);
         }
-        // If left click then use, e.g. use door
-        else
+        else    // If left click then use, e.g. use door
         {
-            if ( active_room->doors.find(response) != active_room->doors.end() )
+            std::string target{active_room->get_door_target(response)};
+            if ( !target.empty() )
             {
                 // Change room
-                std::cout << "Changing room to " << active_room->doors[response] << std::endl;
-                activate_room(active_room->doors[response]);
+                std::cout << "Changing room to " << target << std::endl;
+                activate_room(target);
             }
         }
     }

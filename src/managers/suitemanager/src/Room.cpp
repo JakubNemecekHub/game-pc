@@ -62,9 +62,17 @@ void Room::load(json room_data)
     ambient.load(room_data["ambient"]);
 }
 
+
 Room::~Room()
 {
     SDL_FreeSurface(click_map);
+}
+
+
+// Return true if given point in the room's walk area.
+bool Room::point_in_polygon(int x, int y)
+{
+    return walk_area.point_in_polygon(x, y);
 }
 
 
@@ -188,4 +196,27 @@ Uint32 Room::get_mapped_object(int x, int y)
         default:
             return 0;
     }
+}
+
+
+void Room::get_world_coordinates(int x, int y, int* world_x, int* world_y)
+{
+    *world_x = static_cast<int>((x - texture->dest_rect.x) / texture->scale);
+    *world_y = static_cast<int>(y / texture->scale);
+}
+
+
+std::string Room::get_action(const Uint32 response)
+{
+    return actions[response];
+}
+
+
+std::string Room::get_door_target(Uint32 response)
+{
+    if ( doors.find(response) != doors.end() )
+    {
+        return doors[response];
+    }
+    return "";
 }
