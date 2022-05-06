@@ -172,7 +172,7 @@ void RenderManager::render()
 {
     SDL_RenderClear(renderer);
     RenderableObject* object {nullptr};
-    for ( unsigned int i = 0; i < render_objects.size(); i++ )
+    for ( std::array<std::queue<RenderableObject*>, MAX_LAYERS>::size_type i = 0; i < render_objects.size(); i++ )
     {
         while ( !render_objects[i].empty() )
         {
