@@ -8,12 +8,12 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-#include "../LogManager.hpp"
-#include "../RenderManager.hpp"
-#include "../TextManager.hpp"
-#include "../../components/Animation.hpp"
-#include "../../math_objects/PolygonObject.hpp"
-#include "../../math/Polygon.hpp"
+#include "../../LogManager.hpp"
+#include "../../RenderManager.hpp"
+#include "../../TextManager.hpp"
+#include "../../../components/Animation.hpp"
+#include "../../../math_objects/PolygonObject.hpp"
+#include "../../../math/Polygon.hpp"
 
 using animation_counter = std::vector<Animation>::size_type;
 

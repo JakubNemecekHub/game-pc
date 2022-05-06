@@ -6,12 +6,12 @@ project(
     DESCRIPTION "Various game engine managers."
 )
 
+
 add_library(
     ${PROJECT_NAME}
     src/ControlManager.cpp
     src/LogManager.cpp
     src/RenderManager.cpp
-    src/RoomManager.cpp
     src/TextManager.cpp
     src/WindowManager.cpp
 )

@@ -5,7 +5,7 @@
 #include "src/managers/ControlManager.hpp"
 #include "src/managers/LogManager.hpp"
 #include "src/managers/RenderManager.hpp"
-#include "src/managers/RoomManager.hpp"
+#include "src/managers/SuiteManager/RoomManager.hpp"
 #include "src/managers/TextManager.hpp"
 #include "src/managers/WindowManager.hpp"
 

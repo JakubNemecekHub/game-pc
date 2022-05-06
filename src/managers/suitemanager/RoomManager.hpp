@@ -12,10 +12,10 @@ using json = nlohmann::json;
 
 #include <SDL2/SDL.h>
 
-#include "../components/Texture.hpp"
-#include "../components/Animation.hpp"
-#include "../math_objects/PolygonObject.hpp"
-#include "../math/Polygon.hpp"
+#include "../../components/Texture.hpp"
+#include "../../components/Animation.hpp"
+#include "../../math_objects/PolygonObject.hpp"
+#include "../../math/Polygon.hpp"
 
 /*
     OLD !
