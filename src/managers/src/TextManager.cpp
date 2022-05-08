@@ -60,7 +60,7 @@ void TextManager::ShutDown()
 }
 
 
-void TextManager::register_text(std::string text, int x, int y)
+void TextManager::register_text(std::string text, int x, int y, COLOR color)
 {
     if ( display_text )
     {
@@ -68,9 +68,20 @@ void TextManager::register_text(std::string text, int x, int y)
     }
     // Screen width used in wrapping text and moving it along the x axis
     int sreen_w{RenderManager::GetInstance()->get_screen_width()};
-    SDL_Color color{255, 183, 89};
+    SDL_Color _color;
+    switch ( color )
+    {
+        case BEIGE:
+            _color = SDL_Color{255, 183, 89};
+            break;
+        case PURPLE:
+            _color = SDL_Color{214, 29, 208};
+            break;
+        default:
+            _color = SDL_Color{255, 255, 255};
+    }
     // Create surface from text
-    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), color, sreen_w);
+    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), _color, sreen_w);
     if ( text_surface == NULL )
     {
         LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());

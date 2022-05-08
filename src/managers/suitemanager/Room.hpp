@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "Ambient.hpp"
+#include "GameObject.hpp"
 #include "../../math_objects/PolygonObject.hpp"
 #include "../../math/Polygon.hpp"
 
@@ -33,9 +34,9 @@ private:
     SDL_Surface* click_map;                             // A bitmap of hot-spots.
     bool visible_click_map {false};
     std::unique_ptr<Texture> click_map_texture;         // A visual representation of click_map
-    std::unordered_map<Uint32, std::string> doors;      // A map of doors and their destinations.
-    std::unordered_map<Uint32, std::string> actions;    // A map of hot-spots indexes and their actions.
     Ambient ambient;                                    // Manager of ambient animations.
+    std::unordered_map<Uint32, AmbientObject> objects_ambient;
+    std::unordered_map<Uint32, Door> objects_door;
 
     // Methods
 
@@ -45,7 +46,7 @@ private:
 public:
 
     Room() {};  // Empty Constructor, use load
-    ~Room();    // Empty
+    ~Room();    // Destructor
 
     // Methods
 
@@ -56,8 +57,10 @@ public:
     std::string get_door_target(Uint32 response);
     void update(int dt);
     Uint32 get_mapped_object(int x, int y);
+    AmbientObject* get_ambient_object(Uint32 id);
+    Door* get_door(Uint32 id);
 
-    // Methods to test various thigs
+    // Methods to test various things
 
     void toggle_click_map();
     void toggle_walk_area();

@@ -1,12 +1,14 @@
 #include "../Room.hpp"
 
 #include <unordered_map>
-#include <memory>   // unique_ptr
+#include <memory>           // unique_ptr
 #include <string>
+#include <charconv>         // std::string to number conversion
 
 #include <SDL2/SDL.h>
 
 #include "Ambient.hpp"
+#include "GameObject.hpp"
 #include "../../math_objects/PolygonObject.hpp"
 #include "../../math/Polygon.hpp"
 #include "../../RenderManager.hpp"
@@ -45,20 +47,35 @@ void Room::load(json room_data)
     }
     // Load room click map
     click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
-    // Load doors
-    for ( auto &door : room_data["doors"] )
+    for ( auto it = room_data["objects"].begin(); it != room_data["objects"].end(); ++it )
     {
-        doors.insert({{door[0], door[1]}});
-    }
-    // Load room actions
-    for ( auto &action : room_data["actions"] )
-    {
-        actions.insert({{action[0], action[1]}});
+        std::cout << it.key() << " | " << it.value() << "\n";
+        // General
+        std::string str_id {it.key()};
+        Uint32 id;
+        std::from_chars(str_id.data(), str_id.data() + str_id.size(), id);
+        bool state {it.value().at("state")};
+        std::vector<std::string> observations = it.value().at("look");
+        // Ambient objects
+        if ( it.value().at("type") == "ambient")
+        {
+            std::vector<std::string> use_observations = it.value().at("action-text");
+            objects_ambient.emplace(std::piecewise_construct,
+                                    std::forward_as_tuple(id),
+                                    std::forward_as_tuple(id, state, observations, use_observations));
+        }
+        else if ( it.value().at("type") == "door" )
+        {
+            std::string target {it.value().at("target")};
+            bool locked {it.value().at("locked")};
+            std::vector<std::string> locked_observations = it.value().at("locked-message");
+            Uint32 key_id {it.value().at("key_id")};
+            objects_door.emplace(std::piecewise_construct,
+                                 std::forward_as_tuple(id),
+                                 std::forward_as_tuple(id, state, observations, target, locked, locked_observations, key_id));
+        }
     }
     // load room ambient animations
-    // Zjistit počet animací
-    // Změnit velikost animations vectoru
-    // zalidnit vector
     ambient.load(room_data["ambient"]);
 }
 
@@ -198,25 +215,27 @@ Uint32 Room::get_mapped_object(int x, int y)
     }
 }
 
+AmbientObject* Room::get_ambient_object(Uint32 id)
+{
+    if ( objects_ambient.find(id) != objects_ambient.end() )
+    {
+        return &objects_ambient.at(id);
+    }
+    return nullptr;
+}
+
+Door* Room::get_door(Uint32 id)
+{
+    if ( objects_door.find(id) != objects_door.end() )
+    {
+        return &objects_door.at(id);
+    }
+    return nullptr;
+}
+
 
 void Room::get_world_coordinates(int x, int y, int* world_x, int* world_y)
 {
     *world_x = static_cast<int>((x - texture->dest_rect.x) / texture->scale);
     *world_y = static_cast<int>(y / texture->scale);
-}
-
-
-std::string Room::get_action(const Uint32 response)
-{
-    return actions[response];
-}
-
-
-std::string Room::get_door_target(Uint32 response)
-{
-    if ( doors.find(response) != doors.end() )
-    {
-        return doors[response];
-    }
-    return "";
 }

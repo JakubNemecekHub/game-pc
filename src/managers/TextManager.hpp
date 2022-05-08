@@ -8,6 +8,9 @@
 #include "../components/Texture.hpp"
 
 
+enum COLOR { BEIGE, PURPLE };
+
+
 /*
     Text Manager should handle all aviable fonts and thei sizes and colours.
     Can I resize TTF_Font?
@@ -34,5 +37,5 @@ public:
     void ShutDown();
     void update(int dt);
 
-    void register_text(std::string text, int x, int y);
+    void register_text(std::string text, int x, int y, COLOR color=BEIGE);
 };

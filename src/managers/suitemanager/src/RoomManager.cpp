@@ -103,24 +103,41 @@ void RoomManager::handle_click(int x, int y, bool right_click)
     {
         std::cout << "I am inside." << std::endl;
     }
-    // Print out action
     Uint32 response;
     response = active_room->get_mapped_object(world_x, world_y);
     if ( response )
     {
-        // If right click, then do look. e.g. do action
-        if ( right_click )
+        // Ambient
+        AmbientObject* obj_a = active_room->get_ambient_object(response);
+        if ( obj_a != nullptr )
         {
-            TextManager::GetInstance()->register_text(active_room->get_action(response), x, y);
-        }
-        else    // If left click then use, e.g. use door
-        {
-            std::string target{active_room->get_door_target(response)};
-            if ( !target.empty() )
+            if ( right_click )  // If right click, then look -> show text
             {
-                // Change room
-                std::cout << "Changing room to " << target << std::endl;
-                activate_room(target);
+                TextManager::GetInstance()->register_text(obj_a->look(), x, y);
+            }
+            else                // If left click then use -> also show text
+            {
+                TextManager::GetInstance()->register_text(obj_a->use(), x, y);
+            }
+        }
+        // Door
+        Door* obj_d = active_room->get_door(response);
+        if ( obj_d != nullptr )
+        {
+            if ( right_click )  // If right click, then look -> show text
+            {
+                TextManager::GetInstance()->register_text(obj_d->look(), x, y, PURPLE);
+            }
+            else                // If left click then use -> change room
+            {
+                if ( obj_d->get_locked() )
+                {
+                    TextManager::GetInstance()->register_text(obj_d->look_locked(), x, y, PURPLE);
+                }
+                else
+                {
+                    activate_room(obj_d->get_target());
+                }
             }
         }
     }
