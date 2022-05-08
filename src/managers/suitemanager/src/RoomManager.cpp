@@ -81,6 +81,7 @@ void RoomManager::load_rooms(std::string suite_file)
 
 void RoomManager::activate_room(std::string room_name)
 {
+    TextManager::GetInstance()->clean();
     active_room = &rooms[room_name];
 }
 

@@ -38,4 +38,5 @@ public:
     void update(int dt);
 
     void register_text(std::string text, int x, int y, COLOR color=BEIGE);
+    void clean();
 };

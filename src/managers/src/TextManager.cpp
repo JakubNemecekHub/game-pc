@@ -133,3 +133,9 @@ void TextManager::update(int dt)
         }
     }
 }
+
+
+void TextManager::clean()
+{
+    display_text.release();
+}
