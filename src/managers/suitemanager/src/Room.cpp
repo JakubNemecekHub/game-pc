@@ -49,7 +49,6 @@ void Room::load(json room_data)
     click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
     for ( auto it = room_data["objects"].begin(); it != room_data["objects"].end(); ++it )
     {
-        std::cout << it.key() << " | " << it.value() << "\n";
         // General
         std::string str_id {it.key()};
         Uint32 id;
