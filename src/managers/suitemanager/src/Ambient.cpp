@@ -16,18 +16,16 @@ using animation_counter = std::vector<Animation>::size_type;
 */
 void Ambient::load(json ambient_data)
 {
-    // Set the size if the animations vector
-    animations.resize(ambient_data.size()); // This causes a problem
-    std::string _texture_file;
+    animations.resize(ambient_data.size()); // Set the size of the final animations vector
     for ( animation_counter i = 0; i < animations.size(); i++ )
     {
         // Texture
-        _texture_file = ambient_data[i]["file"];
-        animations.at(i).texture = std::make_unique<Texture>(_texture_file);
-        // > Texture's z_index
+        std::string texture_file { ambient_data[i]["file"] };
+        animations.at(i).texture = std::make_unique<Texture>(texture_file);
+        // > Texture's z_index to 1, which is the layer reserved for room ambient animations
         animations.at(i).texture->set_z_index(1);
         // > Scale
-        float scale {ambient_data[i]["scale"]};
+        float scale { ambient_data[i]["scale"] };
         animations.at(i).texture->set_scale(scale);
         // > Position
         int x, y;

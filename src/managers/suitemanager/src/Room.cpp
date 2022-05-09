@@ -28,54 +28,63 @@
 */
 void Room::load(json room_data)
 {
-    // Load room background texture
-    // texture unique pointer is now nullptr
-    std::string _texture_file = room_data["texture"];   // must create temporary string, because
-    texture = std::make_unique<Texture>(_texture_file); // make_unique here doesn't accept json object
-    // Fit to screen height.
+    // Load room background Texture
+    std::string texture_file { room_data.at("texture") };   // must create temporary string, because
+    texture = std::make_unique<Texture>(texture_file);      // make_unique here doesn't accept json object
+    // > Fit to screen height.
     RenderManager::GetInstance()->scale_full_h(texture);
-    // Set default position.
+    // > Set default position.
     int x;
     x = (RenderManager::GetInstance()->get_screen_width() - texture->dest_rect.w) / 2;
     texture->set_position(x, 0);
-    // set z_index to 0, which is the layer reserved for room background
+    // > set z_index to 0, which is the layer reserved for room background
     texture->set_z_index(0);
     // Load walk area polygon
-    for ( auto &vertex : room_data["walkarea"] )
-    {
-        walk_area.add_vertex(vertex[0], vertex[1]);
-    }
+    walk_area.add_vertices(room_data.at("walkarea").get<std::vector<std::vector<int>>>());
     // Load room click map
-    click_map = RenderManager::GetInstance()->load_bitmap(room_data["map"]);
-    for ( auto it = room_data["objects"].begin(); it != room_data["objects"].end(); ++it )
+    click_map = RenderManager::GetInstance()->load_bitmap(room_data.at("map"));
+    // Load Game objects
+    for ( auto it = room_data.at("objects").begin(); it != room_data.at("objects").end(); ++it )
     {
         // General
-        std::string str_id {it.key()};
+        std::string str_id { it.key() };
         Uint32 id;
         std::from_chars(str_id.data(), str_id.data() + str_id.size(), id);
-        bool state {it.value().at("state")};
-        std::vector<std::string> observations = it.value().at("look");
+        bool state                            { it.value().at("state") };
+        std::vector<std::string> observations { it.value().at("look").get<std::vector<std::string>>() };
         // Ambient objects
         if ( it.value().at("type") == "ambient")
         {
-            std::vector<std::string> use_observations = it.value().at("action-text");
+            std::vector<std::string> use_observations { it.value().at("action-text").get<std::vector<std::string>>() };
             objects_ambient.emplace(std::piecewise_construct,
                                     std::forward_as_tuple(id),
                                     std::forward_as_tuple(id, state, observations, use_observations));
         }
+        // Door
         else if ( it.value().at("type") == "door" )
         {
-            std::string target {it.value().at("target")};
-            bool locked {it.value().at("locked")};
-            std::vector<std::string> locked_observations = it.value().at("locked-message");
-            Uint32 key_id {it.value().at("key_id")};
+            std::string target                           { it.value().at("target") };
+            bool locked                                  { it.value().at("locked") };
+            std::vector<std::string> locked_observations { it.value().at("locked-message").get<std::vector<std::string>>() };
+            Uint32 key_id                                { it.value().at("key_id") };
             objects_door.emplace(std::piecewise_construct,
                                  std::forward_as_tuple(id),
                                  std::forward_as_tuple(id, state, observations, target, locked, locked_observations, key_id));
         }
+        // Item
+        else if ( it.value().at("type") == "item" )
+        {
+            std::string item_texture_file          { it.value().at("texture") };
+            std::vector<int> position              { it.value().at("position").get<std::vector<int>>() };
+            float scale                            {it.value().at("scale") * texture->scale };
+            std::vector<std::vector<int>> vertices { it.value().at("clickarea").get<std::vector<std::vector<int>>>() };
+            items.emplace(std::piecewise_construct,
+                          std::forward_as_tuple(id),
+                          std::forward_as_tuple(id, state, observations, item_texture_file, position, scale, vertices));
+        }
     }
     // load room ambient animations
-    ambient.load(room_data["ambient"]);
+    ambient.load(room_data.at("ambient"));
 }
 
 
@@ -96,6 +105,11 @@ void Room::update(int dt)
 {
     // Register background
     RenderManager::GetInstance()->register_object(texture.get());
+    // Register items visible
+    for ( auto& item : items )
+    {
+        RenderManager::GetInstance()->register_object(item.second.get());
+    }
     // Register Click map if should be visible
     if ( visible_click_map )
     {

@@ -1,11 +1,23 @@
 #include "../polygon.hpp"
 
+#include <vector>
+
 #include "../Vector2D.hpp"
 
 
 // Constructor
 Polygon::Polygon(std::vector<Vector2D> _vertices)
     : vertices{_vertices} {}
+
+
+Polygon::Polygon(std::vector<std::vector<int>> _vertices)
+{
+    for ( std::vector<int>& vertex : _vertices )
+    {
+        Vector2D vec {static_cast<float>(vertex[0]), static_cast<float>(vertex[1])};
+        vertices.push_back(vec);
+    }
+}
 
 
 // Copy Constructor
@@ -28,6 +40,19 @@ void Polygon::add_vertex(int x, int y)
     Vector2D v {_x, _y};
     vertices.push_back(v);
     // vertices.emplace_back(_x, _y);
+}
+
+// Add new vertices at the back of the existing vertices
+void Polygon::add_vertices(std::vector<Vector2D> vertices)
+{
+    this->vertices.insert(this->vertices.end(), vertices.begin(), vertices.end());
+}
+void Polygon::add_vertices(std::vector<std::vector<int>> vertices)
+{
+    for ( auto vertex : vertices )
+    {
+        this->vertices.emplace_back(vertex[0], vertex[1]);
+    }
 }
 
 

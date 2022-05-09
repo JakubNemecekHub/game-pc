@@ -2,8 +2,12 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <SDL2/SDL.h>   // Uint32
+
+#include "../../components/Texture.hpp"
+#include "../../math/Polygon.hpp"
 
 
 /*
@@ -74,21 +78,31 @@ public:
 // };
 
 
-// /*
-//     Using item will pick it up and place it into inventory.
+/*
+    Using item will pick it up and place it into inventory.
 
-//     JSON:
-//     > type: item
-//     > keys: look
-// */
-// class Item : public GameObject
-// {
-// public:
-//     Item();
-//     ~Item() {};
-//     std::string look() {};
-//     std::string use() {};
-// };
+    JSON:
+    > type: item
+    > keys: look
+*/
+class Item : public GameObject
+{
+private:
+    std::unique_ptr<Texture> texture;
+    Polygon click_area;
+public:
+    Item(Uint32 _id,
+         bool _state,
+         std::vector<std::string> _observations,
+         std::string _texture_file,
+         std::vector<int> _position,
+         float _scale,
+         std::vector<std::vector<int>> _click_area
+        );
+    ~Item() {};
+    std::string use();   // This is never used
+    Texture* get() { return texture.get(); }
+};
 
 
 /*
@@ -117,7 +131,7 @@ public:
          Uint32 _key_id
         );
     ~Door() {};
-    std::string use();
+    std::string use();  // This is never used
     std::string get_target();
     bool get_locked();
     std::string look_locked();

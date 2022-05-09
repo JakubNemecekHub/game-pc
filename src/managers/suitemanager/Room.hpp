@@ -37,6 +37,7 @@ private:
     Ambient ambient;                                    // Manager of ambient animations.
     std::unordered_map<Uint32, AmbientObject> objects_ambient;
     std::unordered_map<Uint32, Door> objects_door;
+    std::unordered_map<Uint32, Item> items;
 
     // Methods
 

@@ -15,10 +15,11 @@ public:
 
     // Lifecycle
 
-    Polygon() {};                               // No arg constructor
-    Polygon(std::vector<Vector2D> _vertices);   // Constructor with given vertices
-    Polygon(const Polygon &source);             // Copy cobstructor
-    ~Polygon() {};                              // Destructor
+    Polygon() {};                                       // No arg constructor
+    Polygon(std::vector<Vector2D> _vertices);           // Constructor with given vertices as Vector2D
+    Polygon(std::vector<std::vector<int>> _vertices);   // onstructor with given vertices as vector of ints
+    Polygon(const Polygon &source);                     // Copy cobstructor
+    ~Polygon() {};                                      // Destructor
 
     // Methods
 
@@ -26,6 +27,8 @@ public:
     bool empty();
     void add_vertex(Vector2D vertex);
     void add_vertex(int x, int y);
+    void add_vertices(std::vector<Vector2D> vertices);
+    void add_vertices(std::vector<std::vector<int>> vertices);
     void clear();
     bool point_in_polygon(int x, int y);
     void scale(float _scale);
