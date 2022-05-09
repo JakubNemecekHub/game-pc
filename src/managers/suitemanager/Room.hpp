@@ -37,7 +37,9 @@ private:
     Ambient ambient;                                    // Manager of ambient animations.
     std::unordered_map<Uint32, AmbientObject> objects_ambient;
     std::unordered_map<Uint32, Door> objects_door;
-    std::unordered_map<Uint32, Item> items;
+    std::unordered_map<Uint32, Item> items;             // Asi nepotřebuji map, po kliknutí musím stejnak projít všechny items
+                                                        // a zkontrolovat jejich click_area polygony
+                                                        // stačí tedy vector
 
     // Methods
 
@@ -60,6 +62,7 @@ public:
     Uint32 get_mapped_object(int x, int y);
     AmbientObject* get_ambient_object(Uint32 id);
     Door* get_door(Uint32 id);
+    std::string get_item(int x, int y);
 
     // Methods to test various things
 

@@ -99,9 +99,11 @@ public:
          float _scale,
          std::vector<std::vector<int>> _click_area
         );
+    // Item(const Item& source) : GameObject(source) {};
     ~Item() {};
     std::string use();   // This is never used
     Texture* get() { return texture.get(); }
+    bool clicked(int x, int y);
 };
 
 

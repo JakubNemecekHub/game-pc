@@ -105,6 +105,15 @@ void RoomManager::handle_click(int x, int y, bool right_click)
         std::cout << "I am inside." << std::endl;
     }
     Uint32 response;
+    // Check Items
+    std::string clicked_item;
+    clicked_item = active_room->get_item(x, y);
+    TextManager::GetInstance()->register_text(clicked_item, x, y);
+    // if ( clicked_item != nullptr )
+    // {
+    //     // Use item
+    // }
+    // Check Ambient objects and doors
     response = active_room->get_mapped_object(world_x, world_y);
     if ( response )
     {

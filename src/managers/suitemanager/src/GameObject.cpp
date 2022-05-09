@@ -21,7 +21,6 @@ std::string GameObject::type()
     return type_;
 }
 
-
 std::string GameObject::look()
 {
     /*
@@ -109,4 +108,13 @@ Item::Item(Uint32 _id,
 std::string Item::use()
 {
     return "Way over my head";
+}
+
+bool Item::clicked(int x, int y)
+{
+    // Convert coordinates to item coordinates
+    int item_x { static_cast<int>((x - texture->dest_rect.x) / texture->scale) };
+    int item_y { static_cast<int>(y / texture->scale) };
+
+    return click_area.point_in_polygon(item_y, item_y);
 }

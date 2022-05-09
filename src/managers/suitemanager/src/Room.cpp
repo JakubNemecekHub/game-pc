@@ -246,6 +246,19 @@ Door* Room::get_door(Uint32 id)
     return nullptr;
 }
 
+std::string Room::get_item(int x, int y)
+{
+    for ( auto& item : items )
+    {
+        if ( item.second.clicked(x, y) )
+        {
+            return item.second.look();
+        }
+    }
+    // return nullptr;
+    return "Nothing";
+}
+
 
 void Room::get_world_coordinates(int x, int y, int* world_x, int* world_y)
 {
