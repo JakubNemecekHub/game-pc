@@ -76,11 +76,18 @@ void Room::load(json room_data)
         {
             std::string item_texture_file          { it.value().at("texture") };
             std::vector<int> position              { it.value().at("position").get<std::vector<int>>() };
-            float scale                            {it.value().at("scale") * texture->scale };
-            std::vector<std::vector<int>> vertices { it.value().at("clickarea").get<std::vector<std::vector<int>>>() };
+            float scale                            { it.value().at("scale") };
+            Polygon click_area                     { it.value().at("clickarea").get<std::vector<std::vector<int>>>() };
+            // Scale and move item's polygon into room coordinates
+            click_area.scale(scale);                                            // Scale item's click area by item's scale
+            click_area.move(position[0], position[1]);                          // Move click area by the item's position in the original bacgkround
+            // Scale and move item's texture into screen coordinates
+            scale *= texture->scale;                                            // item's scale multiplied by the room's scale
+            position[0] = position[0] * texture->scale + texture->dest_rect.x;  // Add room's x offset (that centered the room's texture)
+            position[1] = position[1] * texture->scale + texture->dest_rect.y;  // Add room's y offset (should be zero)
             items.emplace(std::piecewise_construct,
                           std::forward_as_tuple(id),
-                          std::forward_as_tuple(id, state, observations, item_texture_file, position, scale, vertices));
+                          std::forward_as_tuple(id, state, observations, item_texture_file, position, scale, click_area));
         }
     }
     // load room ambient animations
@@ -108,7 +115,7 @@ void Room::update(int dt)
     // Register items visible
     for ( auto& item : items )
     {
-        RenderManager::GetInstance()->register_object(item.second.get());
+        RenderManager::GetInstance()->register_object(item.second.get_texture_ptr());
     }
     // Register Click map if should be visible
     if ( visible_click_map )
@@ -119,6 +126,10 @@ void Room::update(int dt)
     if ( visible_walk_area )
     {
         RenderManager::GetInstance()->register_object(screen_walk_area.get());
+        for ( auto& item : screen_items )
+        {
+            RenderManager::GetInstance()->register_object(item);
+        }
     }
     ambient.update(dt);
 }
@@ -165,6 +176,15 @@ void Room::create_screen_walk_area()
                                          texture->dest_rect.x,
                                          texture->dest_rect.y
                                         );
+    for ( auto& pair : items )
+    {
+        PolygonObject* po = new PolygonObject(pair.second.get_click_area(),
+                                              texture->scale,
+                                              texture->dest_rect.x,
+                                              texture->dest_rect.y
+                                             );
+        screen_items.push_back(po);
+    }
 }
 
 

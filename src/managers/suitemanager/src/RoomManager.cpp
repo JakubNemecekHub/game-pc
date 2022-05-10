@@ -103,12 +103,13 @@ void RoomManager::handle_click(int x, int y, bool right_click)
     if ( active_room->point_in_polygon(world_x, world_y) )
     {
         std::cout << "I am inside." << std::endl;
+        // TextManager::GetInstance()->register_text("I am inside.", x, y);
     }
     Uint32 response;
     // Check Items
     std::string clicked_item;
-    clicked_item = active_room->get_item(x, y);
-    TextManager::GetInstance()->register_text(clicked_item, x, y);
+    clicked_item = active_room->get_item(world_x, world_y);
+    TextManager::GetInstance()->register_text(clicked_item, x, y, GREEN);
     // if ( clicked_item != nullptr )
     // {
     //     // Use item

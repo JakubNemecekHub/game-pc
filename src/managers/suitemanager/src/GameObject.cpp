@@ -99,7 +99,23 @@ Item::Item(Uint32 _id,
           )
     : GameObject(_id, "item", _state, _observations), click_area{_click_area}
 {
-    // Crete texture
+    // Create texture
+    texture = std::make_unique<Texture>(_texture_file);
+    texture->set_position(_position[0], _position[1]);
+    texture->set_scale(_scale);
+}
+
+Item::Item(Uint32 _id,
+           bool _state,
+           std::vector<std::string> _observations,
+           std::string _texture_file,
+           std::vector<int> _position,
+           float _scale,
+           Polygon _click_area
+          )
+    : GameObject(_id, "item", _state, _observations), click_area{_click_area}
+{
+    // Create texture
     texture = std::make_unique<Texture>(_texture_file);
     texture->set_position(_position[0], _position[1]);
     texture->set_scale(_scale);
@@ -112,9 +128,15 @@ std::string Item::use()
 
 bool Item::clicked(int x, int y)
 {
-    // Convert coordinates to item coordinates
-    int item_x { static_cast<int>((x - texture->dest_rect.x) / texture->scale) };
-    int item_y { static_cast<int>(y / texture->scale) };
+    return click_area.point_in_polygon(x, y);
+}
 
-    return click_area.point_in_polygon(item_y, item_y);
+Polygon& Item::get_click_area()
+{
+    return click_area;
+}
+
+Texture* Item::get_texture_ptr()
+{
+    return texture.get();
 }

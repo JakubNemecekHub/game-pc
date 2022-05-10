@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>   // unique_ptr
+#include <vector>
 
 #include <SDL2/SDL.h>
 
@@ -40,6 +41,7 @@ private:
     std::unordered_map<Uint32, Item> items;             // Asi nepotřebuji map, po kliknutí musím stejnak projít všechny items
                                                         // a zkontrolovat jejich click_area polygony
                                                         // stačí tedy vector
+    std::vector<PolygonObject*> screen_items;            // A visual representation of item's click map
 
     // Methods
 
