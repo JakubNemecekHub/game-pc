@@ -81,20 +81,25 @@ void Polygon::clear()
 bool Polygon::point_in_polygon(int x, int y)
 {
     /*
-        Is this raycasting? e.g. casting a ray in any direction and then checking
-        number of time it crosses a polygon edge?
+        Casting a ray in the -x direction and then checking
+        number of time it crosses any polygon edge.
         Even number = outside
         Odd number = inside
-        We now maybe check all crossing on a vertical line going through the point.
     */
     unsigned int i;
     long long unsigned int j {vertices.size() - 1};
     bool odd_nodes {false};
-    for ( i = 0; i < vertices.size(); i++ )
+    for ( i = 0; i < vertices.size(); i++ ) // using i, j to loop the polygon two points at a time
     {
-        if ( (vertices[i].y < y && vertices[j].y >= y) || (vertices[j].y < y && vertices[i].y >= y) )
+        // Check if the point lies in the y-range of the two vertices
+        // if not, we don't need to check the crossing with this edge
+        if (
+                (vertices[i].y <= y && vertices[j].y > y) ||    // This two lines check if point inside the vertices y range
+                (vertices[j].y <= y && vertices[i].y > y) &&
+                (vertices[j].x <= x || vertices[i].x <= y)      // Check only vertices on the left side of point
+            )
         {
-            if ( vertices[i].x + (y - vertices[i].y)/(vertices[j].y - vertices[i].y)*(vertices[j].x - vertices[i].x) < x)
+            if ( vertices[i].x + (y - vertices[i].y)/(vertices[j].y - vertices[i].y)*(vertices[j].x - vertices[i].x) <= x)
             {
                 odd_nodes = !odd_nodes;
             }
