@@ -8,7 +8,7 @@
 #include "../components/Texture.hpp"
 
 
-enum COLOR { BEIGE, PURPLE };
+enum COLOR { BEIGE, PURPLE, GREEN };
 
 
 /*

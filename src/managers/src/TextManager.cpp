@@ -77,6 +77,9 @@ void TextManager::register_text(std::string text, int x, int y, COLOR color)
         case PURPLE:
             _color = SDL_Color{214, 29, 208};
             break;
+        case GREEN:
+            _color = SDL_Color{91, 163, 111};
+            break;
         default:
             _color = SDL_Color{255, 255, 255};
     }
