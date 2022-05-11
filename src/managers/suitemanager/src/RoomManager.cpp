@@ -107,13 +107,21 @@ void RoomManager::handle_click(int x, int y, bool right_click)
     }
     Uint32 response;
     // Check Items
-    std::string clicked_item;
-    clicked_item = active_room->get_item(world_x, world_y);
-    TextManager::GetInstance()->register_text(clicked_item, x, y, GREEN);
-    // if ( clicked_item != nullptr )
-    // {
-    //     // Use item
-    // }
+    Item* clicked_item;
+    clicked_item = active_room->item_get(world_x, world_y);
+    if ( clicked_item != nullptr )
+    {
+        // Use item
+        if ( right_click )  // If right click, then look -> show text
+        {
+            TextManager::GetInstance()->register_text(clicked_item->look(), x, y);
+        }
+        else                // If left click then use -> also show text
+        {
+            TextManager::GetInstance()->register_text(clicked_item->use(), x, y, GREEN);
+            clicked_item->set_state(false);
+        }
+    }
     // Check Ambient objects and doors
     response = active_room->get_mapped_object(world_x, world_y);
     if ( response )
@@ -128,7 +136,7 @@ void RoomManager::handle_click(int x, int y, bool right_click)
             }
             else                // If left click then use -> also show text
             {
-                TextManager::GetInstance()->register_text(obj_a->use(), x, y);
+                TextManager::GetInstance()->register_text(obj_a->use(), x, y, GREEN);
             }
         }
         // Door

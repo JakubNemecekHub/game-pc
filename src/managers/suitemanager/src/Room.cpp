@@ -74,10 +74,11 @@ void Room::load(json room_data)
         // Item
         else if ( it.value().at("type") == "item" )
         {
-            std::string item_texture_file          { it.value().at("texture") };
-            std::vector<int> position              { it.value().at("position").get<std::vector<int>>() };
-            float scale                            { it.value().at("scale") };
-            Polygon click_area                     { it.value().at("clickarea").get<std::vector<std::vector<int>>>() };
+            std::string item_texture_file { it.value().at("texture") };
+            std::vector<int> position     { it.value().at("position").get<std::vector<int>>() };
+            float scale                   { it.value().at("scale") };
+            Polygon click_area            { it.value().at("clickarea").get<std::vector<std::vector<int>>>() };
+            std::string text_use          { it.value().at("pick-text") };
             // Scale and move item's polygon into room coordinates
             click_area.scale(scale);                                            // Scale item's click area by item's scale
             click_area.move(position[0], position[1]);                          // Move click area by the item's position in the original bacgkround
@@ -87,7 +88,7 @@ void Room::load(json room_data)
             position[1] = position[1] * texture->scale + texture->dest_rect.y;  // Add room's y offset (should be zero)
             items.emplace(std::piecewise_construct,
                           std::forward_as_tuple(id),
-                          std::forward_as_tuple(id, state, observations, item_texture_file, position, scale, click_area));
+                          std::forward_as_tuple(id, state, observations, item_texture_file, position, scale, click_area, text_use));
         }
     }
     // load room ambient animations
@@ -115,7 +116,10 @@ void Room::update(int dt)
     // Register items visible
     for ( auto& item : items )
     {
-        RenderManager::GetInstance()->register_object(item.second.get_texture_ptr());
+        if ( item.second.active() )
+        {
+            RenderManager::GetInstance()->register_object(item.second.get_texture_ptr());
+        }
     }
     // Register Click map if should be visible
     if ( visible_click_map )
@@ -266,18 +270,27 @@ Door* Room::get_door(Uint32 id)
     return nullptr;
 }
 
-std::string Room::get_item(int x, int y)
+Item* Room::item_get(int x, int y)
 {
     for ( auto& item : items )
     {
-        if ( item.second.clicked(x, y) )
+        if ( item.second.clicked(x, y) && item.second.active() )
         {
-            return item.second.look();
+            return &item.second;
         }
     }
-    // return nullptr;
-    return "Nothing";
+    return nullptr;
 }
+
+// void Room::item_activate(Uint32 id)
+// {
+//     items.at(id).set_state(true);
+// }
+
+// void Room::item_deactivate(Uint32 id)
+// {
+//     items.at(id).set_state(false);
+// }
 
 
 void Room::get_world_coordinates(int x, int y, int* world_x, int* world_y)

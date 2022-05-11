@@ -40,7 +40,7 @@ private:
     std::unordered_map<Uint32, Door> objects_door;
     std::unordered_map<Uint32, Item> items;             // Asi nepotřebuji map, po kliknutí musím stejnak projít všechny items
                                                         // a zkontrolovat jejich click_area polygony
-                                                        // stačí tedy vector
+                                                        // stačí tedy vector -> problém s copy constructor
     std::vector<PolygonObject*> screen_items;            // A visual representation of item's click map
 
     // Methods
@@ -64,7 +64,7 @@ public:
     Uint32 get_mapped_object(int x, int y);
     AmbientObject* get_ambient_object(Uint32 id);
     Door* get_door(Uint32 id);
-    std::string get_item(int x, int y);
+    Item* item_get(int x, int y);
 
     // Methods to test various things
 

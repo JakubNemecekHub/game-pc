@@ -34,8 +34,10 @@ public:
               );
     ~GameObject() {};
     std::string type();
-    std::string look();             // Always returns string
-    virtual std::string use() = 0;  // if "" is returned, don't print text texture
+    std::string look();
+    bool active();
+    void set_state(bool _state);
+    virtual std::string use() = 0;
 };
 
 
@@ -64,19 +66,6 @@ public:
     std::string use();
 };
 
-// struct AmbientObject
-// {
-// bool state;
-// std::vector<std::string> observations;
-// std::vector<std::string> use_observations;
-// AmbientObject(Uint32 _id,
-//                   bool _state,
-//                   std::vector<std::string> _observations,
-//                   std::vector<std::string> _use_observations
-//                  );
-// ~AmbientObject() {};
-// };
-
 
 /*
     Using item will pick it up and place it into inventory.
@@ -90,6 +79,7 @@ class Item : public GameObject
 private:
     std::unique_ptr<Texture> texture;
     Polygon click_area;
+    std::string text_use;
 public:
     Item(Uint32 _id,
          bool _state,
@@ -97,7 +87,8 @@ public:
          std::string _texture_file,
          std::vector<int> _position,
          float _scale,
-         std::vector<std::vector<int>> _click_area
+         std::vector<std::vector<int>> _click_area,
+         std::string _text_use
         );
     Item(Uint32 _id,
          bool _state,
@@ -105,7 +96,8 @@ public:
          std::string _texture_file,
          std::vector<int> _position,
          float _scale,
-         Polygon _click_area
+         Polygon _click_area,
+         std::string _text_use
         );
     // Item(const Item& source) : GameObject(source) {};
     ~Item() {};

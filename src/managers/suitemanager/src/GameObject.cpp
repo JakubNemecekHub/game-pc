@@ -30,6 +30,16 @@ std::string GameObject::look()
    return observations[rand() % observations.size()];
 }
 
+bool GameObject::active()
+{
+    return state;
+}
+
+void GameObject::set_state(bool _state)
+{
+    state = _state;
+}
+
 
 /***********************************************************************************
  * AmbientObject
@@ -95,9 +105,10 @@ Item::Item(Uint32 _id,
            std::string _texture_file,
            std::vector<int> _position,
            float _scale,
-           std::vector<std::vector<int>> _click_area
+           std::vector<std::vector<int>> _click_area,
+           std::string _text_use
           )
-    : GameObject(_id, "item", _state, _observations), click_area{_click_area}
+    : GameObject(_id, "item", _state, _observations), click_area{_click_area}, text_use{_text_use}
 {
     // Create texture
     texture = std::make_unique<Texture>(_texture_file);
@@ -111,9 +122,10 @@ Item::Item(Uint32 _id,
            std::string _texture_file,
            std::vector<int> _position,
            float _scale,
-           Polygon _click_area
+           Polygon _click_area,
+           std::string _text_use
           )
-    : GameObject(_id, "item", _state, _observations), click_area{_click_area}
+    : GameObject(_id, "item", _state, _observations), click_area{_click_area}, text_use{_text_use}
 {
     // Create texture
     texture = std::make_unique<Texture>(_texture_file);
@@ -123,7 +135,7 @@ Item::Item(Uint32 _id,
 
 std::string Item::use()
 {
-    return "Way over my head";
+    return text_use;
 }
 
 bool Item::clicked(int x, int y)
