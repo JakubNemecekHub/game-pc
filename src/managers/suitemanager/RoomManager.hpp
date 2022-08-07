@@ -15,7 +15,7 @@ private:
     RoomManager() {};
     std::unordered_map<std::string, Room> rooms;
     Room* active_room;
-    const std::string path {"D:/Prog/cpp/game_engine_architecture/res/rooms/"}; // Absolutw path for debugging purposes only!
+    const std::string path {"D:/Prog/game_project/game/res/rooms/"}; // Absolute path for debugging purposes only!
 public:
     static RoomManager* GetInstance();
     void startUp();
