@@ -12,12 +12,12 @@ enum COLOR { BEIGE, PURPLE, GREEN };
 
 
 /*
-    Text Manager should handle all aviable fonts and thei sizes and colours.
+    Text Manager should handle all available fonts and their sizes and colours.
     Can I resize TTF_Font?
 
     It should also keep track of all the text that is supposed to be shown on the screen.
-    It will display a text when asked amd the keep the texto on the screen for some time, or
-    until some speficic action, then it will hide the text.
+    It will display a text when asked and the keep the text on the screen for some time, or
+    until some specific action, then it will hide the text.
 
 */
 class TextManager

@@ -27,7 +27,7 @@ Polygon::Polygon(const Polygon &source)
 }
 
 
-// Add vertex at the end of the list of verticies.
+// Add vertex at the end of the list of vertices.
 void Polygon::add_vertex(Vector2D vertex)
 {
     vertices.push_back(vertex);
@@ -63,7 +63,7 @@ unsigned int Polygon::size()
 }
 
 
-// Return true if polgon has no vertices.
+// Return true if polygon has no vertices.
 bool Polygon::empty()
 {
     return size() == 0;

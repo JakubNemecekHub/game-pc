@@ -164,8 +164,8 @@ void RenderManager::register_object(RenderableObject* r)
              2..(N-1) - various stuff
              N - bitmaps
             (N+1) - polygons
-    TO DO: The layering rules shouldn't be so strict. For exaplme, we may want to show
-    parts of the backgroud above player. This way we create a feeling of "depth".
+    TO DO: The layering rules shouldn't be so strict. For example, we may want to show
+    parts of the background above player. This way we create a feeling of "depth".
     Player object will move between various layers.
 */
 void RenderManager::render()

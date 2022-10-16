@@ -52,7 +52,7 @@ void RoomManager::shutDown()
     -> room hot-spots map
     -> room actions
     -> room ambient animations
-    -> wlaking area
+    -> walking area
     TO DO: add
     -> items present in the room
 */
@@ -164,9 +164,9 @@ void RoomManager::handle_click(int x, int y, bool right_click)
 
 
 /*
-    Handle keyboars inputs concerning room an room management.
-    b: Toggle renderinf of click map.
-    p: Toggle rendreing of walk area.
+    Handle keyboard inputs concerning room an room management.
+    b: Toggle rendering of click map.
+    p: Toggle rendering of walk area.
 */
 void RoomManager::handle_keyboard(std::string key)
 {

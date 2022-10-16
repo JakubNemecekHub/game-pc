@@ -18,7 +18,7 @@ public:
     Polygon() {};                                       // No arg constructor
     Polygon(std::vector<Vector2D> _vertices);           // Constructor with given vertices as Vector2D
     Polygon(std::vector<std::vector<int>> _vertices);   // onstructor with given vertices as vector of ints
-    Polygon(const Polygon &source);                     // Copy cobstructor
+    Polygon(const Polygon &source);                     // Copy constructor
     ~Polygon() {};                                      // Destructor
 
     // Methods

@@ -81,7 +81,7 @@ void Room::load(json room_data)
             std::string text_use          { it.value().at("pick-text") };
             // Scale and move item's polygon into room coordinates
             click_area.scale(scale);                                            // Scale item's click area by item's scale
-            click_area.move(position[0], position[1]);                          // Move click area by the item's position in the original bacgkround
+            click_area.move(position[0], position[1]);                          // Move click area by the item's position in the original background
             // Scale and move item's texture into screen coordinates
             scale *= texture->scale;                                            // item's scale multiplied by the room's scale
             position[0] = position[0] * texture->scale + texture->dest_rect.x;  // Add room's x offset (that centered the room's texture)
@@ -211,11 +211,11 @@ void Room::toggle_walk_area()
     The engine works with 32-bit bmp files. This is a bit overkill,only a
     few colours are needed for the click map. But lower bitrate seems to
     return unstable results (e.g. the same colour in different images
-    lead to different reults, probably based on other colour in the image)
+    lead to different results, probably based on other colour in the image)
 
     Probably:
     32bits = 2 ^ 32 = 4 294 967 296 colours
-    8bits = 2 ^ 8 = 256 clours, this should be enough
+    8bits = 2 ^ 8 = 256 colours, this should be enough
 
 */
 Uint32 Room::get_mapped_object(int x, int y)

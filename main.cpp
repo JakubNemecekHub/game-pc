@@ -26,11 +26,11 @@ RenderManager* gRenderManager = RenderManager::GetInstance();
     left or right mouse click? Pass coordinates to current room.
     key pressed? Do e.g. show menu, inventory, close window
     Player <-> Room interaction
-    Left Mouse Click - passed to room, result: possible action = walh, use, look,..... Pass it to Player.
+    Left Mouse Click - passed to room, result: possible action = walk, use, look,..... Pass it to Player.
 */
 ControlManager* gControlManager = ControlManager::GetInstance();
 /* RoomManager
-    Loads room, renders room, checks collisons and player action inside a room
+    Loads room, renders room, checks collisions and player action inside a room
 */
 RoomManager* gRoomManager = RoomManager::GetInstance();
 /* TextManager
@@ -38,7 +38,7 @@ RoomManager* gRoomManager = RoomManager::GetInstance();
 */
 TextManager* gTextManager = TextManager::GetInstance();
 /* LogManager
-    Log erors and other information
+    Log errors and other information
 */
 LogManager* gLogManager = LogManager::GetInstance();
 // Other possible systems
@@ -71,7 +71,7 @@ int main(int argc, char* args[])
     // Game loop
     while (gWindowManager->isRunning)
     {
-        // Hsndle events
+        // Handle events
         gControlManager->handleEvents();
         // Update
         uint32_t next_tick {SDL_GetTicks()};
@@ -83,7 +83,7 @@ int main(int argc, char* args[])
         gRenderManager->render();
     }
 
-    // shut down system in appropriate order (e.g. in reverse)
+    // Shut down system in appropriate order (e.g. in reverse)
     gRoomManager->shutDown();
     gTextManager->ShutDown();
     gRenderManager->shutDown();

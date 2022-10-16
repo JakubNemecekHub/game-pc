@@ -25,9 +25,9 @@ public:
 
     // Methods
     static WindowManager* GetInstance();    // Singleton logic
-    ~WindowManager() {};    // Descturctor that does nothing
-    void startUp();         // Method that I can use instead of contructor
-    void shutDown();        // Method that I can use instead of desctructor
+    ~WindowManager() {};    // Destructor that does nothing
+    void startUp();         // Method that I can use instead of constructor
+    void shutDown();        // Method that I can use instead of destructor
     // void handleEvents();
     SDL_Window* window();
     void toggle_fullscreen();

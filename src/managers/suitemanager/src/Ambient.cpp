@@ -11,7 +11,7 @@ using animation_counter = std::vector<Animation>::size_type;
 
 
 /*
-    Load animation data, specified in the ambiet_data json object
+    Load animation data, specified in the ambient_data json object
     into animations vector.
 */
 void Ambient::load(json ambient_data)
@@ -44,7 +44,7 @@ void Ambient::load(json ambient_data)
         // current_frame and last_updated
         animations.at(i).current_frame = 0;
         animations.at(i).last_updated = 0;
-        // Resett animation
+        // Reset animation
         animations.at(i).reset();
     }
 }

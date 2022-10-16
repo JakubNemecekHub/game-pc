@@ -16,9 +16,9 @@
     Room has its own background texture. All ambient animations are handled
     by RoomManager.
     Room also has a click_map, which is a bitmap (.bmp) loaded into surface.
-    Different active sposts are represented by different colors on the click_map.
+    Different active spots are represented by different colors on the click_map.
 
-    TO DO: Should prepare a list af aviable colours. Or handle them "dynamically"?
+    TO DO: Should prepare a list af available colours. Or handle them "dynamically"?
     mouse click -> get color from click_map -> find color in some unordered_map
     or something like that
 */
@@ -38,9 +38,8 @@ private:
     Ambient ambient;                                    // Manager of ambient animations.
     std::unordered_map<Uint32, AmbientObject> objects_ambient;
     std::unordered_map<Uint32, Door> objects_door;
-    std::unordered_map<Uint32, Item> items;             // Asi nepotřebuji map, po kliknutí musím stejnak projít všechny items
-                                                        // a zkontrolovat jejich click_area polygony
-                                                        // stačí tedy vector -> problém s copy constructor
+    std::unordered_map<Uint32, Item> items;             // After clicking it is necessary to check all items, so vector would be better
+                                                        // but vector seems to bring some problem with copy constructor.
     std::vector<PolygonObject*> screen_items;            // A visual representation of item's click map
 
     // Methods

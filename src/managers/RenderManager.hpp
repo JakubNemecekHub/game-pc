@@ -34,9 +34,9 @@ public:
 
     // Methods
     static RenderManager* GetInstance();    // Singleton logic
-    ~RenderManager() {};    // Descturctor that does nothing
-    void startUp();         // Method that I can use instead of contructor
-    void shutDown();        // Method that I can use instead of desctructor
+    ~RenderManager() {};    // Destructor that does nothing
+    void startUp();         // Method that I can use instead of constructor
+    void shutDown();        // Method that I can use instead of destructor
 
     // Load Stuff.
 

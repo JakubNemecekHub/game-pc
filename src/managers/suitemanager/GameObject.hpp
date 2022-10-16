@@ -12,8 +12,8 @@
 
 /*
     How to resolve actions?
-    Look is easy. It always return text, so it gets priten on the screen.
-    Use on the other hand does all srts of things.
+    Look is easy. It always return text, so it gets printed on the screen.
+    Use on the other hand does all sorts of things.
 */
 
 
@@ -21,8 +21,8 @@ class GameObject
 {
 protected:
     Uint32 id;                              // Unique id, who will generate  it?
-                                            // Could be uniqe only inside the room and correspond with a colour on the click map
-                                            // Or it coud contain information about object type.
+                                            // Could be unique only inside the room and correspond with a colour on the click map
+                                            // Or it could contain information about object type.
     std::string type_;
     bool state;                             // active/inactive
     std::vector<std::string> observations;  // List of observation to be returned from for look action
@@ -44,8 +44,8 @@ public:
 /*
     Ambient object cannot be used, only looked at.
 
-    Looking at them selects observation from general observations. Using them
-    selects a observation from this class fiels use_observations.
+    Looking at them selects observation from general observations.
+    Using them selects a observation from this class' field "use_observations".
 
     JSON:
     > type: ambient

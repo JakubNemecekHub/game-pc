@@ -67,7 +67,7 @@ void TextManager::register_text(std::string text, int x, int y, COLOR color)
         display_text.release();
     }
     // Screen width used in wrapping text and moving it along the x axis
-    int sreen_w{RenderManager::GetInstance()->get_screen_width()};
+    int screen_w{RenderManager::GetInstance()->get_screen_width()};
     SDL_Color _color;
     switch ( color )
     {
@@ -84,7 +84,7 @@ void TextManager::register_text(std::string text, int x, int y, COLOR color)
             _color = SDL_Color{255, 255, 255};
     }
     // Create surface from text
-    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), _color, sreen_w);
+    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), _color, screen_w);
     if ( text_surface == NULL )
     {
         LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
@@ -102,14 +102,14 @@ void TextManager::register_text(std::string text, int x, int y, COLOR color)
     display_text->match_src_dimension();
     /*
         Set position
-        Move text above mouse cursor
+        Move text above mouse cursor.
         If end of the text texture would be rendered outside of the screen,
         move it along the x axis.
-        If the width of the whole text is rater then the screen widthm that
+        If the width of the whole text is greater then the screen width than
         we are...
     */
     int final_x, final_y;
-    final_x = sreen_w - display_text->src_rect.w;
+    final_x = screen_w - display_text->src_rect.w;
     if ( final_x > x )
     {
         final_x = x;

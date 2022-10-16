@@ -24,7 +24,7 @@ Texture::Texture(SDL_Texture* _texture, float _scale, int _z_index)
     src_rect.x = 0;
     src_rect.y = 0;
     SDL_QueryTexture(texture, NULL, NULL, &src_rect.w, &src_rect.h);
-    // Set destination rectengle, so that it doesn't contain garbage
+    // Set destination rectangle, so that it doesn't contain garbage
     dest_rect.x = 0;
     dest_rect.y = 0;
     dest_rect.w = 0;
@@ -41,7 +41,7 @@ Texture::Texture(std::string file_name, float _scale, int _z_index)
     src_rect.x = 0;
     src_rect.y = 0;
     SDL_QueryTexture(texture, NULL, NULL, &src_rect.w, &src_rect.h);
-    // Set destination rectengle, so that it doesn't contain garbage
+    // Set destination rectangle, so that it doesn't contain garbage
     dest_rect.x = 0;
     dest_rect.y = 0;
     dest_rect.w = 0;

@@ -20,7 +20,7 @@ void Animation::reset()
     */
     current_frame = 0;
     texture->src_rect = frames[0].src_rect;
-    texture->match_src_dimension(); // This should be handeled while loading the animation!
+    texture->match_src_dimension(); // This should be handled while loading the animation!
 }
 
 
