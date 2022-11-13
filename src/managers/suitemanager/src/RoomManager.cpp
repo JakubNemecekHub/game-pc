@@ -94,13 +94,8 @@ void RoomManager::update(int dt)
 
 void RoomManager::handle_click(int x, int y, bool right_click)
 {
-    // Convert viewport coordinates into world coordinates
-    int world_x, world_y;
-    active_room->get_world_coordinates(x, y, &world_x, &world_y);
-    std::cout << "Screen coordinates: (" << x << ", " << y << "), ";
-    std::cout << "World coordinates: (" << world_x << ", " << world_y << ")" << std::endl;
     // Check walk area
-    if ( active_room->point_in_polygon(world_x, world_y) )
+    if ( active_room->point_in_polygon(x, y) )
     {
         std::cout << "I am inside." << std::endl;
         // TextManager::GetInstance()->register_text("I am inside.", x, y);
@@ -108,7 +103,7 @@ void RoomManager::handle_click(int x, int y, bool right_click)
     Uint32 response;
     // Check Items
     Item* clicked_item;
-    clicked_item = active_room->item_get(world_x, world_y);
+    clicked_item = active_room->item_get(x, y);
     if ( clicked_item != nullptr )
     {
         // Use item
@@ -123,7 +118,7 @@ void RoomManager::handle_click(int x, int y, bool right_click)
         }
     }
     // Check Ambient objects and doors
-    response = active_room->get_mapped_object(world_x, world_y);
+    response = active_room->get_mapped_object(x, y);
     if ( response )
     {
         // Ambient

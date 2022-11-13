@@ -44,6 +44,10 @@ private:
 
     // Methods
 
+    void get_room_coordinates(int x, int y, int* world_x, int* world_y);
+
+    // Debug Methods
+
     void create_click_map_texture();
     void create_screen_walk_area();
 
@@ -55,7 +59,6 @@ public:
     // Methods
 
     void load(json room_meta);
-    void get_world_coordinates(int x, int y, int* world_x, int* world_y);
     bool point_in_polygon(int x, int y);
     void update(int dt);
     Uint32 get_mapped_object(int x, int y);

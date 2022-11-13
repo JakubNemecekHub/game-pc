@@ -105,7 +105,9 @@ Room::~Room()
 // Return true if given point in the room's walk area.
 bool Room::point_in_polygon(int x, int y)
 {
-    return walk_area.point_in_polygon(x, y);
+    int room_x, room_y;
+    get_room_coordinates(x, y, &room_x, &room_y);
+    return walk_area.point_in_polygon(room_x, room_y);
 }
 
 
@@ -220,8 +222,10 @@ void Room::toggle_walk_area()
 */
 Uint32 Room::get_mapped_object(int x, int y)
 {
+    int room_x, room_y;
+    get_room_coordinates(x, y, &room_x, &room_y);
     int bpp = click_map->format->BytesPerPixel; // bytes per pixel, depends on loaded image
-    Uint8 *p = (Uint8 *)click_map->pixels + y * click_map->pitch + x * bpp;
+    Uint8 *p = (Uint8 *)click_map->pixels + room_y * click_map->pitch + room_x * bpp;
     switch (bpp)
     {
         case 1:
@@ -272,9 +276,11 @@ Door* Room::get_door(Uint32 id)
 
 Item* Room::item_get(int x, int y)
 {
+    int room_x, room_y;
+    get_room_coordinates(x, y, &room_x, &room_y);
     for ( auto& item : items )
     {
-        if ( item.second.clicked(x, y) && item.second.active() )
+        if ( item.second.clicked(room_x, room_y) && item.second.active() )
         {
             return &item.second;
         }
@@ -293,7 +299,7 @@ Item* Room::item_get(int x, int y)
 // }
 
 
-void Room::get_world_coordinates(int x, int y, int* world_x, int* world_y)
+void Room::get_room_coordinates(int x, int y, int* world_x, int* world_y)
 {
     *world_x = static_cast<int>((x - texture->dest_rect.x) / texture->scale);
     *world_y = static_cast<int>(y / texture->scale);
