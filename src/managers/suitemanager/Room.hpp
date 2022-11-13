@@ -57,8 +57,6 @@ public:
     void load(json room_meta);
     void get_world_coordinates(int x, int y, int* world_x, int* world_y);
     bool point_in_polygon(int x, int y);
-    std::string get_action(Uint32 response);
-    std::string get_door_target(Uint32 response);
     void update(int dt);
     Uint32 get_mapped_object(int x, int y);
     AmbientObject* get_ambient_object(Uint32 id);
