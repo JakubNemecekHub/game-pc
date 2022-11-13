@@ -59,7 +59,7 @@ public:
     // Methods
 
     void load(json room_meta);
-    bool point_in_polygon(int x, int y);
+    bool walkable(int x, int y);
     void update(int dt);
     Uint32 get_mapped_object(int x, int y);
     AmbientObject* get_ambient_object(Uint32 id);

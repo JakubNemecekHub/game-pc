@@ -95,7 +95,7 @@ void RoomManager::update(int dt)
 void RoomManager::handle_click(int x, int y, bool right_click)
 {
     // Check walk area
-    if ( active_room->point_in_polygon(x, y) )
+    if ( active_room->walkable(x, y) )
     {
         std::cout << "I am inside." << std::endl;
         // TextManager::GetInstance()->register_text("I am inside.", x, y);

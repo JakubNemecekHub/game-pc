@@ -103,7 +103,7 @@ Room::~Room()
 
 
 // Return true if given point in the room's walk area.
-bool Room::point_in_polygon(int x, int y)
+bool Room::walkable(int x, int y)
 {
     int room_x, room_y;
     get_room_coordinates(x, y, &room_x, &room_y);
