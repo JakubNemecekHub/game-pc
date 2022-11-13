@@ -17,7 +17,7 @@ add_subdirectory(src/components)
 add_subdirectory(src/managers)
 add_subdirectory(src/math)
 add_subdirectory(src/math_objects)
-add_subdirectory(src/managers/suitemanager)
+add_subdirectory(src/managers/roommanager)
 
 # Don't know what this is
 # include(CTest)
@@ -33,7 +33,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   SDL2::SDL2_image SDL2::SDL2_ttf
   nlohmann_json::nlohmann_json
   components managers math math_objects
-  suitemanager
+  roommanager
 )
 
 # Don't know what this is
