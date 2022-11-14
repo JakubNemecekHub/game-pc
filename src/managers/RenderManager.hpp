@@ -21,7 +21,7 @@ private:
     static RenderManager* singleton_;
     // Normal fields
     SDL_Window* window;
-
+    static SDL_Renderer* renderer;
     static const int MAX_LAYERS {4};
     std::array<std::queue<RenderableObject*>, MAX_LAYERS> render_objects;
 
@@ -29,10 +29,9 @@ private:
     // Constructor
     RenderManager() {};
 public:
-    // Fields
-    static SDL_Renderer* renderer;  // I would like to move this to be private
 
     // Methods
+
     static RenderManager* GetInstance();    // Singleton logic
     ~RenderManager() {};    // Destructor that does nothing
     void startUp();         // Method that I can use instead of constructor
