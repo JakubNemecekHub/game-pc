@@ -2,104 +2,87 @@
 
 #include <iostream>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
-#include "../LogManager.hpp"
-#include "../RenderManager.hpp"
-#include "../components/Texture.hpp"
-
-
-TextManager* TextManager::singleton_ = nullptr;
-const int TextManager::total_duration = 1250;
-
-
-TextManager* TextManager::GetInstance()
+TextManager::TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini)
+    : log_{log}, renderer_{renderer}, text_timer_{0}
 {
-    if ( singleton_ == nullptr )
+    font_file_ = ini["font"].as<std::string>();
+    font_size_ = ini["size"].as<int>();
+    max_duration_ = ini["max_duration"].as<int>();
+    for (int i = 0; i < ini["colors"].size(); i++ )
     {
-        singleton_ = new TextManager();
+        colors_.emplace(std::piecewise_construct,
+                std::forward_as_tuple(i),
+                std::forward_as_tuple(ini["colors"][i][0].as<Uint8>(), ini["colors"][i][1].as<Uint8>(), ini["colors"][i][2].as<Uint8>()));
     }
-    return singleton_;
 }
+
 
 /*
     Initialize TTF and load font.
-    Default values are for now "Secret of Monkey Island" font of size 14.
 */
-void TextManager::startUp()
+bool TextManager::startUp()
 {
-    LogManager::GetInstance()->log_message("Starting Text Manager.");
-    text_timer = 0;
+    log_->log("Starting Text Manager.");
+
     // Initialize SDL_ttf library
     if ( TTF_Init() == -1 )
     {
-        LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
-        // return false;
+        log_->error("SDL_ttf Error: ", TTF_GetError());
+        return false;
     }
     else{
         // Load font
-        font = TTF_OpenFont("D:/Prog/cpp/game_engine_architecture/res/fonts/Secret of Monkey Island.ttf", 24);  // Full path for debug purposes
-        if ( font == NULL )
+        font_ = TTF_OpenFont(font_file_.c_str(), font_size_);
+        if ( font_ == NULL )
         {
-            LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
-            // return false;
+            log_->error("SDL_ttf Error: ", TTF_GetError());
+            return false;
         }
     }
-    // return true;
+    return true;
 }
+
 
 /*
     Close font and shut down TTF.
 */
-void TextManager::ShutDown()
+bool TextManager::ShutDown()
 {
-    TTF_CloseFont(font);
+    TTF_CloseFont(font_);
     TTF_Quit();
-    LogManager::GetInstance()->log_message("Shutting down Text Manager.");
+    log_->log("Shutting down Text Manager.");
+    return true;
 }
 
 
 void TextManager::register_text(std::string text, int x, int y, COLOR color)
 {
-    if ( display_text )
+    if ( display_text_ )
     {
-        display_text.release();
+        display_text_.release();
     }
     // Screen width used in wrapping text and moving it along the x axis
-    int screen_w{RenderManager::GetInstance()->get_screen_width()};
-    SDL_Color _color;
-    switch ( color )
-    {
-        case BEIGE:
-            _color = SDL_Color{255, 183, 89};
-            break;
-        case PURPLE:
-            _color = SDL_Color{214, 29, 208};
-            break;
-        case GREEN:
-            _color = SDL_Color{91, 163, 111};
-            break;
-        default:
-            _color = SDL_Color{255, 255, 255};
-    }
+    int screen_width { renderer_->get_screen_width() };
+    Color my_color { colors_.at(color) };
+    SDL_Color _color = SDL_Color{my_color.r, my_color.g, my_color.b};
     // Create surface from text
-    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), _color, screen_w);
+    SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(font_, text.c_str(), _color, screen_width);
     if ( text_surface == NULL )
     {
-        LogManager::GetInstance()->log_error("SDL_ttf Error: ", TTF_GetError());
+        log_->error("SDL_ttf Error: ", TTF_GetError());
         return;
     }
     // Create SDL_Texture from surface
-    SDL_Texture* text_texture = RenderManager::GetInstance()->texture_from_surface(text_surface);
+    SDL_Texture* text_texture = renderer_->texture_from_surface(text_surface);
     if ( text_texture == NULL )
     {
-        LogManager::GetInstance()->log_error("SDL Error: ", SDL_GetError());
+        log_->error("SDL Error: ", SDL_GetError());
         return;
     }
     // Create Texture with SDL_Texture
-    display_text = std::make_unique<Texture>(text_texture, 1, 3);
-    display_text->match_src_dimension();
+    display_text_ = std::make_unique<Texture>(text_texture, 1, 3);
+    display_text_->match_src_dimension();
     /*
         Set position
         Move text above mouse cursor.
@@ -109,36 +92,34 @@ void TextManager::register_text(std::string text, int x, int y, COLOR color)
         we are...
     */
     int final_x, final_y;
-    final_x = screen_w - display_text->src_rect.w;
+    final_x = screen_width - display_text_->src_rect().w;
     if ( final_x > x )
     {
         final_x = x;
     }
-    final_y = y - display_text->src_rect.h;
-    display_text->set_position(final_x, final_y);
-    text_timer = 0;
+    final_y = y - display_text_->src_rect().h;
+    display_text_->set_position(final_x, final_y);
+    renderer_->register_object(display_text_.get());
+    text_timer_ = 0;
 }
 
 
 void TextManager::update(int dt)
 {
-    if ( display_text )
+    if ( display_text_ )
     {
-        if ( text_timer <= TextManager::total_duration )
+        if ( text_timer_ <= max_duration_ )
         {
-            RenderManager::GetInstance()->register_object(display_text.get());
-            text_timer += dt;
+            renderer_->register_object(display_text_.get());
+            text_timer_ += dt;
         }
         else
         {
-            display_text = nullptr;
-            text_timer = 0;
+            display_text_ = nullptr;
+            text_timer_ = 0;
         }
     }
 }
 
 
-void TextManager::clean()
-{
-    display_text.release();
-}
+void TextManager::clean() { display_text_.release(); }

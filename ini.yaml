@@ -1,0 +1,24 @@
+---
+log:
+  file_log: log.txt
+  file_error: error.txt
+window:
+  title: "My Game"
+  width: 1280
+  height: 720
+  fullscreen: false
+renderer:
+  SDL_RENDERER_SOFTWARE: false
+  SDL_RENDERER_ACCELERATED: true
+  SDL_RENDERER_PRESENTVSYNC: true
+  SDL_RENDERER_TARGETTEXTURE: false
+text:
+  font: D:/Prog/cpp/game_engine_architecture/res/fonts/Secret of Monkey Island.ttf
+  size: 24
+  max_duration: 1250
+  colors:
+    - [255, 183, 89]  # BEIGE
+    - [214, 29, 208]  # PURPLE
+    - [91, 163, 111]  # GREEN
+    - [198, 40, 40]   # RED
+control:

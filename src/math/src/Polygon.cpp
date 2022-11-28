@@ -59,7 +59,7 @@ void Polygon::add_vertices(std::vector<std::vector<int>> vertices)
 // Return number of vertices.
 unsigned int Polygon::size()
 {
-    return vertices.size();
+    return static_cast<unsigned int>(vertices.size());
 }
 
 

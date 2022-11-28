@@ -9,10 +9,6 @@ project(
 
 add_library(
     ${PROJECT_NAME}
-    src/RoomManager.cpp
-    src/Ambient.cpp
-    src/Room.cpp
-    src/GameObject.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

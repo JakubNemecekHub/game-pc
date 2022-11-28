@@ -19,13 +19,13 @@ void Animation::reset()
         and registers new Texture to renderer
     */
     current_frame = 0;
-    texture->src_rect = frames[0].src_rect;
+    texture->src_rect(frames[0].src_rect);
     texture->match_src_dimension(); // This should be handled while loading the animation!
 }
 
 
 /* TO DO: test animation update code */
-void Animation::update(int dt)
+void Animation::update(RenderManager* renderer, int dt)
 {
     /*
         Look at the current frame
@@ -40,7 +40,7 @@ void Animation::update(int dt)
     {
         current_frame = (current_frame + 1) % frames.size();
         last_updated = 0;
-        texture->src_rect = frames[current_frame].src_rect;
+        texture->src_rect(frames[current_frame].src_rect);
     }
-    RenderManager::GetInstance()->register_object(texture.get());
+    renderer->register_object(texture);
 }

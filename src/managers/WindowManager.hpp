@@ -1,34 +1,34 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 
+#include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>
+
+#include "LogManager.hpp"
+
 
 class WindowManager
 {
 private:
-    // Fields
-    // Singleton
-    static WindowManager* singleton_;
-    // Normal fields
+
+    LogManager* log_;
     SDL_Window* window_;
-    const char* title = "Game";
-    int width, height;
-    // Methods
-    // Constructor
-    WindowManager() {};
+    std::string title_;
+    int         width_;
+    int         height_;
+    bool        fullscreen_initial_;
 
 public:
-    // Fields
-    bool isRunning;
-    // SDL_Event event;
 
-    // Methods
-    static WindowManager* GetInstance();    // Singleton logic
-    ~WindowManager() {};    // Destructor that does nothing
-    void startUp();         // Method that I can use instead of constructor
-    void shutDown();        // Method that I can use instead of destructor
-    // void handleEvents();
+    bool running;
+
+    WindowManager() {};
+    WindowManager(LogManager* log, YAML::Node ini);
+
+    bool startUp();
+    bool shutDown();
+
     SDL_Window* window();
     void toggle_fullscreen();
     void close();

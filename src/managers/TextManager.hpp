@@ -2,13 +2,25 @@
 
 #include <string>
 #include <memory>   // unique_ptr
+#include <unordered_map>
 
+#include <yaml-cpp/yaml.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "LogManager.hpp"
+#include "RenderManager.hpp"
 #include "../components/Texture.hpp"
 
 
-enum COLOR { BEIGE, PURPLE, GREEN };
+enum COLOR { BEIGE, PURPLE, GREEN, RED };
+
+struct Color
+{
+    Uint8 r, g, b;
+    Color(Uint8 _r, Uint8 _g, Uint8 _b)
+        : r{_r}, g{_g}, b{_b} {}
+};
 
 
 /*
@@ -23,18 +35,25 @@ enum COLOR { BEIGE, PURPLE, GREEN };
 class TextManager
 {
 private:
-    static TextManager* singleton_;
-    TextManager() {};
-    TTF_Font* font;                         // .ttf font to use to display text
-    static const int total_duration;
-    std::unique_ptr<Texture> display_text;  // One Texture representing a text to be shown
-                                            // TO DO: support multiple text on the screen
-    int text_timer;
+
+    RenderManager*                  renderer_;
+    LogManager*                     log_;
+    std::string                     font_file_;
+    int                             font_size_;
+    TTF_Font*                       font_;              // .ttf font to use to display text
+    int                             max_duration_;
+    std::unique_ptr<Texture>        display_text_;      // One Texture representing a text to be shown
+    int                             text_timer_;
+    std::unordered_map<int, Color>  colors_;
+
 public:
-    static TextManager* GetInstance();
-    ~TextManager() {};
-    void startUp();
-    void ShutDown();
+
+    TextManager() {};
+    TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini);
+
+    bool startUp();
+    bool ShutDown();
+
     void update(int dt);
 
     void register_text(std::string text, int x, int y, COLOR color=BEIGE);
