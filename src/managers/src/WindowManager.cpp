@@ -1,72 +1,65 @@
 #include "../WindowManager.hpp"
 
-#include <iostream>
 
-#include "../LogManager.hpp"
-
-WindowManager* WindowManager::singleton_ = nullptr;
-
-WindowManager* WindowManager::GetInstance()
+WindowManager::WindowManager(LogManager* log, YAML::Node ini)
 {
-    if ( singleton_ == nullptr )
-    {
-        singleton_ = new WindowManager();
-    }
-    return singleton_;
+    log_ = log;
+    title_ = ini["title"].as<std::string>();
+    width_ = ini["width"].as<int>();
+    height_ = ini["height"].as<int>();
+    fullscreen_initial_ = ini["fullscreen"].as<bool>();
 }
 
-void WindowManager::startUp()
+
+bool WindowManager::startUp()
 {
-    LogManager::GetInstance()->log_message("Starting Window Manager.");
-    window_ = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false);
+    log_->log("Starting Window Manager.");
+    window_ = SDL_CreateWindow(title_.c_str(),
+                               SDL_WINDOWPOS_CENTERED,
+                               SDL_WINDOWPOS_CENTERED,
+                               width_,
+                               height_,
+                               fullscreen_initial_);
     if ( window_ )
     {
-        LogManager::GetInstance()->log_message("Window created.");
-        isRunning = true;
+        log_->log("Window created.");
+        running = true;
+        return true;
     }
     else
     {
-        LogManager::GetInstance()->log_error("SDL Error: ", SDL_GetError());
+        log_->error("SDL Error: ", SDL_GetError());
+        return false;
     }
 }
 
-void WindowManager::shutDown()
+
+bool WindowManager::shutDown()
 {
     SDL_DestroyWindow(window_);
-    LogManager::GetInstance()->log_message("Window destroyed. Shutting down Window Manager.");
+    log_->log("Window destroyed. Shutting down Window Manager.");
+    return true;
 }
 
-// void WindowManager::handleEvents()
-// {
-//     while ( SDL_PollEvent(&event) )
-//     {
-//         if ( event.type == SDL_QUIT)
-//             isRunning = false;
-//     }
-// }
 
-SDL_Window* WindowManager::window()
-{
-    return window_;
-}
+SDL_Window* WindowManager::window() { return window_; }
+
 
 void WindowManager::toggle_fullscreen()
 {
     if ( !(SDL_GetWindowFlags(window_) & SDL_WINDOW_FULLSCREEN) )
     {
         // From windowed to fullscreen
-        SDL_GetWindowSize(window_, &width, &height);    // Save current window dimensions
+        SDL_GetWindowSize(window_, &width_, &height_);    // Save current window dimensions
         SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN);
     }
     else
     {
         // From fullscreen to windowed
-        SDL_SetWindowFullscreen(window_, 0);                     // set windowed
-        SDL_SetWindowSize(window_, width, height); // Set original dimensions
+        SDL_SetWindowFullscreen(window_, 0);            // set windowed
+        SDL_SetWindowSize(window_, width_, height_);    // Set original dimensions
     }
 }
 
-void WindowManager::close()
-{
-    isRunning = false;
-}
+
+void WindowManager::close() { running = false; }

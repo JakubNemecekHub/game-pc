@@ -4,55 +4,49 @@
 #include <string>
 #include <array>
 #include <queue>
-#include <memory>   // unique_ptr
+// #include <memory>   // unique_ptr
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "LogManager.hpp"
 #include "../components/RenderableObject.h"
 #include "../components/Texture.hpp"
+
+class Texture;
 
 
 class RenderManager
 {
 private:
-    // Fields
-    // Singleton
-    static RenderManager* singleton_;
-    // Normal fields
-    SDL_Window* window;
 
-    static const int MAX_LAYERS {4};
-    std::array<std::queue<RenderableObject*>, MAX_LAYERS> render_objects;
+    LogManager*             log_;
+    SDL_Window*             window_;
+    static SDL_Renderer*    renderer_;
+    static const int        MAX_LAYERS_ {4};
+    std::array<std::queue<RenderableObject*>, MAX_LAYERS_> render_objects_;
 
-    // Methods
-    // Constructor
-    RenderManager() {};
 public:
-    // Fields
-    static SDL_Renderer* renderer;  // I would like to move this to be private
 
-    // Methods
-    static RenderManager* GetInstance();    // Singleton logic
-    ~RenderManager() {};    // Descturctor that does nothing
-    void startUp();         // Method that I can use instead of contructor
-    void shutDown();        // Method that I can use instead of desctructor
+    RenderManager() {};
+    RenderManager(LogManager* log);
+
+    bool startUp(SDL_Window* window);
+    bool shutDown();
 
     // Load Stuff.
 
-    static Texture load_texture(std::string file_name);
-    static SDL_Texture* load_sdl_texture(std::string file_name);
-    static SDL_Surface* load_bitmap(std::string file_name);
-    static SDL_Texture* texture_from_surface(SDL_Surface* surface);
+    SDL_Texture* load_sdl_texture(std::string file_name);
+    SDL_Surface* load_bitmap(std::string file_name);
+    SDL_Texture* texture_from_surface(SDL_Surface* surface);
 
     // Render stuff.
 
-    void register_object(RenderableObject* r);
+    bool register_object(RenderableObject* r);
     void render();
 
     // Helper functions.
 
-    void scale_full_h(Texture& texture);
-    void scale_full_h(const std::unique_ptr<Texture>& texture); // Can use templates?
+    void scale_full_h(Texture* texture);
     int get_screen_width();
 };

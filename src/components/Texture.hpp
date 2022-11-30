@@ -5,6 +5,9 @@
 #include <SDL2/SDL.h>
 
 #include "RenderableObject.h"
+#include "../managers/RenderManager.hpp"
+
+class RenderManager;
 
 
 /*
@@ -13,34 +16,44 @@
 */
 class Texture : public RenderableObject
 {
+private:
+
+    SDL_Texture*    texture_;
+    SDL_Rect        src_rect_;
+    SDL_Rect        dest_rect_;
+    float           scale_;
+
 public:
-    // It shows too much stuff to the outside world
-    SDL_Texture* texture;
-    SDL_Rect src_rect;
-    SDL_Rect dest_rect;
-    float scale;
 
     // Constructors
     Texture() {};
     // Default scale is 1, default z_index is 0.
-    Texture(SDL_Texture* _texture, SDL_Rect _src_rect, float _scale = 1, int _z_index = 0);
-    Texture(SDL_Texture* _texture, float _scale = 1, int _z_index = 0);
-    Texture(std::string file_name, float _scale = 1, int _z_index = 0);
+    Texture(SDL_Texture* texture, float scale = 1.0f, int _z_index = 0);
+    Texture(std::string file_name, RenderManager* renderer, float _scale = 1.0f, int _z_index = 0);
     // Destructor
     ~Texture();
+
+    void set_texture(SDL_Texture* texture);
 
     // Position, size and scale methods.
 
     void set_src(int _x, int _y, int _w, int _h);
-    void set_src(SDL_Rect& source);
+    void src_rect(SDL_Rect& source);
+    SDL_Rect src_rect();
     void set_dest(int _x, int _y, int _w, int _h);
-    void set_dest(SDL_Rect& source);
+    void dest_rect(SDL_Rect& source);
+    SDL_Rect dest_rect();
     void set_position(int _x, int _y);
-    void set_scale(float _scale);
+    void scale(float scale);
+    float scale();
     void set_dimension_width(int _w);
     void set_dimension_height(int _h);
     void set_dimensions(int _w, int _h);
     void match_src_dimension();
+    int x();
+    int y();
+    int w();
+    int h();
 
     // Render methods.
 

@@ -1,7 +1,7 @@
 #include "../ControlManager.hpp"
 
 #include "../LogManager.hpp"
-#include "../SuiteManager/RoomManager.hpp"
+#include "../roommanager/RoomManager.hpp"
 #include "../WindowManager.hpp"
 
 #include <iostream>

@@ -38,8 +38,8 @@ Vector2D& Vector2D::add(const Vector2D& vec)
     return *this;
 }
 
-// Substracting a vector from vector
-Vector2D& Vector2D::substract(const Vector2D& vec)
+// Subtracting a vector from vector
+Vector2D& Vector2D::subtract(const Vector2D& vec)
 {
     this->x -= vec.x;
     this->y -= vec.y;
@@ -77,10 +77,10 @@ Vector2D& Vector2D::operator+=(const Vector2D& vec)
     return this->add(vec);
 }
 
-// Substracting a vector from vector by operator
+// Subtracting a vector from vector by operator
 Vector2D& Vector2D::operator-=(const Vector2D& vec)
 {
-    return this->substract(vec);
+    return this->subtract(vec);
 }
 
 // Multiplication by number (scaling)  by operator

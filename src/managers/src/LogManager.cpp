@@ -8,32 +8,28 @@
 #include <stdarg.h> // for function with variable number of arguments
 
 
-LogManager* LogManager::singleton_ = nullptr;
-
-
-LogManager* LogManager::GetInstance()
+LogManager::LogManager(YAML::Node ini)
 {
-    if ( singleton_ == nullptr )
-    {
-        singleton_ = new LogManager();
-    }
-    return singleton_;
+    file_log_name_ = ini["file_log"].as<std::string>();
+    file_error_name_ = ini["file_error"].as<std::string>();
 }
 
 
-void LogManager::startUp()
+bool LogManager::startUp()
 {
-    file_log = std::freopen("log.txt", "w", stdout);
-    file_error = std::freopen("error.txt", "w", stderr);
-    log_message("Started Log Manager.");
+    file_log_ = std::freopen(file_log_name_.c_str(), "w", stdout);
+    file_error_ = std::freopen(file_error_name_.c_str(), "w", stderr);
+    log("Started Log Manager.");
+    return true;
 }
 
 
-void LogManager::shutDown()
+bool LogManager::shutDown()
 {
-    log_message("Shutting down Log Manager.");
-    std::fclose(file_log);
-    std::fclose(file_error);
+    log("Shutting down Log Manager.");
+    std::fclose(file_log_);
+    std::fclose(file_error_);
+    return true;
 }
 
 
