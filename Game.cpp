@@ -6,7 +6,19 @@
 Game::Game()
 {
     YAML::Node ini = YAML::LoadFile("D:/Prog/game_project/game/ini.yaml");
+
+    // Start Log Manager as soon as possible
     m_LogManager = LogManager(ini["log"]);
+    m_LogManager.startUp();
+
+    // Load in key bindings
+    YAML::Node bindings = ini["control"];
+    m_Controls = Controls{bindings["Inventory"].as<int>(),
+                          bindings["Polygon"].as<int>(),
+                          bindings["Hots_pots"].as<int>()
+                         };
+
+    // Start all other Managers
     m_WindowManager = WindowManager(&m_LogManager, ini["window"]);
     m_RenderManager = RenderManager(&m_LogManager);
     m_TextureManager = TextureManager(&m_LogManager);
@@ -15,7 +27,6 @@ Game::Game()
     m_RoomManager = RoomManager(&m_LogManager);
     m_PlayerManager = PlayerManager();
 
-    m_LogManager.startUp();
     m_WindowManager.startUp();
     m_RenderManager.startUp(m_WindowManager.window());
     m_TextureManager.startUp(&m_RenderManager);
@@ -115,6 +126,32 @@ void Game::handle_click_(int x, int y, bool right_click)
     }
 }
 
+
+void Game::handle_keyboard_(SDL_Keycode key)
+{
+    // Fullscreen
+    if ( key == SDLK_F11 )
+    {
+        m_WindowManager.toggle_fullscreen();
+    }
+    // Toggle Static texture
+    else if ( key == m_Controls.KEY_HOT_SPOTS )
+    {
+        m_RoomManager.handle_keyboard("bitmap");
+    }
+    // Toggle polygon rendering
+    else if ( key == m_Controls.KEY_POLYGON )
+    {
+        m_RoomManager.handle_keyboard("polygon");
+    }
+    // Show Inventory
+    else if ( key == m_Controls.KEY_INVENTORY )
+    {
+        m_PlayerManager.inventory.print(&m_LogManager);
+    }
+}
+
+
 bool Game::running() { return m_WindowManager.running; }
 
 /*
@@ -130,11 +167,6 @@ void Game::update(int dt)
         // Close Window
         if ( event_.type == SDL_QUIT || event_.key.keysym.sym == SDLK_ESCAPE)
             m_WindowManager.close();
-        // Fullscreen
-        if ( event_.type == SDL_KEYUP && event_.key.keysym.sym == SDLK_F11 )  // Should only catch one F11 event
-        {
-            m_WindowManager.toggle_fullscreen();
-        }
         // Mouse click
         if ( event_.type == SDL_MOUSEBUTTONUP )
         {
@@ -143,22 +175,11 @@ void Game::update(int dt)
             bool right_click { event_.button.button == SDL_BUTTON_RIGHT };
             handle_click_(x, y, right_click);
         }
-        // Toggle Static texture
-        if ( event_.type == SDL_KEYUP && event_.key.keysym.sym == SDLK_b )
+        // Keyboard
+        if ( event_.type == SDL_KEYUP )
         {
-            m_RoomManager.handle_keyboard("bitmap");
+            handle_keyboard_(event_.key.keysym.sym);
         }
-        // Toggle polygon rendering
-        if ( event_.type == SDL_KEYUP && event_.key.keysym.sym == SDLK_p )
-        {
-            m_RoomManager.handle_keyboard("polygon");
-        }
-        // Show Inventory
-        if ( event_.type == SDL_KEYUP && event_.key.keysym.sym == SDLK_i )
-        {
-            m_PlayerManager.inventory.print(&m_LogManager);
-        }
-
     }
     // 2) Update.
     m_RoomManager.update(&m_RenderManager, dt);

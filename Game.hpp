@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <SDL2/SDL.h>
 
 #include "src/managers/LogManager.hpp"
@@ -10,6 +12,14 @@
 #include "src/managers/ItemManager.hpp"
 #include "src/managers/TextureManager.hpp"
 #include "src/managers/PlayerManager.hpp"
+
+
+struct Controls
+{
+    SDL_Keycode KEY_INVENTORY;
+    SDL_Keycode KEY_POLYGON;
+    SDL_Keycode KEY_HOT_SPOTS;
+};
 
 
 class Game {
@@ -25,8 +35,10 @@ private:
     PlayerManager    m_PlayerManager;
 
     SDL_Event event_;
+    Controls m_Controls;
 
     void handle_click_(int x, int y, bool right_click);
+    void handle_keyboard_(SDL_Keycode key);
 
 public:
 
