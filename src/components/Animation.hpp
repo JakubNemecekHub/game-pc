@@ -25,25 +25,28 @@ public:
 class Animation
 {
 private:
+
+    Texture*            texture_;
+    int                 current_frame_;  //this is src_rect. dest_rect and scale will be provided by RoomManager.
+    long                last_updated_;
+    std::vector<Frame>  frames_;
+    // int offset_x;    // How is this used?
+    // int offset_y;    // How is this used?
+
 public:
-    // Fields
-    Texture* texture;
-    int current_frame;                      //this is src_rect. dest_rect and scale will be provided by RoomManager.
-    long last_updated;
-    std::vector<Frame> frames;
-    // int offset_x;                        // How is this used?
-    // int offset_y;                        // How is this used?
 
     Animation() {}                          // No-args Constructor
-    Animation(const Animation&& source) {}  // Copy Constructor
-    Animation(const Animation& source) {}   // Move Constructor
+    Animation(Texture* texture, std::vector<std::vector<int>> frames_meta);
     ~Animation() {}                         // Destructor
-
-    // Static Class Methods
 
     // Methods
 
+    // void position(int x, int y); // Done using Animation's texture
+    void scale(float s);
     void reset();
     void update(RenderManager* renderer, int dt);
-    void set_position(int _x, int _y);
+
+    Texture* texture();
+
 };
+

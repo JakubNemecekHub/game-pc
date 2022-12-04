@@ -171,6 +171,7 @@ void Texture::match_src_dimension()
    dest_rect_.h = static_cast<int>(src_rect_.h * scale_);
 }
 
+
 /*
     Get scale.
 */

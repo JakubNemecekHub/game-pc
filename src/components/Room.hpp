@@ -7,7 +7,8 @@
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>
 
-#include "Ambient.hpp"
+// #include "Ambient.hpp"
+#include "Animation.hpp"
 #include "Item.hpp"
 #include "Door.hpp"
 #include "HotSpot.hpp"
@@ -16,6 +17,23 @@
 #include "../managers/RenderManager.hpp"
 #include "../managers/ItemManager.hpp"
 #include "../managers/TextureManager.hpp"
+
+
+class RoomAnimations
+{
+private:
+
+    std::vector<Animation*> animations_;
+
+public:
+
+    RoomAnimations() {};
+    ~RoomAnimations() {};
+
+    void load(YAML::Node data, TextureManager* textures);
+    void update(RenderManager* renderer, int dt);
+
+};
 
 
 /*
@@ -36,7 +54,7 @@ private:
 
     Texture*                                    texture_;                    // Background texture
     Polygon                                     walk_area_;                  // A polygon representing the walk area
-    Ambient                                     ambient_;                    // Manager of ambient animations.
+    RoomAnimations                              animations_;                 // Manages ambient animations
     SDL_Surface*                                click_map_;                  // A bitmap of hot-spots.
 
     std::unordered_map<Uint32, HotSpot>         hot_spots_;

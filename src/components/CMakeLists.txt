@@ -15,8 +15,8 @@ add_library(
     src/RenderableObject.cpp
     src/Texture.cpp
     src/Room.cpp
-    src/Ambient.cpp
     src/Inventory.cpp
+    src/Sprite.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

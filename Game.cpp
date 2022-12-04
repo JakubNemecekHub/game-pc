@@ -25,7 +25,7 @@ Game::Game()
     m_TextManager = TextManager(&m_LogManager, &m_RenderManager, ini["text"]);
     m_ItemManager = ItemManager(&m_LogManager);
     m_RoomManager = RoomManager(&m_LogManager);
-    m_PlayerManager = PlayerManager();
+    m_PlayerManager = PlayerManager(&m_LogManager);
 
     m_WindowManager.startUp();
     m_RenderManager.startUp(m_WindowManager.window());
@@ -33,6 +33,7 @@ Game::Game()
     m_TextManager.startUp();
     m_ItemManager.startUp(&m_TextureManager);
     m_RoomManager.startUp(&m_RenderManager, &m_ItemManager, &m_TextureManager);
+    m_PlayerManager.startUp(&m_TextureManager);
 
     m_LogManager.log("All Managers started.");
 }

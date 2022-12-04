@@ -15,8 +15,7 @@ Item::Item(YAML::Node data, TextureManager* textures)
     // Load click area polygon
     click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<int>>>());
     // Load texture
-    // texture_ = std::make_unique<Texture>(data["texture"].as<std::string>());
-    texture_ = textures->get_item(id_);
+    texture_ = textures->get_texture(id_);
 }
 
 
