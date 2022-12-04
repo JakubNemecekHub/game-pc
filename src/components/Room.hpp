@@ -16,7 +16,7 @@
 #include "../math/Polygon.hpp"
 #include "../managers/RenderManager.hpp"
 #include "../managers/ItemManager.hpp"
-#include "../managers/TextureManager.hpp"
+#include "../managers/AssetManager.hpp"
 
 
 class RoomAnimations
@@ -30,7 +30,7 @@ public:
     RoomAnimations() {};
     ~RoomAnimations() {};
 
-    void load(YAML::Node data, TextureManager* textures);
+    void load(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt);
 
 };
@@ -83,7 +83,7 @@ private:
 public:
 
     Room() {};
-    Room(YAML::Node data, RenderManager* renderer, ItemManager* items, TextureManager* textures);
+    Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetManager* assets);
     ~Room();
 
     // Methods

@@ -4,7 +4,7 @@
 #include <string>
 
 #include "LogManager.hpp"
-#include "TextureManager.hpp"
+#include "AssetManager.hpp"
 #include "../components/Item.hpp"
 
 
@@ -21,7 +21,7 @@ public:
     ItemManager() {};
     ItemManager(LogManager* log);
 
-    bool startUp(TextureManager* textures);
+    bool startUp(AssetManager* assets);
     bool shutDown();
 
     Item* get(std::string id);

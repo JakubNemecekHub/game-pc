@@ -11,12 +11,12 @@
     into animations vector.
 */
 using animation_counter = std::vector<Animation*>::size_type;
-void RoomAnimations::load(YAML::Node data, TextureManager* textures)
+void RoomAnimations::load(YAML::Node data, AssetManager* assets)
 {
     animations_.resize(data.size()); // Set the size of the final animations vector
     for ( animation_counter i = 0; i < animations_.size(); i++ )
     {
-        animations_.at(i) = textures->get_animation(data[i]["id"].as<std::string>());
+        animations_.at(i) = assets->get_animation(data[i]["id"].as<std::string>());
         animations_.at(i)->texture()->set_z_index(1);
         animations_.at(i)->scale(data[i]["scale"].as<float>());
         int x { data[i]["position"][0].as<int>() };
@@ -46,16 +46,16 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 /*
     Loads room's data based on info in the room data dictionary.
 */
-Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, TextureManager* textures)
+Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetManager* assets)
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
-    texture_ = textures->get_texture(id);
+    texture_ = assets->get_texture(id);
     // Load walk area polygon
     walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<int>>>());
     // Load room click map
-    click_map_ = textures->get_bitmap(id);
-    click_map_texture_ = textures->get_texture(id + "_bitmap");
+    click_map_ = assets->get_bitmap(id);
+    click_map_texture_ = assets->get_texture(id + "_bitmap");
     // Load HotSpots
     for ( auto& hot_spot : data["hot_spots"] )
     {
@@ -92,7 +92,7 @@ Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, Texture
         items_.insert(std::make_pair(id, item));
     }
     // load room ambient animations
-    animations_.load(data["animations"], textures);
+    animations_.load(data["animations"], assets);
 }
 
 

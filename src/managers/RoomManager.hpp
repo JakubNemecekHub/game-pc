@@ -8,7 +8,7 @@
 #include "LogManager.hpp"
 #include "RenderManager.hpp"
 #include "ItemManager.hpp"
-#include "TextureManager.hpp"
+#include "AssetManager.hpp"
 #include "../components/Room.hpp"
 #include "../components/Item.hpp"
 #include "../components/Door.hpp"
@@ -23,14 +23,14 @@ private:
     Room* active_room_;
     std::string path_ {"D:/Prog/game_project/game/res/"};
 
-    void load_rooms_(std::string suite_file, RenderManager* renderer, ItemManager* items, TextureManager* textures);
+    void load_rooms_(std::string suite_file, RenderManager* renderer, ItemManager* items, AssetManager* assets);
 
 public:
 
     RoomManager();
     RoomManager(LogManager* log);
 
-    bool startUp(RenderManager* renderer, ItemManager* items, TextureManager* textures);
+    bool startUp(RenderManager* renderer, ItemManager* items, AssetManager* assets);
     bool shutDown();
 
     void activate_room(std::string room_name);

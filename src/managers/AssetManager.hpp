@@ -12,7 +12,7 @@
 #include "RenderManager.hpp"
 
 
-class TextureManager
+class AssetManager
 {
 private:
 
@@ -26,8 +26,8 @@ private:
 
 public:
 
-    TextureManager() {};
-    TextureManager(LogManager* log);
+    AssetManager() {};
+    AssetManager(LogManager* log);
 
     bool startUp(RenderManager* renderer);
     bool shutDown();

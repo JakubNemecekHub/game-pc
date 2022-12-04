@@ -1,4 +1,4 @@
-#include "../TextureManager.hpp"
+#include "../AssetManager.hpp"
 
 #include <iostream>
 #include <vector>
@@ -7,11 +7,11 @@
 #include <yaml-cpp/yaml.h>
 
 
-TextureManager::TextureManager(LogManager* log)
+AssetManager::AssetManager(LogManager* log)
     : log_{log} {}
 
 
-bool TextureManager::startUp(RenderManager* renderer)
+bool AssetManager::startUp(RenderManager* renderer)
 {
     log_->log("Starting Texture Manager.");
     YAML::Node data = YAML::LoadFile(path_);
@@ -112,7 +112,7 @@ bool TextureManager::startUp(RenderManager* renderer)
 }
 
 
-Texture* TextureManager::get_texture(std::string id)
+Texture* AssetManager::get_texture(std::string id)
 {
     if ( textures_.find(id) != textures_.end() )
     {
@@ -120,7 +120,7 @@ Texture* TextureManager::get_texture(std::string id)
     }
     return nullptr;
 }
-SDL_Surface* TextureManager::get_bitmap(std::string id)
+SDL_Surface* AssetManager::get_bitmap(std::string id)
 {
     if ( bitmaps_.find(id) != bitmaps_.end() )
     {
@@ -128,7 +128,7 @@ SDL_Surface* TextureManager::get_bitmap(std::string id)
     }
     return nullptr;
 }
-Animation* TextureManager::get_animation(std::string id)
+Animation* AssetManager::get_animation(std::string id)
 {
     if ( animations_.find(id) != animations_.end() )
     {
@@ -136,7 +136,7 @@ Animation* TextureManager::get_animation(std::string id)
     }
     return nullptr;
 }
-Sprite* TextureManager::get_sprite(std::string id)
+Sprite* AssetManager::get_sprite(std::string id)
 {
     if ( sprites_.find(id) != sprites_.end() )
     {

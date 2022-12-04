@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "LogManager.hpp"
-#include "TextureManager.hpp"
+#include "AssetManager.hpp"
 #include "../components/Animation.hpp"
 #include "../components/Inventory.hpp"
 #include "../math/Vector2D.hpp"
@@ -32,11 +32,11 @@ private:
 public:
 
     Player() {};
-    Player(TextureManager* textures)
+    Player(AssetManager* assets)
         : position{0, 0}, destination{0, 0}, is_walking{false}, speed{3}, scale{1}
     {
         const std::string id { "player" };
-        sprite_ = textures->get_sprite(id);
+        sprite_ = assets->get_sprite(id);
     }
 
     void walk(int x, int y)
@@ -64,7 +64,7 @@ public:
     PlayerManager() {};
     PlayerManager(LogManager* log);
 
-    bool startUp(TextureManager* textures);
+    bool startUp(AssetManager* assets);
     bool shutDown();
 
 };

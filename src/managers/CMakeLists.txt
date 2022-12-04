@@ -15,7 +15,7 @@ add_library(
     src/WindowManager.cpp
     src/ItemManager.cpp
     src/RoomManager.cpp
-    src/TextureManager.cpp
+    src/AssetManager.cpp
     src/PlayerManager.cpp
 )
 

@@ -5,7 +5,7 @@
 
 /*
     Create Texture object from SDL_Texture.
-    Used to create Texture for text in TextManager and the Hot spot Texture in TextureManager.
+    Used to create Texture for text in TextManager and the Hot spot Texture in AssetManager.
 */
 Texture::Texture(SDL_Texture* texture, float scale, int z_index)
     : RenderableObject(z_index), texture_{texture}, scale_{scale}
@@ -23,7 +23,7 @@ Texture::Texture(SDL_Texture* texture, float scale, int z_index)
 
 /*
     Create a texture from a .png file.
-    Used for all Textures in TextureManager.
+    Used for all Textures in AssetManager.
 */
 Texture::Texture(std::string file_name, RenderManager* renderer, float scale, int z_index)
     : RenderableObject(z_index), scale_{scale}

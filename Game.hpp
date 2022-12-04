@@ -10,7 +10,7 @@
 #include "src/managers/TextManager.hpp"
 #include "src/managers/WindowManager.hpp"
 #include "src/managers/ItemManager.hpp"
-#include "src/managers/TextureManager.hpp"
+#include "src/managers/AssetManager.hpp"
 #include "src/managers/PlayerManager.hpp"
 
 
@@ -28,7 +28,7 @@ private:
     LogManager       m_LogManager;
     WindowManager    m_WindowManager;
     RenderManager    m_RenderManager;
-    TextureManager   m_TextureManager;
+    AssetManager     m_AssetManager;
     TextManager      m_TextManager;
     ItemManager      m_ItemManager;
     RoomManager      m_RoomManager;

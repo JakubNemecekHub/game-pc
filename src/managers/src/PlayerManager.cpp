@@ -5,10 +5,10 @@ PlayerManager::PlayerManager(LogManager* log)
     : log_{log} {}
 
 
-bool PlayerManager::startUp(TextureManager* textures)
+bool PlayerManager::startUp(AssetManager* assets)
 {
     log_->log("Starting Player Manager.");
-    player = Player(textures);
+    player = Player(assets);
     log_->log("Player Manager started.");
     return true;
 }

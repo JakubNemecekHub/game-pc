@@ -9,7 +9,7 @@ ItemManager::ItemManager(LogManager* log)
     : log_{log} {}
 
 
-bool ItemManager::startUp(TextureManager* textures)
+bool ItemManager::startUp(AssetManager* assets)
 {
     log_->log("Starting Item Manager.");
     YAML::Node data = YAML::LoadFile(path_);
@@ -18,7 +18,7 @@ bool ItemManager::startUp(TextureManager* textures)
         std::string id { item_data["id"].as<std::string>() };
         items_.emplace(std::piecewise_construct,
                 std::forward_as_tuple(id),
-                std::forward_as_tuple(item_data, textures));
+                std::forward_as_tuple(item_data, assets));
     }
     log_->log("Item Manager Started.");
     return true;
