@@ -21,18 +21,19 @@ Game::Game()
     // Start all other Managers
     m_WindowManager = WindowManager(&m_LogManager, ini["window"]);
     m_RenderManager = RenderManager(&m_LogManager);
-    m_TextureManager = TextureManager(&m_LogManager);
+    m_AssetManager = AssetManager(&m_LogManager);
     m_TextManager = TextManager(&m_LogManager, &m_RenderManager, ini["text"]);
     m_ItemManager = ItemManager(&m_LogManager);
     m_RoomManager = RoomManager(&m_LogManager);
-    m_PlayerManager = PlayerManager();
+    m_PlayerManager = PlayerManager(&m_LogManager);
 
     m_WindowManager.startUp();
     m_RenderManager.startUp(m_WindowManager.window());
-    m_TextureManager.startUp(&m_RenderManager);
+    m_AssetManager.startUp(&m_RenderManager);
     m_TextManager.startUp();
-    m_ItemManager.startUp(&m_TextureManager);
-    m_RoomManager.startUp(&m_RenderManager, &m_ItemManager, &m_TextureManager);
+    m_ItemManager.startUp(&m_AssetManager);
+    m_RoomManager.startUp(&m_RenderManager, &m_ItemManager, &m_AssetManager);
+    m_PlayerManager.startUp(&m_AssetManager);
 
     m_LogManager.log("All Managers started.");
 }

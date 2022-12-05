@@ -3,7 +3,7 @@
 #include <stdlib.h> // rand
 
 
-Item::Item(YAML::Node data, TextureManager* textures)
+Item::Item(YAML::Node data, AssetManager* assets)
 {
     id_ = data["id"].as<std::string>();
     // Default state and locked is false
@@ -15,8 +15,7 @@ Item::Item(YAML::Node data, TextureManager* textures)
     // Load click area polygon
     click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<int>>>());
     // Load texture
-    // texture_ = std::make_unique<Texture>(data["texture"].as<std::string>());
-    texture_ = textures->get_item(id_);
+    texture_ = assets->get_texture(id_);
 }
 
 

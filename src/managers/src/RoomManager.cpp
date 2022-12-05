@@ -20,10 +20,10 @@ RoomManager::RoomManager(LogManager* log)
     : log_{log} {}
 
 
-bool RoomManager::startUp(RenderManager* renderer, ItemManager* items, TextureManager* textures)
+bool RoomManager::startUp(RenderManager* renderer, ItemManager* items, AssetManager* assets)
 {
     log_->log("Starting Room Manager.");
-    load_rooms_("rooms", renderer, items, textures);
+    load_rooms_("rooms", renderer, items, assets);
     activate_room("Bedroom");
     return true;
 }
@@ -41,7 +41,7 @@ bool RoomManager::shutDown()
     Load necessary room data. All information is stored in a .yaml file.
 
 */
-void RoomManager::load_rooms_(std::string suite_file, RenderManager* renderer, ItemManager* items, TextureManager* textures)
+void RoomManager::load_rooms_(std::string suite_file, RenderManager* renderer, ItemManager* items, AssetManager* assets)
 {
 
     // Open yaml file
@@ -55,7 +55,7 @@ void RoomManager::load_rooms_(std::string suite_file, RenderManager* renderer, I
         std::string name { room_data["name"].as<std::string>() };
         rooms_.emplace(std::piecewise_construct,
                       std::forward_as_tuple(name),
-                      std::forward_as_tuple(room_data, renderer, items, textures));
+                      std::forward_as_tuple(room_data, renderer, items, assets));
     }
 }
 

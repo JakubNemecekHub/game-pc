@@ -6,7 +6,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "../managers/TextureManager.hpp"
+#include "../managers/AssetManager.hpp"
 #include "Texture.hpp"
 #include "../math/Polygon.hpp"
 
@@ -22,7 +22,7 @@ private:
     Texture*                    texture_;
 public:
 
-    Item(YAML::Node data, TextureManager* textures);
+    Item(YAML::Node data, AssetManager* assets);
 
     // void        load(YAML::Node data);
     bool        clicked(int x, int y);
