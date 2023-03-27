@@ -178,7 +178,7 @@ void RenderManager::render_sprite()
 
 
 /*
-    Render or math objects in polygon_queue_ and vector_queue_
+    Render all math objects in polygon_queue_ and vector_queue_
 */
 void RenderManager::render_math()
 {
