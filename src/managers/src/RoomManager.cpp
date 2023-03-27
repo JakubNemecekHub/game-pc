@@ -90,26 +90,24 @@ void RoomManager::remove_item(std::string id) { active_room_->remove_item(id); }
 
 /*
     Handle keyboard inputs concerning room an room management.
-    b: Toggle rendering of click map.
-    p: Toggle rendering of walk area.
 */
-void RoomManager::handle_keyboard(std::string key)
+void RoomManager::handle_keyboard(ACTION_ROOM action)
 {
-    // Use enum?
-    if ( key == "bitmap" )
+    switch ( action )
     {
+    case ACTION_ROOM::BITMAP:
         active_room_->toggle_click_map();
-    }
-    if ( key == "walk_polygon" )
-    {
+        break;
+    case ACTION_ROOM::WALK_POLYGON:
         active_room_->toggle_walk_area();
-    }
-    if ( key == "item_polygon" )
-    {
+        break;
+    case ACTION_ROOM::ITEM_POLYGON:
         active_room_->toggle_item_click_map();
-    }
-    if ( key == "item_vector" )
-    {
+        break;
+    case ACTION_ROOM::ITEM_VECTOR:
         active_room_->toggle_item_vector();
+        break;
+    default:
+        break;
     }
 }

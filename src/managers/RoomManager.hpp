@@ -14,6 +14,16 @@
 #include "../components/Door.hpp"
 #include "../components/HotSpot.hpp"
 
+
+enum ACTION_ROOM
+{
+    BITMAP,
+    WALK_POLYGON,
+    ITEM_POLYGON,
+    ITEM_VECTOR,
+};
+
+
 class RoomManager
 {
 private:
@@ -40,6 +50,6 @@ public:
     Door* get_door(int x, int y);
     Item* get_item(int x, int y);
     void remove_item(std::string id);
-    void handle_keyboard(std::string key);
+    void handle_keyboard(ACTION_ROOM action);
 
 };

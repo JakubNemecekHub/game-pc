@@ -17,6 +17,7 @@ add_library(
     src/RoomManager.cpp
     src/AssetManager.cpp
     src/PlayerManager.cpp
+    src/ControlManager.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

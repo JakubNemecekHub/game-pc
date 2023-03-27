@@ -6,19 +6,11 @@
 Game::Game()
 {
     YAML::Node ini = YAML::LoadFile("D:/Prog/game_project/game/ini.yaml");
+    // TO DO: error opening file
 
     // Start Log Manager as soon as possible
     m_LogManager = LogManager(ini["log"]);
     m_LogManager.startUp();
-
-    // Load in key bindings
-    YAML::Node bindings = ini["control"];
-    m_Controls = Controls{bindings["Inventory"].as<int>(),
-                          bindings["Walk_Polygon"].as<int>(),
-                          bindings["Item_Polygon"].as<int>(),
-                          bindings["Item_Vector"].as<int>(),
-                          bindings["Hots_pots"].as<int>()
-                         };
 
     // Start all other Managers
     m_WindowManager = WindowManager(&m_LogManager, ini["window"]);
@@ -28,6 +20,7 @@ Game::Game()
     m_ItemManager = ItemManager(&m_LogManager);
     m_RoomManager = RoomManager(&m_LogManager);
     m_PlayerManager = PlayerManager(&m_LogManager);
+    m_ControlManager = ControlManager(&m_LogManager, &m_WindowManager, &m_RoomManager, &m_PlayerManager);
 
     m_WindowManager.startUp();
     m_RenderManager.startUp(m_WindowManager.window());
@@ -35,13 +28,19 @@ Game::Game()
     m_TextManager.startUp();
     m_ItemManager.startUp(&m_AssetManager);
     m_RoomManager.startUp(&m_RenderManager, &m_ItemManager, &m_AssetManager);
+    m_ControlManager.startUp(ini["control"]);
     m_PlayerManager.startUp(&m_AssetManager);
 
     m_LogManager.log("All Managers started.");
 }
 
-void Game::handle_click_(int x, int y, bool right_click)
+
+void Game::handle_click_(mouse_click mouse_click_data)
 {
+    if ( !std::get<1>(mouse_click_data) ) return;   // Check if there was a click to handle;
+    int x { std::get<1>(mouse_click_data) };
+    int y { std::get<2>(mouse_click_data) };
+    bool right_click  { std::get<3>(mouse_click_data) };
     // Clicked on Item?
     Item* item { m_RoomManager.get_item(x, y) };
     if ( item )
@@ -130,42 +129,8 @@ void Game::handle_click_(int x, int y, bool right_click)
 }
 
 
-void Game::handle_keyboard_(SDL_Keycode key)
-{
-    // Fullscreen
-    if ( key == SDLK_F11 )
-    {
-        m_WindowManager.toggle_fullscreen();
-    }
-    // Toggle Static texture
-    else if ( key == m_Controls.KEY_HOT_SPOTS )
-    {
-        m_RoomManager.handle_keyboard("bitmap");
-    }
-    // Toggle walk area's polygon rendering
-    else if ( key == m_Controls.KEY_WALK_POLYGON )
-    {
-        m_RoomManager.handle_keyboard("walk_polygon");
-    }
-    // Toggle items' click area's polygon rendering
-    else if ( key == m_Controls.KEY_ITEM_POLYGON )
-    {
-        m_RoomManager.handle_keyboard("item_polygon");
-    }
-    // Toggle items' position vector rendering
-    else if ( key == m_Controls.KEY_ITEM_VECTOR )
-    {
-        m_RoomManager.handle_keyboard("item_vector");
-    }
-    // Show Inventory
-    else if ( key == m_Controls.KEY_INVENTORY )
-    {
-        m_PlayerManager.inventory.print(&m_LogManager);
-    }
-}
-
-
 bool Game::running() { return m_WindowManager.running; }
+
 
 /*
     1) Handle input.
@@ -177,22 +142,10 @@ void Game::update(int dt)
     // 1) Handle input.
     while ( SDL_PollEvent(&event_) )
     {
-        // Close Window
-        if ( event_.type == SDL_QUIT || event_.key.keysym.sym == SDLK_ESCAPE)
-            m_WindowManager.close();
-        // Mouse click
-        if ( event_.type == SDL_MOUSEBUTTONUP )
-        {
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            bool right_click { event_.button.button == SDL_BUTTON_RIGHT };
-            handle_click_(x, y, right_click);
-        }
-        // Keyboard
-        if ( event_.type == SDL_KEYUP )
-        {
-            handle_keyboard_(event_.key.keysym.sym);
-        }
+        m_ControlManager.handle_window(event_);
+        m_ControlManager.handle_keyboard(event_);
+        mouse_click mouse_click_data { m_ControlManager.handle_mouse(event_) };
+        handle_click_(mouse_click_data);
     }
     // 2) Update.
     m_RoomManager.update(&m_RenderManager, dt);
