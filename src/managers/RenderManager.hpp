@@ -30,8 +30,9 @@ private:
     std::queue<Polygon*>                            polygon_queue_;
     std::queue<Vector2D*>                           vector_queue_;
 
-    void render_surface();
+    void render_sprite();
     void render_math();
+    void render_surface();
 
 public:
 
