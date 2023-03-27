@@ -1,8 +1,14 @@
 #include "../ItemManager.hpp"
 
+#include <queue>
+#include <filesystem>
+
 #include <yaml-cpp/yaml.h>
 
 #include "../components/Item.hpp"
+#include "../utils/Files.hpp"
+
+namespace fs = std::filesystem;
 
 
 ItemManager::ItemManager(LogManager* log)
@@ -12,13 +18,18 @@ ItemManager::ItemManager(LogManager* log)
 bool ItemManager::startUp(AssetManager* assets)
 {
     log_->log("Starting Item Manager.");
-    YAML::Node data = YAML::LoadFile(path_);
-    for ( auto& item_data : data["items"] )
+    std::queue<fs::directory_entry> items_meta { assets->items_meta() };
+    while ( !items_meta.empty() )
     {
-        std::string id { item_data["id"].as<std::string>() };
+        fs::directory_entry entry { items_meta.front() };
+        std::string id            { base_name(entry)   };
+        YAML::Node item_data      { YAML::LoadFile(entry.path().string()) };
+        item_data["id"] = id;
         items_.emplace(std::piecewise_construct,
                 std::forward_as_tuple(id),
                 std::forward_as_tuple(item_data, assets));
+        log_->log("Item \"", id, "\" created.");
+        items_meta.pop();
     }
     log_->log("Item Manager Started.");
     return true;
@@ -27,7 +38,7 @@ bool ItemManager::startUp(AssetManager* assets)
 
 bool ItemManager::shutDown()
 {
-    // Delete all Items
+    // TO DO: Delete all Items
     log_->log("Shutting down Item Manager.");
     return true;
 }

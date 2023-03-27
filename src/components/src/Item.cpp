@@ -15,7 +15,7 @@ Item::Item(YAML::Node data, AssetManager* assets)
     // Load click area polygon
     click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<int>>>());
     // Load texture
-    texture_ = assets->get_texture(id_);
+    sprite_ = assets->sprite(id_);  // TO DO: log error if assets return nullptr
 }
 
 
@@ -42,5 +42,5 @@ bool Item::state() { return state_; }
 void Item::state(bool new_state) { state_ = new_state; }
 bool Item::lock() { return lock_; }
 void Item::lock(bool new_lock) { lock_ = new_lock; }
-Texture* Item::texture() { return texture_; }
-Polygon& Item::click_area() { return click_area_; }
+Sprite* Item::sprite() { return sprite_; }
+Polygon* Item::click_area() { return &click_area_; }

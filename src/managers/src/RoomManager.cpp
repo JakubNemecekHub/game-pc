@@ -4,12 +4,14 @@
 #include <fstream>
 #include <string>
 #include <memory>   // unique_ptr
+#include <queue>
+#include <filesystem>
 
 #include <yaml-cpp/yaml.h>
 
-#include "../../components/Animation.hpp"
-#include "../../math_objects/PolygonObject.hpp"
 #include "../../math/Polygon.hpp"
+
+namespace fs = std::filesystem;
 
 
 RoomManager::RoomManager()
@@ -24,7 +26,7 @@ bool RoomManager::startUp(RenderManager* renderer, ItemManager* items, AssetMana
 {
     log_->log("Starting Room Manager.");
     load_rooms_("rooms", renderer, items, assets);
-    activate_room("Bedroom");
+    activate_room("hall");
     return true;
 }
 
@@ -43,26 +45,33 @@ bool RoomManager::shutDown()
 */
 void RoomManager::load_rooms_(std::string suite_file, RenderManager* renderer, ItemManager* items, AssetManager* assets)
 {
-
-    // Open yaml file
-    YAML::Node data = YAML::LoadFile(path_ + suite_file + ".yaml");
-
-    for ( auto &room_data : data["rooms"] )
+    log_->log("Loading rooms.");
+    std::queue<fs::directory_entry> rooms_meta { assets->rooms_meta() };
+    while ( !rooms_meta.empty() )
     {
-        /*
-            Create empty Room in the rooms map and the use its load method.
-        */
-        std::string name { room_data["name"].as<std::string>() };
+        fs::directory_entry entry { rooms_meta.front() };
+        YAML::Node room_data      { YAML::LoadFile(entry.path().string()) };
+        std::string id            { room_data["id"].as<std::string>() };
         rooms_.emplace(std::piecewise_construct,
-                      std::forward_as_tuple(name),
+                      std::forward_as_tuple(id),
                       std::forward_as_tuple(room_data, renderer, items, assets));
+        log_->log("Room \"", id, "\" created.");
+        rooms_meta.pop();
     }
 }
 
 
-void RoomManager::activate_room(std::string room_name)
+void RoomManager::activate_room(const std::string& id)
 {
-    active_room_ = &rooms_[room_name];
+    try
+    {
+        active_room_ = &rooms_.at(id);
+    }
+    catch(const std::out_of_range& e)
+    {
+        log_->error("Cannot activate missing room \"", id, "\"");
+    }
+    
 }
 
 
@@ -91,8 +100,16 @@ void RoomManager::handle_keyboard(std::string key)
     {
         active_room_->toggle_click_map();
     }
-    if ( key == "polygon" )
+    if ( key == "walk_polygon" )
     {
         active_room_->toggle_walk_area();
+    }
+    if ( key == "item_polygon" )
+    {
+        active_room_->toggle_item_click_map();
+    }
+    if ( key == "item_vector" )
+    {
+        active_room_->toggle_item_vector();
     }
 }

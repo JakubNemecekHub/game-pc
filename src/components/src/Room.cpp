@@ -10,21 +10,18 @@
     Load animation data, specified in the yaml object
     into animations vector.
 */
-using animation_counter = std::vector<Animation*>::size_type;
+using animation_counter = std::vector<Sprite*>::size_type;
 void RoomAnimations::load(YAML::Node data, AssetManager* assets)
 {
     animations_.resize(data.size()); // Set the size of the final animations vector
     for ( animation_counter i = 0; i < animations_.size(); i++ )
     {
-        animations_.at(i) = assets->get_animation(data[i]["id"].as<std::string>());
-        animations_.at(i)->texture()->set_z_index(1);
+        animations_.at(i) = assets->sprite(data[i]["id"].as<std::string>());
+        animations_.at(i)->z_index(1);
         animations_.at(i)->scale(data[i]["scale"].as<float>());
         int x { data[i]["position"][0].as<int>() };
         int y { data[i]["position"][1].as<int>() };
-        animations_.at(i)->texture()->set_position(x, y);
-        // Offset
-        // animations.at(i).offset_x = data[i]["offset"][0];
-        // animations.at(i).offset_y = data[i]["offset"][1];
+        animations_.at(i)->position(x, y);
         // Reset animation
         animations_.at(i)->reset();
     }
@@ -50,12 +47,17 @@ Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetMa
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
-    texture_ = assets->get_texture(id);
+    sprite_ = assets->sprite(id);
+    renderer->scale_full_h(sprite_);
+    renderer->center_horizontally(sprite_);
     // Load walk area polygon
     walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<int>>>());
+    walk_area_.visual.scale = sprite_->scale();
+    walk_area_.visual.dx = sprite_->x();
+    walk_area_.visual.dy = sprite_->y();
     // Load room click map
-    click_map_ = assets->get_bitmap(id);
-    click_map_texture_ = assets->get_texture(id + "_bitmap");
+    click_map_ = assets->bitmap(id);
+    // click_map_texture_ = assets->get_texture(id + "_bitmap");
     // Load HotSpots
     for ( auto& hot_spot : data["hot_spots"] )
     {
@@ -78,14 +80,18 @@ Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetMa
         std::vector<int> position { item_data["position"].as<std::vector<int>>() };
         // scale item by its scale and also by the Room's scale.
         float item_scale { item_data["scale"].as<float>() };
-        float room_scale { texture_->scale() };
-        item->texture()->match_src_dimension();
-        item->texture()->set_position(position[0] * room_scale + texture_->x(), position[1] * room_scale);
-        item->texture()->scale(room_scale * item_scale);
+        float room_scale { sprite_->scale() };
+        item->sprite()->match_dimensions();
+        item->sprite()->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
+        item->sprite()->scale(room_scale * item_scale);
 
         // Scale the click area Polygon in the same way
-        item->click_area().scale(item_scale);
-        item->click_area().move(position[0], position[1]);
+        item->click_area()->scale(item_scale);
+        item->click_area()->move(position[0], position[1]);
+        // Also scale its visual 
+        item->click_area()->visual.scale = sprite_->scale();
+        item->click_area()->visual.dx = sprite_->x();
+        item->click_area()->visual.dy = sprite_->y();
 
         item->state(item_data["state"].as<bool>());
         item->lock(true);
@@ -114,96 +120,34 @@ bool Room::walkable(int x, int y)
 void Room::update(RenderManager* renderer, int dt)
 {
     // Register background
-    renderer->register_object(texture_);
+    renderer->submit(sprite_);
     // Register visible items
     for ( auto& item : items_ )
     {
         if ( item.second->state() )
         {
-            renderer->register_object(item.second->texture());
+            renderer->submit(item.second->sprite());
         }
     }
-    // Register Click map if should be visible
-    if ( visible_click_map_ )
+    // START OF DEBUG
+    if ( visible_click_map_ ) renderer->submit(click_map_, sprite_->dest_rect());   // Register Click map if should be visible
+    if ( visible_walk_area_ ) renderer->submit(&walk_area_);                        // Render Walk area if it should be visible
+    if ( visible_item_click_map_ )                                                  // Render all items' click polygons if they should be visible
     {
-        renderer->register_object(click_map_texture_);
-    }
-    // Register Walk area if should be visible
-    if ( visible_walk_area_ )
-    {
-        renderer->register_object(screen_walk_area_.get());
-        for ( auto& item : screen_items_ )
+        for ( auto& item : items_ )
         {
-            renderer->register_object(item);
+            renderer->submit(item.second->click_area());
         }
     }
+    if ( visible_item_vector_ )
+    {
+        for ( auto& item : items_ )
+        {
+            renderer->submit(item.second->sprite()->position());
+        }
+    }
+    // END OF DEBUG
     animations_.update(renderer, dt);
-}
-
-
-// /*
-//     Create renderable click map texture from the click map bitmap.
-//     For testing purposes.
-// */
-// void Room::create_click_map_texture()
-// {
-//     // could return bool about result
-//     // probably should check if click_map_texture doesn't already exists
-//     click_map_texture_ = std::make_unique<Texture>();
-//     click_map_texture_->texture = RenderManager::GetInstance()->texture_from_surface(click_map_);
-//     click_map_texture_->set_src(texture_->src_rect);
-//     click_map_texture_->set_dest(texture_->dest_rect);
-//     click_map_texture_->set_scale(texture_->scale);
-//     click_map_texture_->set_z_index(2);
-// }
-
-
-/*
-    Toggle rendering of click map.
-*/
-void Room::toggle_click_map()
-{
-    visible_click_map_ = !visible_click_map_;
-    // if ( visible_click_map_ && !click_map_texture_ )
-    // {
-    //     create_click_map_texture();
-    // }
-}
-
-
-/*
-    Create renderable PolygonObject from walk area math polygon.
-    For testing purposes.
-*/
-void Room::create_screen_walk_area_()
-{
-    screen_walk_area_ = std::make_unique<PolygonObject>(walk_area_,
-                                         texture_->scale(),
-                                         texture_->x(),
-                                         texture_->y()
-                                        );
-    for ( auto& pair : items_ )
-    {
-        PolygonObject* po = new PolygonObject(pair.second->click_area(),
-                                              texture_->scale(),
-                                              texture_->x(),
-                                              texture_->y()
-                                             );
-        screen_items_.push_back(po);
-    }
-}
-
-
-/*
-    Toggle rendering of walkarea.
-*/
-void Room::toggle_walk_area()
-{
-    visible_walk_area_ = !visible_walk_area_;
-    if ( visible_walk_area_ && !screen_walk_area_ )
-    {
-        create_screen_walk_area_();
-    }
 }
 
 
@@ -310,6 +254,6 @@ void Room::remove_item(std::string id)
 
 void Room::get_room_coordinates_(int x, int y, int* world_x, int* world_y)
 {
-    *world_x = static_cast<int>((x - texture_->x()) / texture_->scale());
-    *world_y = static_cast<int>(y / texture_->scale());
+    *world_x = static_cast<int>((x - sprite_->x()) / sprite_->scale());
+    *world_y = static_cast<int>(y / sprite_->scale());
 }

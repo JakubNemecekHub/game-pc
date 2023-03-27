@@ -10,7 +10,7 @@
 
 #include "LogManager.hpp"
 #include "RenderManager.hpp"
-#include "../components/Texture.hpp"
+#include "../components/Sprite.hpp"
 
 
 enum COLOR { BEIGE, PURPLE, GREEN, RED };
@@ -42,7 +42,7 @@ private:
     int                             font_size_;
     TTF_Font*                       font_;              // .ttf font to use to display text
     int                             max_duration_;
-    std::unique_ptr<Texture>        display_text_;      // One Texture representing a text to be shown
+    std::unique_ptr<Sprite>         sprite_;            // One Sprite representing a text to be shown
     int                             text_timer_;
     std::unordered_map<int, Color>  colors_;
 

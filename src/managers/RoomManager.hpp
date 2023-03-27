@@ -33,7 +33,7 @@ public:
     bool startUp(RenderManager* renderer, ItemManager* items, AssetManager* assets);
     bool shutDown();
 
-    void activate_room(std::string room_name);
+    void activate_room(const std::string& room_id);
     void update(RenderManager* renderer, int dt);
     bool walkable(int x, int y);
     HotSpot* get_hot_spot(int x, int y);

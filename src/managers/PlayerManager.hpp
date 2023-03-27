@@ -4,7 +4,6 @@
 
 #include "LogManager.hpp"
 #include "AssetManager.hpp"
-#include "../components/Animation.hpp"
 #include "../components/Inventory.hpp"
 #include "../math/Vector2D.hpp"
 
@@ -34,6 +33,7 @@ public:
     Player() {};
     Player(AssetManager* assets);
 
+    void update(RenderManager* renderer, int dt);
     void walk(int x, int y);
 
 };
@@ -55,5 +55,6 @@ public:
 
     bool startUp(AssetManager* assets);
     bool shutDown();
+    void update(RenderManager* renderer, int dt);
 
 };

@@ -3,144 +3,132 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <string_view>
 
 #include <yaml-cpp/yaml.h>
+
+#include "../utils/Files.hpp"
+
+namespace fs = std::filesystem;
 
 
 AssetManager::AssetManager(LogManager* log)
     : log_{log} {}
 
-
 bool AssetManager::startUp(RenderManager* renderer)
 {
-    log_->log("Starting Texture Manager.");
-    YAML::Node data = YAML::LoadFile(path_);
-    {   // Suite
-        std::string base_folder { data["suites"][0]["base_folder"].as<std::string>() };
-        YAML::Node background_data { data["suites"][0]["rooms"] };
-        for ( auto& background : background_data )
-        {
-            // Background
-            std::string id           { background["id"].as<std::string>() };
-            std::string texture_file { background["texture"].as<std::string>() };
-            textures_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(base_folder + texture_file, renderer));
-            // Background texture must be fitted to screen
-            Texture* texture = &textures_.at(id);
-            texture->match_src_dimension();
-            renderer->scale_full_h(texture);                                // Fit to screen height.
-            int x { (renderer->get_screen_width() - texture->w()) / 2 };    // Set default position.
-            texture->set_position(x, 0);
-            texture->set_z_index(0); //set z_index to 0, which is the layer reserved for Room background
-            // Bitmap and its texture
-            std::string bitmap_id { id + "_bitmap" };
-            std::string bitmap_file { background["map"].as<std::string>() };
-            SDL_Surface* surface = renderer->load_bitmap(base_folder + bitmap_file);
-            bitmaps_.insert(std::make_pair(id, surface));
-            textures_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(bitmap_id),
-                    std::forward_as_tuple(renderer->texture_from_surface(surface), 1, 2));
-            textures_.at(bitmap_id).src_rect(texture->src_rect());
-            textures_.at(bitmap_id).dest_rect(texture->dest_rect());
-            textures_.at(bitmap_id).scale(texture->scale());
-        }
-        // Load Rooms' Animations
-        YAML::Node animations { data["suites"][0]["animations"] };
-        for ( auto& animation : animations )
-        {
-            std::string id           { animation["id"].as<std::string>() };
-            // Create Texture
-            std::string texture_file { animation["texture"].as<std::string>() };
-            textures_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(base_folder + texture_file, renderer));
-            // Create Animation from just created texture
-            animations_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(&textures_.at(id), animation["frames"].as<std::vector<std::vector<int>>>())
-                    );
-        }
+    log_->log("Starting Asset Manager.");
+
+    // Loop all the files in "res" folder and sort their paths into their respective stacks.
+    
+    std::queue<fs::directory_entry> png_paths;
+    std::queue<fs::directory_entry> bmp_paths;
+    std::queue<fs::directory_entry> frames_paths;
+    std::queue<fs::directory_entry> sprites_paths;
+
+    for (auto const& entry : std::filesystem::recursive_directory_iterator{path_})
+    {
+        fs::path name { fs::path(entry).filename()  };
+        fs::path ext  { fs::path(entry).extension() };
+             if ( ext == ".png" )                                      png_paths.push(entry);
+        else if ( ext == ".bmp" )                                      bmp_paths.push(entry);
+        else if ( ext == ".yaml" && is_animation_meta(name.string()) ) frames_paths.push(entry);
+        else if ( ext == ".yaml" && is_item_meta(name.string()) )      items_meta_.push(entry);
+        else if ( ext == ".yaml" && is_room_meta(name.string()) )      rooms_meta_.push(entry);
+        else if ( ext == ".yaml" && is_sprites_meta(name.string()) )   sprites_paths.push(entry);
     }
-    {   // Items
-        std::string base_folder { data["items"]["base_folder"].as<std::string>() };
-        YAML::Node item_data { data["items"]["textures"] };
-        for ( auto& item : item_data )
-        {
-            std::string id           { item["id"].as<std::string>() };
-            std::string texture_file { item["texture"].as<std::string>() };
-            textures_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(base_folder + texture_file, renderer));
-        }
+
+    /*
+        Process all the files in all the queues.
+        Exceptions:
+            items_meta_ queue will be handled by ItemManager.
+            rooms_meta_ queue will be handled by RoomManager.
+    */
+    while ( !png_paths.empty() )
+    {
+        fs::directory_entry entry { png_paths.front() };
+        std::string id { base_name(entry) };
+        textures_.insert(std::make_pair(id, renderer->load_sdl_texture(entry.path().string())));
+        log_->log("Loaded texture ", entry.path().string());
+        png_paths.pop();
     }
-    {   // Player
-        std::string base_folder { data["player"]["base_folder"].as<std::string>() };
-        YAML::Node animations { data["player"]["animations"] };
-        for ( auto& animation : animations )
-        {
-            std::string id           { animation["id"].as<std::string>() };
-            // Create Texture
-            std::string texture_file { animation["texture"].as<std::string>() };
-            textures_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(base_folder + texture_file, renderer));
-            // Create Animation from just created texture
-            animations_.emplace(std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(&textures_.at(id), animation["frames"].as<std::vector<std::vector<int>>>())
-                    );
-        }
-        // // Create Sprites
-        YAML::Node sprites { data["player"]["sprites"] };
-        std::string sprite_id { sprites["id"].as<std::string>() };
-        std::unordered_map<std::string, Animation*>  sprite_animations;
-        for ( auto& animation_id : sprites["animations"].as<std::vector<std::string>>() )
-        {
-            sprite_animations.emplace(std::piecewise_construct,
-                std::forward_as_tuple(animation_id),
-                std::forward_as_tuple(&animations_.at(animation_id))
-            );
-        }
-        sprites_.emplace(std::piecewise_construct,
-            std::forward_as_tuple(sprite_id),
-            std::forward_as_tuple(sprite_animations)
-        );
+
+    while ( !bmp_paths.empty() )
+    {
+        fs::directory_entry entry { bmp_paths.front() };
+        std::string id { base_name(entry) };
+        bitmaps_.insert(std::make_pair(id, renderer->load_bitmap(entry.path().string())));
+        log_->log("Loaded bitmap ", entry.path().string());
+        bmp_paths.pop();
     }
+
+    while ( !frames_paths.empty() )
+    {
+        fs::directory_entry entry { frames_paths.front() };
+        std::string id { base_name(entry) };
+        YAML::Node data = YAML::LoadFile(entry.path().string());
+        std::vector<std::vector<int>> frames_meta { data["frames"].as<std::vector<std::vector<int>>>() };
+        std::vector<Frame> frames;
+        for ( auto& frame_meta : frames_meta ) frames.emplace_back(frame_meta);
+        frames_.insert(std::make_pair(id, frames));
+        log_->log("Loaded frames ", entry.path().string());
+        frames_paths.pop();
+    }
+
+    while ( !sprites_paths.empty() )
+    {
+        fs::directory_entry entry { sprites_paths.front() };
+        std::string id { base_name(entry) };
+        YAML::Node data = YAML::LoadFile(entry.path().string());
+        for (auto& sprite : data)
+        {
+            std::string sprite_id { sprite["id"].as<std::string>() };
+            sprites_.emplace(std::piecewise_construct,
+                std::forward_as_tuple(sprite_id),
+                std::forward_as_tuple());
+            for ( auto& texture : sprite["textures"] ) 
+            {
+                std::string texture_id { texture.as<std::string>() };
+                sprites_.at(sprite_id).add_animation(texture_id, this->texture(texture_id), this->frames(texture_id));
+            }
+            // Set up the values of src_rect_, dest_rect_ and current_animation_
+            sprites_.at(sprite_id).animation(sprite["textures"][0].as<std::string>());
+        }
+        log_->log("Created Sprites ", entry.path().string());
+        sprites_paths.pop();
+    }
+
     log_->log("Assets Loaded.");
     return true;
 }
 
-
-Texture* AssetManager::get_texture(std::string id)
+SDL_Texture* AssetManager::texture(std::string id)
 {
-    if ( textures_.find(id) != textures_.end() )
-    {
-        return &textures_.at(id);
-    }
+    if ( textures_.find(id) != textures_.end() ) return textures_.at(id);
     return nullptr;
 }
-SDL_Surface* AssetManager::get_bitmap(std::string id)
+std::vector<Frame>* AssetManager::frames(std::string id)
 {
-    if ( bitmaps_.find(id) != bitmaps_.end() )
-    {
-        return bitmaps_.at(id);
-    }
+    if ( frames_.find(id) != frames_.end() ) return &frames_.at(id);
     return nullptr;
 }
-Animation* AssetManager::get_animation(std::string id)
+SDL_Surface* AssetManager::bitmap(std::string id)
 {
-    if ( animations_.find(id) != animations_.end() )
-    {
-        return &animations_.at(id);
-    }
+    if ( bitmaps_.find(id) != bitmaps_.end() ) return bitmaps_.at(id);
+    return nullptr; 
+}
+Sprite* AssetManager::sprite(std::string id)
+{
+    if ( sprites_.find(id) != sprites_.end() ) return &sprites_.at(id);
+    // else if no such id exists
+    log_->error("Requested missing sprite id \"", id, "\"");
     return nullptr;
 }
-Sprite* AssetManager::get_sprite(std::string id)
+std::queue<fs::directory_entry> AssetManager::items_meta()
 {
-    if ( sprites_.find(id) != sprites_.end() )
-    {
-        return &sprites_.at(id);
-    }
-    return nullptr;
+    return items_meta_;
+}
+std::queue<fs::directory_entry> AssetManager::rooms_meta()
+{
+    return rooms_meta_;
 }

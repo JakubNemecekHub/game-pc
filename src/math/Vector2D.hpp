@@ -2,6 +2,11 @@
 
 #include <iostream>
 
+#include <SDL2/SDL.h>
+
+#include "Visual.hpp"
+
+
 class Vector2D
 {
 public:
@@ -40,4 +45,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Vector2D& vec);
     // Constructor
     Vector2D(float x = 0.0f, float y = 0.0f);
+
+    // Rendering methods
+    Visual visual;
+    void render(SDL_Renderer* renderer);
 };

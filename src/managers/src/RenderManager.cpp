@@ -89,32 +89,46 @@ SDL_Texture* RenderManager::texture_from_surface(SDL_Surface* surface)
 /************************************************************************
     Render stuff.
 *************************************************************************/
-/*
-    Should be able to register various types of Textures, because I need to be able to handle render order.
-    e.g.
-        room background
-        room animation
-        items
-        player
-*/
-
 
 /*
-    Register a RenderableObject based on its z_index.
+    Register a Sprite to be rendered.
 */
-bool RenderManager::register_object(RenderableObject* r)
+bool RenderManager::submit(Sprite* sprite)
 {
-    if ( r->z_index() < MAX_LAYERS_ )
+    int z_index { sprite->z_index() };
+    if ( z_index >= MAX_LAYERS_ )
     {
-        render_objects_.at(r->z_index()).push(r);
-        return true;
+        log_->error("Z-index ", z_index, " out of scope (max ", MAX_LAYERS_, ")");
+        return false;
     }
-    return false;
-    // else
-    // {
-    //     LogManager::GetInstance()->log_error("Z-index out of scope. May index is ", MAX_LAYERS_,
-    //                                          ", was given ", r->z_index());
-    // }
+    render_queues_.at(z_index).push(sprite);
+    return true; // TO DO: make this make sense!
+}
+/*
+    Register a Polygon to be rendered.
+*/
+bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
+{
+    // surface_queue_.push(surface);
+    // surface_destination_queue_.push(dest_rect);
+    surface_queue_.push(std::make_tuple(surface, dest_rect));
+    return true;
+}
+/*
+    Register a Polygon to be rendered.
+*/
+bool RenderManager::submit(Polygon* polygon)
+{
+    polygon_queue_.push(polygon);
+    return true;
+}
+/*
+    Register a Vector2D to be rendered.
+*/
+bool RenderManager::submit(Vector2D* vector2d)
+{
+    vector_queue_.push(vector2d);
+    return true;
 }
 
 
@@ -132,16 +146,61 @@ bool RenderManager::register_object(RenderableObject* r)
 void RenderManager::render()
 {
     SDL_RenderClear(renderer_);
-    RenderableObject* object {nullptr};
-    for ( std::array<std::queue<RenderableObject*>, MAX_LAYERS_>::size_type i = 0; i < render_objects_.size(); i++ )
+    // Render sprites
+    Sprite* sprite { nullptr };
+    for ( std::array<std::queue<Sprite*>, MAX_LAYERS_>::size_type i = 0; i < render_queues_.size(); i++ )
     {
-        while ( !render_objects_[i].empty() )
+        while ( !render_queues_[i].empty() )
         {
-            object = render_objects_[i].front();
-            render_objects_[i].pop();
-            object->render(renderer_);
+            sprite = render_queues_[i].front();
+            sprite->render(renderer_);
+            render_queues_[i].pop();
         }
     }
+    // Render polygons on top of all textures.
+    Polygon* polygon { nullptr };
+    while ( !polygon_queue_.empty() )
+    {
+        polygon = polygon_queue_.front();
+        polygon->render(renderer_);
+        polygon_queue_.pop();
+    }
+    // Render vectors on top of all textures.
+    Vector2D* vector2d { nullptr };
+    while ( !vector_queue_.empty() )
+    {
+        vector2d = vector_queue_.front();
+        vector2d->render(renderer_);
+        vector_queue_.pop();
+    }
+    // Render bitmaps on top of all textures.
+    SDL_Surface* window_surface { SDL_GetWindowSurface(window_) };
+    // TO DO: catch errors with window's surface
+    bool surface_render_flag { false };
+    // First clear the window's surface. But only if we will draw something to it.
+    if ( !surface_queue_.empty() )
+    {
+        surface_render_flag = true;
+        SDL_LockSurface(window_surface);
+        SDL_memset(window_surface->pixels, 0, window_surface->h * window_surface->pitch);
+        SDL_UnlockSurface(window_surface);
+        uint32_t keyColor = SDL_MapRGB(window_surface->format, 255, 255, 255);
+        SDL_SetColorKey(window_surface, SDL_TRUE, keyColor);
+    }
+    // Then copy all submitted surfaces onto the screen
+    SDL_Surface* original_surface { nullptr };
+    SDL_Rect* dest_rect;
+    while ( !surface_queue_.empty() )
+    {
+        std::tuple<SDL_Surface*, SDL_Rect*> surface_info { surface_queue_.front() };
+        original_surface = std::get<0>(surface_info);
+        dest_rect = std::get<1>(surface_info);
+        SDL_Surface* converted_surface = SDL_ConvertSurface(original_surface, window_surface->format, 0);
+        SDL_BlitScaled(converted_surface, NULL, window_surface, dest_rect);
+        SDL_FreeSurface(converted_surface);
+        surface_queue_.pop();
+    }
+    if ( surface_render_flag) SDL_UpdateWindowSurface(window_);
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderPresent(renderer_);
 }
@@ -155,24 +214,25 @@ void RenderManager::render()
     Sets scale of the given texture so that is fills the whole screen height.
     Used for loading room textures.
 */
-void RenderManager::scale_full_h(Texture* texture)
+void RenderManager::scale_full_h(Sprite* sprite)
 {
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer_, &w, &h);
     // Scale.
-    float scale = static_cast<float>(h) / texture->h();  // Use static_cast to really get a float.
-    texture->scale(scale);
+    float scale = static_cast<float>(h) / sprite->h();  // Use static_cast to really get a float.
+    sprite->scale(scale);
 }
-// void RenderManager::scale_full_h(const std::unique_ptr<Texture>& texture)
-// {
-//     // Get screen dimensions.
-//     int w, h;
-//     SDL_GetRendererOutputSize(renderer_, &w, &h);
-//     // Scale.
-//     float scale = static_cast<float>(h) / texture->h();  // Use static_cast to really get a float.
-//     texture->scale(scale);
-// }
+
+void RenderManager::center_horizontally(Sprite* sprite)
+{
+    // Get screen dimensions.
+    int w, h;
+    SDL_GetRendererOutputSize(renderer_, &w, &h);
+    int sprite_w { sprite->w() };
+    int x = 0.5f * (w - sprite_w);
+    sprite->x(x);
+}
 
 // Returns current screen width.
 int RenderManager::get_screen_width()

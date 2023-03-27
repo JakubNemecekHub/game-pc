@@ -14,7 +14,9 @@ Game::Game()
     // Load in key bindings
     YAML::Node bindings = ini["control"];
     m_Controls = Controls{bindings["Inventory"].as<int>(),
-                          bindings["Polygon"].as<int>(),
+                          bindings["Walk_Polygon"].as<int>(),
+                          bindings["Item_Polygon"].as<int>(),
+                          bindings["Item_Vector"].as<int>(),
                           bindings["Hots_pots"].as<int>()
                          };
 
@@ -48,7 +50,7 @@ void Game::handle_click_(int x, int y, bool right_click)
         if ( right_click )  // Look.
         {
             std::string observation { item->get_observation() };
-            m_TextManager.register_text(observation, item->texture()->x(), item->texture()->y(),
+            m_TextManager.register_text(observation, item->sprite()->x(), item->sprite()->y(),
                                         GREEN);
         }
         else                // Try to pick up.
@@ -57,12 +59,12 @@ void Game::handle_click_(int x, int y, bool right_click)
             {
                 m_PlayerManager.inventory.add(item);
                 m_RoomManager.remove_item(item->id());
-                m_TextManager.register_text(item->get_pick_observation(), item->texture()->x(), item->texture()->y(),
+                m_TextManager.register_text(item->get_pick_observation(), item->sprite()->x(), item->sprite()->y(),
                                             PURPLE);
             }
             else
             {
-                m_TextManager.register_text("My Inventory is full.", item->texture()->x(), item->texture()->x(),
+                m_TextManager.register_text("My Inventory is full.", item->sprite()->x(), item->sprite()->x(),
                                             BEIGE);
             }
         }
@@ -140,10 +142,20 @@ void Game::handle_keyboard_(SDL_Keycode key)
     {
         m_RoomManager.handle_keyboard("bitmap");
     }
-    // Toggle polygon rendering
-    else if ( key == m_Controls.KEY_POLYGON )
+    // Toggle walk area's polygon rendering
+    else if ( key == m_Controls.KEY_WALK_POLYGON )
     {
-        m_RoomManager.handle_keyboard("polygon");
+        m_RoomManager.handle_keyboard("walk_polygon");
+    }
+    // Toggle items' click area's polygon rendering
+    else if ( key == m_Controls.KEY_ITEM_POLYGON )
+    {
+        m_RoomManager.handle_keyboard("item_polygon");
+    }
+    // Toggle items' position vector rendering
+    else if ( key == m_Controls.KEY_ITEM_VECTOR )
+    {
+        m_RoomManager.handle_keyboard("item_vector");
     }
     // Show Inventory
     else if ( key == m_Controls.KEY_INVENTORY )
@@ -184,6 +196,7 @@ void Game::update(int dt)
     }
     // 2) Update.
     m_RoomManager.update(&m_RenderManager, dt);
+    m_PlayerManager.update(&m_RenderManager, dt);
     m_TextManager.update(dt);
     // 3) Render.
     m_RenderManager.render();
