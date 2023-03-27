@@ -5,12 +5,21 @@
 
 Game::Game()
 {
-    YAML::Node ini = YAML::LoadFile("D:/Prog/game_project/game/ini.yaml");
-    // TO DO: error opening file
-
+    YAML::Node ini;
+    try
+    {
+        ini = YAML::LoadFile("D:/Prog/game_project/game/ini.yaml");
+    }
+    catch(const YAML::BadFile& e)
+    {
+        std::cerr << "Cannot initialize game. " << e.what() << "\n";
+        exit(EXIT_FAILURE);
+    }
+    
     // Start Log Manager as soon as possible
     m_LogManager = LogManager(ini["log"]);
     m_LogManager.startUp();
+
 
     // Start all other Managers
     m_WindowManager = WindowManager(&m_LogManager, ini["window"]);
