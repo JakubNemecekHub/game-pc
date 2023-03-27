@@ -46,7 +46,7 @@ void Game::clicked_item_(Item* item, mouse_click mouse_click_data)
     if ( right_click )  // Look.
     {
         std::string observation { item->get_observation() };
-        m_TextManager.register_text(observation, x, y, GREEN);
+        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
     }
     else                // Try to pick up. TO DO: move to Inventory
     {
@@ -54,11 +54,11 @@ void Game::clicked_item_(Item* item, mouse_click mouse_click_data)
         {
             m_PlayerManager.inventory.add(item);
             m_RoomManager.remove_item(item->id());
-            m_TextManager.register_text(item->get_pick_observation(), x, y, PURPLE);
+            m_TextManager.register_text(item->get_pick_observation(), x, y, COLOR::PURPLE);
         }
         else
         {
-            m_TextManager.register_text("My Inventory is full.", x, y, BEIGE);
+            m_TextManager.register_text("My Inventory is full.", x, y, COLOR::BEIGE);
         }
     }
 }
@@ -69,7 +69,7 @@ void Game::clicked_door_(Door* door, mouse_click mouse_click_data)
     if ( right_click )  // Look
     {
         std::string observation { door->get_observation() };
-        m_TextManager.register_text(observation, x, y, GREEN);
+        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
     }
     else
     {
@@ -80,12 +80,12 @@ void Game::clicked_door_(Door* door, mouse_click mouse_click_data)
             {
                 door->unlock();
                 m_PlayerManager.inventory.remove(key_id);
-                m_TextManager.register_text("Unlocked.", x, y, PURPLE);
+                m_TextManager.register_text("Unlocked.", x, y, COLOR::PURPLE);
             }
             else
             {
                 std::string observation { door->get_locked_observation() };
-                m_TextManager.register_text(observation, x, y, GREEN);
+                m_TextManager.register_text(observation, x, y, COLOR::GREEN);
             }
         }
         else
@@ -103,7 +103,7 @@ void Game::clicked_hot_spot_(HotSpot* hot_spot, mouse_click mouse_click_data)
     if ( right_click )
     {
         observation = hot_spot->get_observation();
-        m_TextManager.register_text(observation, x, y, BEIGE);
+        m_TextManager.register_text(observation, x, y, COLOR::BEIGE);
     }
     else
     {
