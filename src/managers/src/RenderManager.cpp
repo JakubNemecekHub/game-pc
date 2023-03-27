@@ -174,19 +174,31 @@ void RenderManager::render()
         vector_queue_.pop();
     }
     // Render bitmaps on top of all textures.
+    if ( !surface_queue_.empty() ) render_surface();
+    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderPresent(renderer_);
+}
+
+/************************************************************************
+    Helper Render functions.
+*************************************************************************/
+
+/*
+    Render all bitmap surfaces from the surface_queue_.
+*/
+void RenderManager::render_surface()
+{
+    // Get window surface. We will blit all surfaces onto here.
     SDL_Surface* window_surface { SDL_GetWindowSurface(window_) };
-    // TO DO: catch errors with window's surface
-    bool surface_render_flag { false };
-    // First clear the window's surface. But only if we will draw something to it.
-    if ( !surface_queue_.empty() )
+    if ( window_surface == NULL )
     {
-        surface_render_flag = true;
-        SDL_LockSurface(window_surface);
-        SDL_memset(window_surface->pixels, 0, window_surface->h * window_surface->pitch);
-        SDL_UnlockSurface(window_surface);
-        uint32_t keyColor = SDL_MapRGB(window_surface->format, 255, 255, 255);
-        SDL_SetColorKey(window_surface, SDL_TRUE, keyColor);
+        log_->error("Cannot create window surface", SDL_GetError());
+        return;
     }
+    // Clear the window's surface to all black.
+    SDL_LockSurface(window_surface);
+    SDL_memset(window_surface->pixels, 0, window_surface->h * window_surface->pitch);
+    SDL_UnlockSurface(window_surface);
     // Then copy all submitted surfaces onto the screen
     SDL_Surface* original_surface { nullptr };
     SDL_Rect* dest_rect;
@@ -200,9 +212,8 @@ void RenderManager::render()
         SDL_FreeSurface(converted_surface);
         surface_queue_.pop();
     }
-    if ( surface_render_flag) SDL_UpdateWindowSurface(window_);
-    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderPresent(renderer_);
+    // finally update the window surface with all the bitmaps blitted.
+    SDL_UpdateWindowSurface(window_);
 }
 
 
