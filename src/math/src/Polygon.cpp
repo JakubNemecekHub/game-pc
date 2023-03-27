@@ -58,7 +58,7 @@ void Polygon::add_vertices(std::vector<std::vector<int>> vertices)
 
 
 // Return number of vertices.
-unsigned int Polygon::size()
+unsigned int Polygon::size() const
 {
     return static_cast<unsigned int>(vertices.size());
 }
@@ -135,7 +135,7 @@ void Polygon::move(int dx, int dy)
 /*
     Render scaled and moved version of polygon.
 */
-void Polygon::render(SDL_Renderer* renderer)
+void Polygon::render(SDL_Renderer* renderer) const
 {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
     size_t i, j;

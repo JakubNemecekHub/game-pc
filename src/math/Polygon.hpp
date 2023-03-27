@@ -25,7 +25,7 @@ public:
 
     // Methods
 
-    unsigned int size();
+    unsigned int size() const;
     bool empty();
     void add_vertex(Vector2D vertex);
     void add_vertex(int x, int y);
@@ -38,6 +38,6 @@ public:
 
     // Rendering methods
     Visual visual;
-    void render(SDL_Renderer* renderer);
+    void render(SDL_Renderer* renderer) const;
     
 };

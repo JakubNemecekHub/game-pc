@@ -109,8 +109,6 @@ bool RenderManager::submit(Sprite* sprite)
 */
 bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
 {
-    // surface_queue_.push(surface);
-    // surface_destination_queue_.push(dest_rect);
     surface_queue_.push(std::make_tuple(surface, dest_rect));
     return true;
 }
@@ -119,7 +117,7 @@ bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
 */
 bool RenderManager::submit(Polygon* polygon)
 {
-    polygon_queue_.push(polygon);
+    math_queue_.push(MyType::Object(polygon));
     return true;
 }
 /*
@@ -127,7 +125,7 @@ bool RenderManager::submit(Polygon* polygon)
 */
 bool RenderManager::submit(Vector2D* vector2d)
 {
-    vector_queue_.push(vector2d);
+    math_queue_.push(MyType::Object(vector2d));
     return true;
 }
 
@@ -182,21 +180,11 @@ void RenderManager::render_sprite()
 */
 void RenderManager::render_math()
 {
-    // Render polygons.
-    Polygon* polygon { nullptr };
-    while ( !polygon_queue_.empty() )
+    while ( !math_queue_.empty() )
     {
-        polygon = polygon_queue_.front();
-        polygon->render(renderer_);
-        polygon_queue_.pop();
-    }
-    // Render vectors.
-    Vector2D* vector2d { nullptr };
-    while ( !vector_queue_.empty() )
-    {
-        vector2d = vector_queue_.front();
-        vector2d->render(renderer_);
-        vector_queue_.pop();
+        MyType::Object object { math_queue_.front() };
+        object.render(renderer_);
+        math_queue_.pop();
     }
 }
 

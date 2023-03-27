@@ -5,6 +5,7 @@
 #include <array>
 #include <queue>
 #include <tuple>
+#include <memory>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -14,7 +15,55 @@
 #include "../math/Polygon.hpp"
 #include "../math/Vector2D.hpp"
 
+
 class Sprite;
+
+namespace MyType
+{
+
+/*
+    Type erasure for Polygon and Vector2D.
+    According to:
+        https://www.modernescpp.com/index.php/type-erasure
+        https://davekilian.com/cpp-type-erasure.html
+    Could be used for more classes? 
+*/
+class Object
+{
+public:
+ 
+    // Define the abstract class (or interface) of the objects this wrapper can hold
+    struct Concept
+    {
+        virtual ~Concept() {}
+        // Pure virtual functions
+        virtual void render(SDL_Renderer* renderer) const = 0;
+    };
+    
+    // Methods delegating call to the object itself
+    void render(SDL_Renderer* renderer) const { object->render(renderer); }
+
+    // What is this?
+    template<typename T>
+    struct Model : Concept
+    {
+        Model(T* t) // cont T& t
+            : object{t} {}
+        void render(SDL_Renderer* renderer) const override { object->render(renderer); }
+    private:
+        T* object;
+    };
+    
+    std::shared_ptr<Concept> object; // This holds the object itself
+
+    // Templated constructor
+    template<typename T>
+    Object(T* obj)
+        : object{std::make_shared<Model<T>>(obj)} {}
+};
+
+} // namespace
+
 
 
 class RenderManager
@@ -27,8 +76,7 @@ private:
     static const int        MAX_LAYERS_ {4};
     std::array<std::queue<Sprite*>, MAX_LAYERS_>    render_queues_;
     std::queue<std::tuple<SDL_Surface*, SDL_Rect*>> surface_queue_;
-    std::queue<Polygon*>                            polygon_queue_;
-    std::queue<Vector2D*>                           vector_queue_;
+    std::queue<MyType::Object>                      math_queue_;
 
     void render_sprite();
     void render_math();

@@ -157,7 +157,7 @@ std::ostream& operator<<(std::ostream& os, const Vector2D& vec)
 /*
     Render scaled and moved version of vector.
 */
-void Vector2D::render(SDL_Renderer* renderer)
+void Vector2D::render(SDL_Renderer* renderer) const
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, SDL_ALPHA_OPAQUE);
     int x2 { static_cast<int>(x * visual.scale + visual.dx) };
