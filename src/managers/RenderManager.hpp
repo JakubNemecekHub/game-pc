@@ -22,11 +22,10 @@ namespace MyType
 {
 
 /*
-    Type erasure for Polygon and Vector2D.
+    Type erasure for Polygon and Vector2D, and also Srites.
     According to:
         https://www.modernescpp.com/index.php/type-erasure
         https://davekilian.com/cpp-type-erasure.html
-    Could be used for more classes? 
 */
 class Object
 {
@@ -74,12 +73,10 @@ private:
     SDL_Window*             window_;
     static SDL_Renderer*    renderer_;
     static const int        MAX_LAYERS_ {4};
-    std::array<std::queue<Sprite*>, MAX_LAYERS_>    render_queues_;
-    std::queue<std::tuple<SDL_Surface*, SDL_Rect*>> surface_queue_;
-    std::queue<MyType::Object>                      math_queue_;
+    std::array<std::queue<MyType::Object>, MAX_LAYERS_> render_queues_;
+    std::queue<std::tuple<SDL_Surface*, SDL_Rect*>>     surface_queue_;
 
     void render_sprite();
-    void render_math();
     void render_surface();
 
 public:

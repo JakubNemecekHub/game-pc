@@ -101,7 +101,7 @@ bool RenderManager::submit(Sprite* sprite)
         log_->error("Z-index ", z_index, " out of scope (max ", MAX_LAYERS_, ")");
         return false;
     }
-    render_queues_.at(z_index).push(sprite);
+    render_queues_.at(z_index).push(MyType::Object(sprite));
     return true; // TO DO: make this make sense!
 }
 /*
@@ -117,7 +117,8 @@ bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
 */
 bool RenderManager::submit(Polygon* polygon)
 {
-    math_queue_.push(MyType::Object(polygon));
+    // math_queue_.push(MyType::Object(polygon));
+    render_queues_.at(4).push(MyType::Object(polygon));
     return true;
 }
 /*
@@ -125,7 +126,8 @@ bool RenderManager::submit(Polygon* polygon)
 */
 bool RenderManager::submit(Vector2D* vector2d)
 {
-    math_queue_.push(MyType::Object(vector2d));
+    // math_queue_.push(MyType::Object(vector2d));
+    render_queues_.at(4).push(MyType::Object(vector2d));
     return true;
 }
 
@@ -145,8 +147,7 @@ void RenderManager::render()
 {
     SDL_RenderClear(renderer_);
 
-    render_sprite();                                    // Render sprites
-    render_math();                                      // Render Polygons and Vectors on top of all textures.
+    render_sprite();                                    // Render submitted renderable sprites objects 
     if ( !surface_queue_.empty() ) render_surface();    // Render bitmaps on top of everything.
 
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -162,29 +163,14 @@ void RenderManager::render()
 */
 void RenderManager::render_sprite()
 {
-    Sprite* sprite { nullptr };
     for ( std::array<std::queue<Sprite*>, MAX_LAYERS_>::size_type i = 0; i < render_queues_.size(); i++ )
     {
         while ( !render_queues_[i].empty() )
         {
-            sprite = render_queues_[i].front();
-            sprite->render(renderer_);
+            MyType::Object object { render_queues_[i].front() };
+            object.render(renderer_);
             render_queues_[i].pop();
         }
-    }
-}
-
-
-/*
-    Render all math objects in polygon_queue_ and vector_queue_
-*/
-void RenderManager::render_math()
-{
-    while ( !math_queue_.empty() )
-    {
-        MyType::Object object { math_queue_.front() };
-        object.render(renderer_);
-        math_queue_.pop();
     }
 }
 
