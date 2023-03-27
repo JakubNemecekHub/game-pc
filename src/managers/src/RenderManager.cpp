@@ -117,8 +117,7 @@ bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
 */
 bool RenderManager::submit(Polygon* polygon)
 {
-    // math_queue_.push(MyType::Object(polygon));
-    render_queues_.at(4).push(MyType::Object(polygon));
+    render_queues_.at(3).push(MyType::Object(polygon));
     return true;
 }
 /*
@@ -126,8 +125,7 @@ bool RenderManager::submit(Polygon* polygon)
 */
 bool RenderManager::submit(Vector2D* vector2d)
 {
-    // math_queue_.push(MyType::Object(vector2d));
-    render_queues_.at(4).push(MyType::Object(vector2d));
+    render_queues_.at(3).push(MyType::Object(vector2d));
     return true;
 }
 
