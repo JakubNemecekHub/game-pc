@@ -15,16 +15,6 @@
 #include "src/managers/ControlManager.hpp"
 
 
-// struct Controls
-// {
-//     SDL_Keycode KEY_INVENTORY;
-//     SDL_Keycode KEY_WALK_POLYGON;
-//     SDL_Keycode KEY_ITEM_POLYGON;
-//     SDL_Keycode KEY_ITEM_VECTOR;
-//     SDL_Keycode KEY_HOT_SPOTS;
-// };
-
-
 class Game {
 private:
 
@@ -39,10 +29,13 @@ private:
     ControlManager   m_ControlManager;
 
     SDL_Event event_;
-    // Controls m_Controls;
 
     void handle_click_(mouse_click mouse_click_data);
-    // void handle_keyboard_(SDL_Keycode key);
+
+    // Game logic
+    void clicked_item_(Item* item, mouse_click mouse_click_data);
+    void clicked_door_(Door* door, mouse_click mouse_click_data);
+    void clicked_hot_spot_(HotSpot* hot_spot, mouse_click mouse_click_data);
 
 public:
 

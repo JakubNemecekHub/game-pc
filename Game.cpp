@@ -34,6 +34,83 @@ Game::Game()
     m_LogManager.log("All Managers started.");
 }
 
+inline auto destructure(mouse_click data)
+{
+    struct result { int x; int y; bool right_click; };
+    return result{std::get<1>(data), std::get<2>(data), std::get<3>(data)};
+}
+
+void Game::clicked_item_(Item* item, mouse_click mouse_click_data)
+{
+    auto [x, y, right_click] = destructure(mouse_click_data);
+    if ( right_click )  // Look.
+    {
+        std::string observation { item->get_observation() };
+        m_TextManager.register_text(observation, x, y, GREEN);
+    }
+    else                // Try to pick up. TO DO: move to Inventory
+    {
+        if ( m_PlayerManager.inventory.has_space() )
+        {
+            m_PlayerManager.inventory.add(item);
+            m_RoomManager.remove_item(item->id());
+            m_TextManager.register_text(item->get_pick_observation(), x, y, PURPLE);
+        }
+        else
+        {
+            m_TextManager.register_text("My Inventory is full.", x, y, BEIGE);
+        }
+    }
+}
+
+void Game::clicked_door_(Door* door, mouse_click mouse_click_data)
+{
+    auto [x, y, right_click] = destructure(mouse_click_data);
+    if ( right_click )  // Look
+    {
+        std::string observation { door->get_observation() };
+        m_TextManager.register_text(observation, x, y, GREEN);
+    }
+    else
+    {
+        if ( door->locked() )
+        {
+            std::string key_id { door->key_id() };
+            if ( m_PlayerManager.inventory.has_item(key_id) )
+            {
+                door->unlock();
+                m_PlayerManager.inventory.remove(key_id);
+                m_TextManager.register_text("Unlocked.", x, y, PURPLE);
+            }
+            else
+            {
+                std::string observation { door->get_locked_observation() };
+                m_TextManager.register_text(observation, x, y, GREEN);
+            }
+        }
+        else
+        {
+            m_TextManager.clean();
+            m_RoomManager.activate_room(door->target());
+        }
+    }
+}
+
+void Game::clicked_hot_spot_(HotSpot* hot_spot, mouse_click mouse_click_data)
+{
+    auto [x, y, right_click] = destructure(mouse_click_data);
+    std::string observation;
+    if ( right_click )
+    {
+        observation = hot_spot->get_observation();
+        m_TextManager.register_text(observation, x, y, BEIGE);
+    }
+    else
+    {
+        observation = hot_spot->get_use_observation();
+        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
+    }
+}
 
 void Game::handle_click_(mouse_click mouse_click_data)
 {
@@ -41,91 +118,12 @@ void Game::handle_click_(mouse_click mouse_click_data)
     int x { std::get<1>(mouse_click_data) };
     int y { std::get<2>(mouse_click_data) };
     bool right_click  { std::get<3>(mouse_click_data) };
-    // Clicked on Item?
-    Item* item { m_RoomManager.get_item(x, y) };
-    if ( item )
-    {
-        // Yes, clicked on Item.
-        if ( right_click )  // Look.
-        {
-            std::string observation { item->get_observation() };
-            m_TextManager.register_text(observation, item->sprite()->x(), item->sprite()->y(),
-                                        GREEN);
-        }
-        else                // Try to pick up.
-        {
-            if ( m_PlayerManager.inventory.has_space() )
-            {
-                m_PlayerManager.inventory.add(item);
-                m_RoomManager.remove_item(item->id());
-                m_TextManager.register_text(item->get_pick_observation(), item->sprite()->x(), item->sprite()->y(),
-                                            PURPLE);
-            }
-            else
-            {
-                m_TextManager.register_text("My Inventory is full.", item->sprite()->x(), item->sprite()->x(),
-                                            BEIGE);
-            }
-        }
-    }
-    else
-    {
-        // No, did't click on Item.
-        // Clicked on Door?
-        Door* door { m_RoomManager.get_door(x, y) };
-        if ( door )
-        {
-            if ( right_click )
-            {
-                // Look
-                std::string observation { door->get_observation() };
-                m_TextManager.register_text(observation, x, y, GREEN);
-            }
-            else
-            {
-                if ( door->locked() )
-                {
-                    std::string key_id { door->key_id() };
-                    if ( m_PlayerManager.inventory.has_item(key_id) )
-                    {
-                        door->unlock();
-                        m_PlayerManager.inventory.remove(key_id);
-                        m_TextManager.register_text("Unlocked.", x, y, PURPLE);
-                    }
-                    else
-                    {
-                        std::string observation { door->get_locked_observation() };
-                        m_TextManager.register_text(observation, x, y, GREEN);
-                    }
-                }
-                else
-                {
-                    m_TextManager.clean();
-                    m_RoomManager.activate_room(door->target());
-                }
-            }
-        }
-        else
-        {
-            // No, didn't clicked door either.
-            // Clicked hot spot?
-            HotSpot* hot_spot { m_RoomManager.get_hot_spot(x, y) };
-            if ( hot_spot )
-            {
-                std::string observation;
-                if ( right_click )
-                {
-                    observation = hot_spot->get_observation();
-                    m_TextManager.register_text(observation, x, y, BEIGE);
-                }
-                else
-                {
-                    observation = hot_spot->get_use_observation();
-                    m_TextManager.register_text(observation, x, y, COLOR::GREEN);
-                }
-            }
-        }
-    }
+    Item*    item     { m_RoomManager.get_item(x, y)     };
+    Door*    door     { m_RoomManager.get_door(x, y)     };
+    HotSpot* hot_spot { m_RoomManager.get_hot_spot(x, y) };
+         if ( item )     clicked_item_(item, mouse_click_data);
+    else if ( door )     clicked_door_(door, mouse_click_data);
+    else if ( hot_spot ) clicked_hot_spot_(hot_spot, mouse_click_data);
 }
 
 

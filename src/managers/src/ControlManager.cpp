@@ -56,14 +56,11 @@ void ControlManager::handle_keyboard(SDL_Event event)
 
 mouse_click ControlManager::handle_mouse(SDL_Event event)
 {
-    if ( event.type == SDL_MOUSEBUTTONUP )
-    {
-        int x, y;
-        SDL_GetMouseState(&x, &y);
-        bool right_click;
-        right_click = ( event.button.button == SDL_BUTTON_RIGHT );
-        // Return mouse click
-        return std::make_tuple(true, x, y, right_click);
-    }
-    return std::make_tuple(false, 0, 0, false);
+    if ( event.type != SDL_MOUSEBUTTONUP ) return std::make_tuple(false, 0, 0, false);
+    
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    bool right_click;
+    right_click = ( event.button.button == SDL_BUTTON_RIGHT );
+    return std::make_tuple(true, x, y, right_click);
 }
