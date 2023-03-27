@@ -31,6 +31,7 @@ private:
     std::queue<Vector2D*>                           vector_queue_;
 
     void render_surface();
+    void render_math();
 
 public:
 

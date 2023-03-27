@@ -157,24 +157,10 @@ void RenderManager::render()
             render_queues_[i].pop();
         }
     }
-    // Render polygons on top of all textures.
-    Polygon* polygon { nullptr };
-    while ( !polygon_queue_.empty() )
-    {
-        polygon = polygon_queue_.front();
-        polygon->render(renderer_);
-        polygon_queue_.pop();
-    }
-    // Render vectors on top of all textures.
-    Vector2D* vector2d { nullptr };
-    while ( !vector_queue_.empty() )
-    {
-        vector2d = vector_queue_.front();
-        vector2d->render(renderer_);
-        vector_queue_.pop();
-    }
-    // Render bitmaps on top of all textures.
-    if ( !surface_queue_.empty() ) render_surface();
+    
+    render_math(); // Render Polygons and Vectors on top of all textures.
+    if ( !surface_queue_.empty() ) render_surface(); // Render bitmaps on top of everything.
+    
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderPresent(renderer_);
 }
@@ -214,6 +200,30 @@ void RenderManager::render_surface()
     }
     // finally update the window surface with all the bitmaps blitted.
     SDL_UpdateWindowSurface(window_);
+}
+
+
+/*
+    Render or math objects in polygon_queue_ and vector_queue_
+*/
+void RenderManager::render_math()
+{
+    // Render polygons.
+    Polygon* polygon { nullptr };
+    while ( !polygon_queue_.empty() )
+    {
+        polygon = polygon_queue_.front();
+        polygon->render(renderer_);
+        polygon_queue_.pop();
+    }
+    // Render vectors.
+    Vector2D* vector2d { nullptr };
+    while ( !vector_queue_.empty() )
+    {
+        vector2d = vector_queue_.front();
+        vector2d->render(renderer_);
+        vector_queue_.pop();
+    }
 }
 
 
