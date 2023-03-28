@@ -123,13 +123,15 @@ void Game::clicked_hot_spot_(HotSpot* hot_spot, mouse_click mouse_click_data)
 
 void Game::handle_click_(mouse_click mouse_click_data)
 {
-    if ( !std::get<1>(mouse_click_data) ) return;   // Check if there was a click to handle;
-    int x { std::get<1>(mouse_click_data) };
-    int y { std::get<2>(mouse_click_data) };
-    bool right_click  { std::get<3>(mouse_click_data) };
+    // Check if there was a click to handle. If not do nothing.
+    if ( !std::get<1>(mouse_click_data) ) return;
+    // Get mouse click information.
+    auto [x, y, right_click] = destructure(mouse_click_data);
+    // Get object from Room Manager. 
     Item*    item     { m_RoomManager.get_item(x, y)     };
     Door*    door     { m_RoomManager.get_door(x, y)     };
     HotSpot* hot_spot { m_RoomManager.get_hot_spot(x, y) };
+    // Do something with that object.
          if ( item )     clicked_item_(item, mouse_click_data);
     else if ( door )     clicked_door_(door, mouse_click_data);
     else if ( hot_spot ) clicked_hot_spot_(hot_spot, mouse_click_data);
