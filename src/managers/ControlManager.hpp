@@ -14,6 +14,7 @@
 
 #define mouse_click std::tuple<bool, int, int, bool>
 
+
 struct Controls
 {
     SDL_Keycode KEY_INVENTORY;
