@@ -39,3 +39,5 @@ void Door::state(bool new_state) { state_ = new_state; }
 
 
 std::string Door::key_id() { return key_id_; }
+
+void Door::accept(Visitor* visitor) { visitor->visit_door(this); }

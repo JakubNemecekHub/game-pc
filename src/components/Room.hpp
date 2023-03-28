@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 
 #include "Sprite.hpp"
+#include "GameObject.hpp"
 #include "Item.hpp"
 #include "Door.hpp"
 #include "HotSpot.hpp"
@@ -72,9 +73,10 @@ public:
 
         void update(RenderManager* renderer, int dt);
         bool walkable(int x, int y);
-    HotSpot* get_hot_spot(int x, int y);
-       Door* get_door(int x, int y);
-       Item* get_item(int x, int y);
+    GameObject* get_object(int x, int y);
+    // HotSpot* get_hot_spot(int x, int y);
+    //    Door* get_door(int x, int y);
+    //    Item* get_item(int x, int y);
         void remove_item(std::string id);
 
     // Debug

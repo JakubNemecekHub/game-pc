@@ -44,3 +44,5 @@ bool Item::lock() { return lock_; }
 void Item::lock(bool new_lock) { lock_ = new_lock; }
 Sprite* Item::sprite() { return sprite_; }
 Polygon* Item::click_area() { return &click_area_; }
+
+void Item::accept(Visitor* visitor) { visitor->visit_item(this); }

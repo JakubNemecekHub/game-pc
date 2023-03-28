@@ -4,6 +4,7 @@
 
 
 Game::Game()
+    // : visitor_{Visitor{this}}
 {
     YAML::Node ini;
     try
@@ -41,6 +42,7 @@ Game::Game()
     m_PlayerManager.startUp(&m_AssetManager);
 
     m_LogManager.log("All Managers started.");
+
 }
 
 inline auto destructure(mouse_click data)
@@ -128,13 +130,15 @@ void Game::handle_click_(mouse_click mouse_click_data)
     // Get mouse click information.
     auto [x, y, right_click] = destructure(mouse_click_data);
     // Get object from Room Manager. 
-    Item*    item     { m_RoomManager.get_item(x, y)     };
-    Door*    door     { m_RoomManager.get_door(x, y)     };
-    HotSpot* hot_spot { m_RoomManager.get_hot_spot(x, y) };
+    GameObject*    object     { m_RoomManager.get_object(x, y)     };
+    // Item*    item     { m_RoomManager.get_item(x, y)     };
+    // Door*    door     { m_RoomManager.get_door(x, y)     };
+    // HotSpot* hot_spot { m_RoomManager.get_hot_spot(x, y) };
     // Do something with that object.
-         if ( item )     clicked_item_(item, mouse_click_data);
-    else if ( door )     clicked_door_(door, mouse_click_data);
-    else if ( hot_spot ) clicked_hot_spot_(hot_spot, mouse_click_data);
+    object->accept(&visitor_);
+    //      if ( item )     clicked_item_(item, mouse_click_data);
+    // else if ( door )     clicked_door_(door, mouse_click_data);
+    // else if ( hot_spot ) clicked_hot_spot_(hot_spot, mouse_click_data);
 }
 
 

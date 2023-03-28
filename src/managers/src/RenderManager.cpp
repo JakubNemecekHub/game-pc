@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "../../components/Sprite.hpp"
+
 
 SDL_Renderer* RenderManager::renderer_ = nullptr;
 

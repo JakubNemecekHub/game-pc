@@ -7,11 +7,14 @@
 #include <yaml-cpp/yaml.h>
 
 #include "../managers/AssetManager.hpp"
+#include "Visitor.hpp"
+#include "GameObject.hpp"
 #include "Sprite.hpp"
 #include "../math/Polygon.hpp"
 
 
-class Item {
+class Item : public GameObject
+{
 private:
     std::string                 id_;
     bool                        state_;
@@ -34,5 +37,7 @@ public:
     void        lock(bool new_lock);
     Sprite*     sprite();
     Polygon*    click_area();
+
+    void accept(Visitor* visitor) override;
     
 };

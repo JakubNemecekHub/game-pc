@@ -14,6 +14,8 @@
 #include "src/managers/PlayerManager.hpp"
 #include "src/managers/ControlManager.hpp"
 
+#include "src/components/Visitor.hpp"
+
 
 class Game {
 private:
@@ -29,6 +31,7 @@ private:
     ControlManager   m_ControlManager;
 
     SDL_Event event_;
+    Visitor visitor_;
 
     void handle_click_(mouse_click mouse_click_data);
 

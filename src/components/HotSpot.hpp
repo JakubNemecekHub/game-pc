@@ -6,8 +6,14 @@
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>   // Uint32
 
+#include "Visitor.hpp"
+#include "GameObject.hpp"
 
-class HotSpot {
+class Visitor;
+
+
+class HotSpot : public GameObject
+{
 private:
     // Uint32                      id_;
     bool                        state_;
@@ -21,4 +27,7 @@ public:
 
     std::string get_observation();
     std::string get_use_observation();
+
+    void accept(Visitor* visitor) override;
+
 };

@@ -6,6 +6,7 @@
 
 #include <yaml-cpp/yaml.h>
 
+
 class LogManager
 {
 private:

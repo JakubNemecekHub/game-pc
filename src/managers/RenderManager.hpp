@@ -11,7 +11,6 @@
 #include <SDL2/SDL_image.h>
 
 #include "LogManager.hpp"
-#include "../components/Sprite.hpp"
 #include "../math/Polygon.hpp"
 #include "../math/Vector2D.hpp"
 
@@ -22,7 +21,7 @@ namespace MyType
 {
 
 /*
-    Type erasure for Polygon and Vector2D, and also Srites.
+    Type erasure for Polygon and Vector2D, and also Sprites.
     According to:
         https://www.modernescpp.com/index.php/type-erasure
         https://davekilian.com/cpp-type-erasure.html

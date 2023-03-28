@@ -6,6 +6,8 @@
 #include "../managers/LogManager.hpp"
 #include "Item.hpp"
 
+class Item;
+
 
 constexpr int INVENTORY_SIZE { 7 };
 

@@ -6,8 +6,14 @@
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>   // Uint32
 
+#include "Visitor.hpp"
+#include "GameObject.hpp"
 
-class Door {
+class Visitor;
+
+
+class Door : public GameObject
+{
 private:
     // Uint32                      id_;
     bool                        state_;
@@ -30,4 +36,7 @@ public:
     bool        state();
     void        state(bool _state);
     std::string key_id();
+
+    void accept(Visitor* visitor) override;
+
 };
