@@ -22,8 +22,8 @@ text:
     - [91, 163, 111]  # GREEN
     - [198, 40, 40]   # RED
 control:
-  Inventory: 105        # i
-  Walk_Polygon: 112     # p
-  Item_Polygon: 116     # t
-  Item_Vector: 118      # v
-  Hots_pots: 98         # b
+  Inventory: i
+  Walk_Polygon: p
+  Item_Polygon: t
+  Item_Vector: v
+  Hots_pots: b

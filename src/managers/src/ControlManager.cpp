@@ -12,11 +12,11 @@ void ControlManager::startUp(YAML::Node mapping)
 {
     log_->log("Starting Control Manager.");
     mapping_ = Controls{
-        mapping["Inventory"].as<int>(),
-        mapping["Walk_Polygon"].as<int>(),
-        mapping["Item_Polygon"].as<int>(),
-        mapping["Item_Vector"].as<int>(),
-        mapping["Hots_pots"].as<int>()
+        SDL_GetKeyFromName(mapping["Inventory"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Walk_Polygon"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Item_Polygon"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Item_Vector"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Hots_pots"].as<std::string>().c_str()),
     };
     log_->log("Control Manager started.");
 }
