@@ -107,11 +107,22 @@ Room::~Room()
 }
 
 
+// Transform coordinates to room's coordinates.
+auto Room::relative_coordinates(int x, int y)
+{
+    struct result { int room_x; int room_y; };
+    return result
+    {
+        static_cast<int>((x - sprite_->x()) / sprite_->scale()),
+        static_cast<int>(y / sprite_->scale())   
+    };
+}
+
+
 // Return true if given point in the room's walk area.
 bool Room::walkable(int x, int y)
 {
-    int room_x, room_y;
-    get_room_coordinates_(x, y, &room_x, &room_y);
+    auto [room_x, room_y] = relative_coordinates(x, y);
     return walk_area_.point_in_polygon(room_x, room_y);
 }
 
@@ -177,8 +188,7 @@ void Room::update_items(RenderManager* renderer, int dt)
 */
 Uint32 Room::get_mapped_object_(int x, int y)
 {
-    int room_x, room_y;
-    get_room_coordinates_(x, y, &room_x, &room_y);
+    auto [room_x, room_y] = relative_coordinates(x, y);
     int bpp = click_map_->format->BytesPerPixel; // bytes per pixel, depends on loaded image
     Uint8 *p = (Uint8 *)click_map_->pixels + room_y * click_map_->pitch + room_x * bpp;
     switch (bpp)
@@ -217,8 +227,7 @@ GameObject* Room::get_object(int x, int y)
     // Order: Item -> Door -> Hot Spot
 
     // Look for items.
-    int room_x, room_y;
-    get_room_coordinates_(x, y, &room_x, &room_y); // TO DO: destructuring
+    auto [room_x, room_y] = relative_coordinates(x, y);
     for ( auto& item : items_ )
     {
         if ( item.second->clicked(room_x, room_y) && item.second->state() )
@@ -291,8 +300,3 @@ void Room::remove_item(std::string id)
 // }
 
 
-void Room::get_room_coordinates_(int x, int y, int* world_x, int* world_y)
-{
-    *world_x = static_cast<int>((x - sprite_->x()) / sprite_->scale());
-    *world_y = static_cast<int>(y / sprite_->scale());
-}

@@ -61,7 +61,7 @@ private:
 
     void update_items(RenderManager* renderer, int dt);
 
-    void get_room_coordinates_(int x, int y, int* world_x, int* world_y);
+    auto relative_coordinates(int x, int y);
     Uint32 get_mapped_object_(int x, int y);
 
 public:
