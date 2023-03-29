@@ -1,9 +1,10 @@
 #pragma once
 
-#include <yaml-cpp/yaml.h>
+// #include <yaml-cpp/yaml.h>
 
 #include "LogManager.hpp"
 #include "AssetManager.hpp"
+#include "RenderManager.hpp"
 #include "../components/Inventory.hpp"
 #include "../math/Vector2D.hpp"
 
@@ -44,6 +45,7 @@ class PlayerManager
 private:
 
     LogManager* log_;
+    RenderManager* renderer_;
 
 public:
 

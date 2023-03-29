@@ -104,5 +104,7 @@ public:
 
     void scale_full_h(Sprite* sprite);
     void center_horizontally(Sprite* sprite);
+    void center_vertically(Sprite* sprite);
     int get_screen_width();
+    
 };

@@ -1,9 +1,25 @@
 #include "../Inventory.hpp"
 
 
-Inventory::Inventory()
+Inventory::Inventory() : count_{0}, visible_{false} {}
+
+
+void Inventory::ini_gui(AssetManager* assets, RenderManager* renderer_)
 {
-    count_ = 0;
+    gui_frame_ = assets->sprite("inventory_frame");
+    gui_frame_->scale(10.0f);
+    renderer_->center_horizontally(gui_frame_);
+    renderer_->center_vertically(gui_frame_);
+}
+
+
+void Inventory::toggle_visibility() { visible_ = !visible_; }
+
+
+void Inventory::update(RenderManager* renderer, int dt)
+{
+   if ( !visible_ ) return;
+   gui_frame_->update(renderer, dt); 
 }
 
 

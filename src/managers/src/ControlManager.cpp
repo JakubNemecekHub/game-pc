@@ -50,7 +50,7 @@ void ControlManager::handle_keyboard(SDL_Event event)
         // Toggle items' position vector rendering
         else if ( kkey == mapping_.KEY_ITEM_VECTOR ) rooms_->handle_keyboard(ACTION_ROOM::ITEM_VECTOR);
         // Show Inventory
-        else if ( kkey == mapping_.KEY_INVENTORY ) player_->inventory.print(log_);
+        else if ( kkey == mapping_.KEY_INVENTORY ) player_->inventory.toggle_visibility();
     }
 }
 

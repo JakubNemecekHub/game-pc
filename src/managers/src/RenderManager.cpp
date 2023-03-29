@@ -237,6 +237,16 @@ void RenderManager::center_horizontally(Sprite* sprite)
     sprite->x(x);
 }
 
+void RenderManager::center_vertically(Sprite* sprite)
+{
+    // Get screen dimensions.
+    int w, h;
+    SDL_GetRendererOutputSize(renderer_, &w, &h);
+    int sprite_h { sprite->h() };
+    int y = 0.5f * (h - sprite_h);
+    sprite->y(y);
+}
+
 // Returns current screen width.
 int RenderManager::get_screen_width()
 {

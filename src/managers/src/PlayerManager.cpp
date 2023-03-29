@@ -42,7 +42,10 @@ PlayerManager::PlayerManager(LogManager* log)
 bool PlayerManager::startUp(AssetManager* assets)
 {
     log_->log("Starting Player Manager.");
+    // Create player
     player = Player(assets);
+    // Initialize inventor's GUI
+    inventory.ini_gui(assets, renderer_);
     log_->log("Player Manager started.");
     return true;
 }
@@ -51,4 +54,5 @@ bool PlayerManager::startUp(AssetManager* assets)
 void PlayerManager::update(RenderManager* renderer, int dt)
 {
     player.update(renderer, dt);
+    inventory.update(renderer, dt);
 }
