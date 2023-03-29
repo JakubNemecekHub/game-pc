@@ -47,14 +47,10 @@ Game::Game()
 
 void Game::handle_click_(Mouse::click mouse_click_data)
 {
-    // Check if there was a click to handle. If not do nothing.
-    if ( !std::get<1>(mouse_click_data) ) return;
-    // Get mouse click information.
-    auto [x, y, right_click] = Mouse::destructure(mouse_click_data);
-    // Get object from Room Manager. 
-    GameObject* object { m_RoomManager.get_object(x, y) };
-    // Do something with that object.
-    object->accept(this, mouse_click_data);
+    if ( !std::get<1>(mouse_click_data) ) return;                       // Check if there was a click to handle. If not do nothing.
+    auto [x, y, right_click] = Mouse::destructure(mouse_click_data);    // Get mouse click information.
+    GameObject* object { m_RoomManager.get_object(x, y) };              // Get object from Room Manager.
+    if ( object) object->accept(this, mouse_click_data);                // Do something with that object.
 }
 
 
