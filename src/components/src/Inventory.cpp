@@ -8,8 +8,7 @@ void Inventory::ini_gui(AssetManager* assets, RenderManager* renderer_)
 {
     gui_frame_ = assets->sprite("inventory_frame");
     gui_frame_->scale(10.0f);
-    renderer_->center_horizontally(gui_frame_);
-    renderer_->center_vertically(gui_frame_);
+    gui_frame_->center();
 }
 
 

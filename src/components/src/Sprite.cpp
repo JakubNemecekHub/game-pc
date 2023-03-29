@@ -1,7 +1,7 @@
 #include "../Sprite.hpp"
 
-Sprite::Sprite()
-    : position_{0, 0}, scale_{1}, src_rect_{0, 0, 0, 0},
+Sprite::Sprite(RenderManager* renderer)
+    : renderer_{renderer}, position_{0, 0}, scale_{1}, src_rect_{0, 0, 0, 0},
       dest_rect_{0, 0, 0, 0}, z_index_{0}, current_frame_{0},
       last_updated_{0} {}
 
@@ -151,6 +151,33 @@ void Sprite::dest_rect(SDL_Rect& source)
 void Sprite::z_index(int index)
 {
     z_index_ = index;
+}
+
+
+/*
+    Center horizontally and vertically.
+    Uses the renderer, the Sprite was created with.
+*/
+void Sprite::center()
+{
+    renderer_->center_horizontally(this);
+    renderer_->center_vertically(this);
+}
+/*
+    Center horizontally.
+    Uses the renderer, the Sprite was created with.
+*/
+void Sprite::center_horizontally()
+{
+    renderer_->center_horizontally(this);
+}
+/*
+    Center vertically.
+    Uses the renderer, the Sprite was created with.
+*/
+void Sprite::center_vertically()
+{
+    renderer_->center_vertically(this);
 }
 
 

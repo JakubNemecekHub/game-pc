@@ -85,7 +85,7 @@ bool AssetManager::startUp(RenderManager* renderer)
             std::string sprite_id { sprite["id"].as<std::string>() };
             sprites_.emplace(std::piecewise_construct,
                 std::forward_as_tuple(sprite_id),
-                std::forward_as_tuple());
+                std::forward_as_tuple(renderer));
             for ( auto& texture : sprite["textures"] ) 
             {
                 std::string texture_id { texture.as<std::string>() };

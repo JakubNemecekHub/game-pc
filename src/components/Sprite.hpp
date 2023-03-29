@@ -32,12 +32,14 @@ class Sprite
 {
 private:
 
+    RenderManager* renderer_; // The renderer that created the Sprite
+
     Vector2D position_;
     float    scale_;
     SDL_Rect src_rect_;
     SDL_Rect dest_rect_;
     int      z_index_;
-
+    
     std::unordered_map<std::string, SDL_Texture*>	     textures_;
     std::unordered_map<std::string, std::vector<Frame>*> frames_;
     std::string	                                         current_animation_;
@@ -47,7 +49,7 @@ private:
 
 public:
 
-    Sprite();    // Set default values
+    Sprite(RenderManager* renderer);
     Sprite(SDL_Texture* texture, float scale, int z_index);
 
     void add_animation(std::string id, SDL_Texture* texture, std::vector<Frame>* frames = nullptr);
@@ -72,6 +74,9 @@ public:
     void set_dest(int _x, int _y, int _w, int _h);
     void dest_rect(SDL_Rect& source);
     void z_index(int index);
+    void center();
+    void center_horizontally();
+    void center_vertically();
 
     // Getters
 
