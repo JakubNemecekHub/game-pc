@@ -248,41 +248,6 @@ GameObject* Room::get_object(int x, int y)
     return nullptr;
 }
 
-// HotSpot* Room::get_hot_spot(int x, int y)
-// {
-//     Uint32 id { get_mapped_object_(x, y) };
-//     if ( hot_spots_.find(id) != hot_spots_.end() )
-//     {
-//         return &hot_spots_.at(id);
-//     }
-//     return nullptr;
-// }
-
-// Door* Room::get_door(int x, int y)
-// {
-//     Uint32 id { get_mapped_object_(x, y) };
-//     if ( doors_.find(id) != doors_.end() )
-//     {
-//         return &doors_.at(id);
-//     }
-//     return nullptr;
-// }
-
-
-// Item* Room::get_item(int x, int y)
-// {
-//     int room_x, room_y;
-//     get_room_coordinates_(x, y, &room_x, &room_y);
-//     for ( auto& item : items_ )
-//     {
-//         if ( item.second->clicked(room_x, room_y) && item.second->state() )
-//         {
-//             return item.second;
-//         }
-//     }
-//     return nullptr;
-// }
-
 
 void Room::remove_item(std::string id)
 {
