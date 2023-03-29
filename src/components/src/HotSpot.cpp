@@ -2,6 +2,8 @@
 
 #include <stdlib.h> // rand
 
+#include "../../Game.hpp"
+
 
 // HotSpot::HotSpot() {}
 
@@ -25,4 +27,4 @@ std::string HotSpot::get_use_observation()
     return use_observations_[rand() % use_observations_.size()];
 }
 
-void HotSpot::accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse)  { visitor->visit(this, text_, player_, room_, mouse); }
+void HotSpot::accept(Game* handler, Mouse::click mouse) { handler->visit(this, mouse); }

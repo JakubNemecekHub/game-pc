@@ -4,7 +4,6 @@
 
 
 Game::Game()
-    // : visitor_{Visitor{this}}
 {
     YAML::Node ini;
     try
@@ -55,7 +54,7 @@ void Game::handle_click_(Mouse::click mouse_click_data)
     // Get object from Room Manager. 
     GameObject* object { m_RoomManager.get_object(x, y) };
     // Do something with that object.
-    object->accept(&visitor_, &m_TextManager, &m_PlayerManager, &m_RoomManager, mouse_click_data);
+    object->accept(this, mouse_click_data);
 }
 
 
@@ -83,4 +82,82 @@ void Game::update(int dt)
     m_TextManager.update(dt);
     // 3) Render.
     m_RenderManager.render();
+}
+
+/*****************************************************************************************************************
+ * Game Logic
+*****************************************************************************************************************/
+
+void Game::visit(Item* item, Mouse::click mouse)
+{
+    auto [x, y, right_click] = Mouse::destructure(mouse);
+    if ( right_click )  // Look.
+    {
+        std::string observation { item->get_observation() };
+        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
+    }
+    else                // Try to pick up. TO DO: move to Inventory
+    {
+        if ( m_PlayerManager.inventory.has_space() )
+        {
+            m_PlayerManager.inventory.add(item);
+            m_RoomManager.remove_item(item->id());
+            m_TextManager.register_text(item->get_pick_observation(), x, y, COLOR::PURPLE);
+        }
+        else
+        {
+            m_TextManager.register_text("My Inventory is full.", x, y, COLOR::BEIGE);
+        }
+    }
+}
+
+
+void Game::visit(Door* door, Mouse::click mouse)
+{
+    auto [x, y, right_click] = Mouse::destructure(mouse);
+    if ( right_click )  // Look
+    {
+        std::string observation { door->get_observation() };
+        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
+    }
+    else
+    {
+        if ( door->locked() )
+        {
+            std::string key_id { door->key_id() };
+            if ( m_PlayerManager.inventory.has_item(key_id) )
+            {
+                door->unlock();
+                m_PlayerManager.inventory.remove(key_id);
+                m_TextManager.register_text("Unlocked.", x, y, COLOR::PURPLE);
+            }
+            else
+            {
+                std::string observation { door->get_locked_observation() };
+               m_TextManager.register_text(observation, x, y, COLOR::GREEN);
+            }
+        }
+        else
+        {
+            m_TextManager.clean();
+            m_RoomManager.activate_room(door->target());
+        }
+    }
+}
+
+
+void Game::visit(HotSpot* hot_spot, Mouse::click mouse)
+{
+    auto [x, y, right_click] = Mouse::destructure(mouse);
+    std::string observation;
+    if ( right_click )
+    {
+        observation = hot_spot->get_observation();
+        m_TextManager.register_text(observation, x, y, COLOR::BEIGE);
+    }
+    else
+    {
+        observation = hot_spot->get_use_observation();
+        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
+    }
 }

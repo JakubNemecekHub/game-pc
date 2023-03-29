@@ -14,7 +14,6 @@ add_library(
     src/Room.cpp
     src/Inventory.cpp
     src/Sprite.cpp
-    src/Visitor.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

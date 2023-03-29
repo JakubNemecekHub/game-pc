@@ -6,10 +6,7 @@
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>   // Uint32
 
-#include "Visitor.hpp"
 #include "GameObject.hpp"
-
-class Visitor;
 
 
 class Door : public GameObject
@@ -37,6 +34,6 @@ public:
     void        state(bool _state);
     std::string key_id();
 
-    void accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse) override;
+    void accept(Game* handler, Mouse::click mouse) override;
 
 };

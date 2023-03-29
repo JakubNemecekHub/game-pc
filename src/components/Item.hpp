@@ -7,7 +7,6 @@
 #include <yaml-cpp/yaml.h>
 
 #include "../managers/AssetManager.hpp"
-#include "Visitor.hpp"
 #include "GameObject.hpp"
 #include "Sprite.hpp"
 #include "../math/Polygon.hpp"
@@ -38,6 +37,6 @@ public:
     Sprite*     sprite();
     Polygon*    click_area();
 
-    void accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse) override;
+    void accept(Game* handler, Mouse::click mouse) override;
     
 };

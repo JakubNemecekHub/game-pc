@@ -2,6 +2,8 @@
 
 #include <stdlib.h> // rand
 
+#include "../../Game.hpp"
+
 
 // Door::Door() {}
 
@@ -40,4 +42,4 @@ void Door::state(bool new_state) { state_ = new_state; }
 
 std::string Door::key_id() { return key_id_; }
 
-void Door::accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse) { visitor->visit(this, text_, player_, room_, mouse); }
+void Door::accept(Game* handler, Mouse::click mouse) { handler->visit(this, mouse); }

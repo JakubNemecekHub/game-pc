@@ -14,8 +14,6 @@
 #include "src/managers/PlayerManager.hpp"
 #include "src/managers/ControlManager.hpp"
 
-#include "src/components/Visitor.hpp"
-
 #include "src/utils/Mouse.hpp"
 
 
@@ -33,19 +31,19 @@ private:
     ControlManager   m_ControlManager;
 
     SDL_Event event_;
-    Visitor visitor_;
 
     void handle_click_(Mouse::click mouse_click_data);
-
-    // Game logic
-    void clicked_item_(Item* item, Mouse::click mouse_click_data);
-    void clicked_door_(Door* door, Mouse::click mouse_click_data);
-    void clicked_hot_spot_(HotSpot* hot_spot, Mouse::click mouse_click_data);
 
 public:
 
     Game();
     bool running();
     void update(int dt);
+
+    // Game logic
+
+    void visit(Item* item, Mouse::click mouse_click_data);
+    void visit(Door* door, Mouse::click mouse_click_data);
+    void visit(HotSpot* hot_spot, Mouse::click mouse_click_data);
 
 };
