@@ -24,13 +24,13 @@ bool Door::locked() { return locked_; }
 void Door::unlock() { locked_ = false; }
 
 
-std::string Door::get_observation()
+std::string Door::observation()
 {
     return observations_[rand() % observations_.size()];
 }
 
 
-std::string Door::get_locked_observation()
+std::string Door::locked_observation()
 {
     return locked_observations_[rand() % locked_observations_.size()];
 }

@@ -27,8 +27,8 @@ public:
     Item(YAML::Node data, AssetManager* assets);
 
     bool        clicked(int x, int y);
-    std::string get_observation();
-    std::string get_pick_observation();
+    std::string observation();
+    std::string pick_observation();
     std::string id();
     bool        state();
     void        state(bool new_state);

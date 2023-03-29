@@ -16,13 +16,13 @@ HotSpot::HotSpot(YAML::Node data)
 }
 
 
-std::string HotSpot::get_observation()
+std::string HotSpot::observation()
 {
     return observations_[rand() % observations_.size()];
 }
 
 
-std::string HotSpot::get_use_observation()
+std::string HotSpot::use_observation()
 {
     return use_observations_[rand() % use_observations_.size()];
 }

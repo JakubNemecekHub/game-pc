@@ -93,7 +93,7 @@ void Game::visit(Item* item, Mouse::click mouse)
     auto [x, y, right_click] = Mouse::destructure(mouse);
     if ( right_click )  // Look.
     {
-        std::string observation { item->get_observation() };
+        std::string observation { item->observation() };
         m_TextManager.register_text(observation, x, y, COLOR::GREEN);
     }
     else                // Try to pick up. TO DO: move to Inventory
@@ -102,7 +102,7 @@ void Game::visit(Item* item, Mouse::click mouse)
         {
             m_PlayerManager.inventory.add(item);
             m_RoomManager.remove_item(item->id());
-            m_TextManager.register_text(item->get_pick_observation(), x, y, COLOR::PURPLE);
+            m_TextManager.register_text(item->pick_observation(), x, y, COLOR::PURPLE);
         }
         else
         {
@@ -117,7 +117,7 @@ void Game::visit(Door* door, Mouse::click mouse)
     auto [x, y, right_click] = Mouse::destructure(mouse);
     if ( right_click )  // Look
     {
-        std::string observation { door->get_observation() };
+        std::string observation { door->observation() };
         m_TextManager.register_text(observation, x, y, COLOR::GREEN);
     }
     else
@@ -133,7 +133,7 @@ void Game::visit(Door* door, Mouse::click mouse)
             }
             else
             {
-                std::string observation { door->get_locked_observation() };
+                std::string observation { door->locked_observation() };
                m_TextManager.register_text(observation, x, y, COLOR::GREEN);
             }
         }
@@ -152,12 +152,12 @@ void Game::visit(HotSpot* hot_spot, Mouse::click mouse)
     std::string observation;
     if ( right_click )
     {
-        observation = hot_spot->get_observation();
+        observation = hot_spot->observation();
         m_TextManager.register_text(observation, x, y, COLOR::BEIGE);
     }
     else
     {
-        observation = hot_spot->get_use_observation();
+        observation = hot_spot->use_observation();
         m_TextManager.register_text(observation, x, y, COLOR::GREEN);
     }
 }

@@ -27,13 +27,13 @@ bool Item::clicked(int x, int y)
 }
 
 
-std::string Item::get_observation()
+std::string Item::observation()
 {
     return observations_[rand() % observations_.size()];
 }
 
 
-std::string Item::get_pick_observation()
+std::string Item::pick_observation()
 {
     return pick_observation_;
 }

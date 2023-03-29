@@ -18,12 +18,11 @@ private:
     std::vector<std::string>    use_observations_;
 public:
 
-    // HotSpot();
     HotSpot(YAML::Node data);
     ~HotSpot() {};
 
-    std::string get_observation();
-    std::string get_use_observation();
+    std::string observation();
+    std::string use_observation();
 
     void accept(Game* handler, Mouse::click mouse) override;
 

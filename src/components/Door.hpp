@@ -28,8 +28,8 @@ public:
     std::string target();
     bool        locked();
     void        unlock();
-    std::string get_observation();
-    std::string get_locked_observation();
+    std::string observation();
+    std::string locked_observation();
     bool        state();
     void        state(bool _state);
     std::string key_id();
