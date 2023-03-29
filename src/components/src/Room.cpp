@@ -57,7 +57,6 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     walk_area_.visual.dy = sprite_->y();
     // Load room click map
     click_map_ = assets->bitmap(id);
-    // click_map_texture_ = assets->get_texture(id + "_bitmap");
     // Load HotSpots
     for ( auto& hot_spot : data["hot_spots"] )
     {
