@@ -48,7 +48,10 @@ Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetMa
     std::string id { data["id"].as<std::string>() };
     sprite_ = assets->sprite(id);
     renderer->scale_full_h(sprite_);
-    renderer->center_horizontally(sprite_);
+    // renderer->center_horizontally(sprite_);
+    // sprite_->scale_full_h(); // TO DO
+    sprite_->center_horizontally();
+    sprite_->z_index(0);
     // Load walk area polygon
     walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<int>>>());
     walk_area_.visual.scale = sprite_->scale();

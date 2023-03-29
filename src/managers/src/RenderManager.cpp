@@ -119,7 +119,7 @@ bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
 */
 bool RenderManager::submit(Polygon* polygon)
 {
-    render_queues_.at(3).push(MyType::Object(polygon));
+    render_queues_.at(MAX_LAYERS_ - 1).push(MyType::Object(polygon));
     return true;
 }
 /*
@@ -133,15 +133,13 @@ bool RenderManager::submit(Vector2D* vector2d)
 
 
 /*
-    Render objects in order based on z-index of each object.
-    z-index: 0 - room's background
-             1 - room's ambient animations
-             2..(N-1) - various stuff
-             N - bitmaps
-            (N+1) - polygons
-    TO DO: The layering rules shouldn't be so strict. For example, we may want to show
-    parts of the background above player. This way we create a feeling of "depth".
-    Player object will move between various layers.
+    Render objects in order based on z-index.
+    z-index: 0        : Room's background           (base layer)
+             1        : Room's ambient animations
+             2..(N-3) : various stuff                               (for N = 5, as it is now, this layer is number 2)
+             N-2      : GUI                                         (for N = 5, as it is now, this layer is number 3)
+             N-1      : polygons                    (topmost layer) (for N = 5, as it is now, this layer is number 4)
+             Bitmaps are render over everything else.
 */
 void RenderManager::render()
 {

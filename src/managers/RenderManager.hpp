@@ -71,7 +71,7 @@ private:
     LogManager*             log_;
     SDL_Window*             window_;
     static SDL_Renderer*    renderer_;
-    static const int        MAX_LAYERS_ {4};
+    static const int        MAX_LAYERS_ {5};
     std::array<std::queue<MyType::Object>, MAX_LAYERS_> render_queues_;
     std::queue<std::tuple<SDL_Surface*, SDL_Rect*>>     surface_queue_;
 
