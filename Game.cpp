@@ -36,7 +36,7 @@ Game::Game()
     m_AssetManager.startUp(&m_RenderManager);
     m_TextManager.startUp();
     m_ItemManager.startUp(&m_AssetManager);
-    m_RoomManager.startUp(&m_RenderManager, &m_ItemManager, &m_AssetManager);
+    m_RoomManager.startUp(&m_ItemManager, &m_AssetManager);
     m_ControlManager.startUp(ini["control"]);
     m_PlayerManager.startUp(&m_AssetManager);
 

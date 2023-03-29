@@ -74,6 +74,7 @@ public:
     void set_dest(int _x, int _y, int _w, int _h);
     void dest_rect(SDL_Rect& source);
     void z_index(int index);
+    void scale_full_h();
     void center();
     void center_horizontally();
     void center_vertically();

@@ -42,14 +42,12 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 /*
     Loads room's data based on info in the room data dictionary.
 */
-Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetManager* assets)
+Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
     sprite_ = assets->sprite(id);
-    renderer->scale_full_h(sprite_);
-    // renderer->center_horizontally(sprite_);
-    // sprite_->scale_full_h(); // TO DO
+    sprite_->scale_full_h();
     sprite_->center_horizontally();
     sprite_->z_index(0);
     // Load walk area polygon

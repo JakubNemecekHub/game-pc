@@ -155,6 +155,15 @@ void Sprite::z_index(int index)
 
 
 /*
+    Scale the sprite to fit window's height.
+*/
+void Sprite::scale_full_h()
+{
+    renderer_->scale_full_h(this);
+}
+
+
+/*
     Center horizontally and vertically.
     Uses the renderer, the Sprite was created with.
 */

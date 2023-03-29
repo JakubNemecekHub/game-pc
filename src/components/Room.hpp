@@ -67,7 +67,7 @@ private:
 public:
 
     Room() {};
-    Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetManager* assets);
+    Room(YAML::Node data, ItemManager* items, AssetManager* assets);
     ~Room();
 
     // Methods
