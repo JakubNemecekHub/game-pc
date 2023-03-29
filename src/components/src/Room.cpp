@@ -147,6 +147,18 @@ void Room::update(RenderManager* renderer, int dt)
     }
     // END OF DEBUG
     animations_.update(renderer, dt);
+    update_items(renderer, dt);
+}
+
+/*
+    Update each ambient animation and register it to the renderer
+*/
+void Room::update_items(RenderManager* renderer, int dt)
+{
+   for ( auto &item : items_ )
+   {
+       item.second->update(renderer, dt);
+   }
 }
 
 

@@ -20,6 +20,11 @@ Item::Item(YAML::Node data, AssetManager* assets)
     sprite_ = assets->sprite(id_);  // TO DO: log error if assets return nullptr
 }
 
+void Item::update(RenderManager* renderer, int dt)
+{
+    sprite_->update(renderer, dt);
+}
+
 
 bool Item::clicked(int x, int y)
 {

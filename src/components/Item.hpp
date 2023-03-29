@@ -26,6 +26,8 @@ public:
 
     Item(YAML::Node data, AssetManager* assets);
 
+    void update(RenderManager* renderer, int dt);
+
     bool        clicked(int x, int y);
     std::string observation();
     std::string pick_observation();
