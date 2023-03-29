@@ -45,100 +45,17 @@ Game::Game()
 
 }
 
-inline auto destructure(mouse_click data)
-{
-    struct result { int x; int y; bool right_click; };
-    return result{std::get<1>(data), std::get<2>(data), std::get<3>(data)};
-}
 
-void Game::clicked_item_(Item* item, mouse_click mouse_click_data)
-{
-    auto [x, y, right_click] = destructure(mouse_click_data);
-    if ( right_click )  // Look.
-    {
-        std::string observation { item->get_observation() };
-        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
-    }
-    else                // Try to pick up. TO DO: move to Inventory
-    {
-        if ( m_PlayerManager.inventory.has_space() )
-        {
-            m_PlayerManager.inventory.add(item);
-            m_RoomManager.remove_item(item->id());
-            m_TextManager.register_text(item->get_pick_observation(), x, y, COLOR::PURPLE);
-        }
-        else
-        {
-            m_TextManager.register_text("My Inventory is full.", x, y, COLOR::BEIGE);
-        }
-    }
-}
-
-void Game::clicked_door_(Door* door, mouse_click mouse_click_data)
-{
-    auto [x, y, right_click] = destructure(mouse_click_data);
-    if ( right_click )  // Look
-    {
-        std::string observation { door->get_observation() };
-        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
-    }
-    else
-    {
-        if ( door->locked() )
-        {
-            std::string key_id { door->key_id() };
-            if ( m_PlayerManager.inventory.has_item(key_id) )
-            {
-                door->unlock();
-                m_PlayerManager.inventory.remove(key_id);
-                m_TextManager.register_text("Unlocked.", x, y, COLOR::PURPLE);
-            }
-            else
-            {
-                std::string observation { door->get_locked_observation() };
-                m_TextManager.register_text(observation, x, y, COLOR::GREEN);
-            }
-        }
-        else
-        {
-            m_TextManager.clean();
-            m_RoomManager.activate_room(door->target());
-        }
-    }
-}
-
-void Game::clicked_hot_spot_(HotSpot* hot_spot, mouse_click mouse_click_data)
-{
-    auto [x, y, right_click] = destructure(mouse_click_data);
-    std::string observation;
-    if ( right_click )
-    {
-        observation = hot_spot->get_observation();
-        m_TextManager.register_text(observation, x, y, COLOR::BEIGE);
-    }
-    else
-    {
-        observation = hot_spot->get_use_observation();
-        m_TextManager.register_text(observation, x, y, COLOR::GREEN);
-    }
-}
-
-void Game::handle_click_(mouse_click mouse_click_data)
+void Game::handle_click_(Mouse::click mouse_click_data)
 {
     // Check if there was a click to handle. If not do nothing.
     if ( !std::get<1>(mouse_click_data) ) return;
     // Get mouse click information.
-    auto [x, y, right_click] = destructure(mouse_click_data);
+    auto [x, y, right_click] = Mouse::destructure(mouse_click_data);
     // Get object from Room Manager. 
-    GameObject*    object     { m_RoomManager.get_object(x, y)     };
-    // Item*    item     { m_RoomManager.get_item(x, y)     };
-    // Door*    door     { m_RoomManager.get_door(x, y)     };
-    // HotSpot* hot_spot { m_RoomManager.get_hot_spot(x, y) };
+    GameObject* object { m_RoomManager.get_object(x, y) };
     // Do something with that object.
-    object->accept(&visitor_);
-    //      if ( item )     clicked_item_(item, mouse_click_data);
-    // else if ( door )     clicked_door_(door, mouse_click_data);
-    // else if ( hot_spot ) clicked_hot_spot_(hot_spot, mouse_click_data);
+    object->accept(&visitor_, &m_TextManager, &m_PlayerManager, &m_RoomManager, mouse_click_data);
 }
 
 
@@ -157,7 +74,7 @@ void Game::update(int dt)
     {
         m_ControlManager.handle_window(event_);
         m_ControlManager.handle_keyboard(event_);
-        mouse_click mouse_click_data { m_ControlManager.handle_mouse(event_) };
+        Mouse::click mouse_click_data { m_ControlManager.handle_mouse(event_) };
         handle_click_(mouse_click_data);
     }
     // 2) Update.

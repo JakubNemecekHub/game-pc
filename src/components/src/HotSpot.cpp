@@ -25,4 +25,4 @@ std::string HotSpot::get_use_observation()
     return use_observations_[rand() % use_observations_.size()];
 }
 
-void HotSpot::accept(Visitor* visitor)  { visitor->visit_hot_spot(this); }
+void HotSpot::accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse)  { visitor->visit(this, text_, player_, room_, mouse); }

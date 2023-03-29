@@ -45,4 +45,4 @@ void Item::lock(bool new_lock) { lock_ = new_lock; }
 Sprite* Item::sprite() { return sprite_; }
 Polygon* Item::click_area() { return &click_area_; }
 
-void Item::accept(Visitor* visitor) { visitor->visit_item(this); }
+void Item::accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse) { visitor->visit(this, text_, player_, room_, mouse); }

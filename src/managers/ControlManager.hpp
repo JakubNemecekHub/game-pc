@@ -1,18 +1,16 @@
 #pragma once
 
 #include <iostream>
-#include <tuple>
 
 #include <SDL2/SDL.h>
 
 #include <yaml-cpp/yaml.h>
 
+#include "../utils/Mouse.hpp"
 #include "LogManager.hpp"
 #include "RoomManager.hpp"
 #include "WindowManager.hpp"
 #include "PlayerManager.hpp"
-
-#define mouse_click std::tuple<bool, int, int, bool>
 
 
 struct Controls
@@ -48,5 +46,5 @@ public:
     
     void handle_window(SDL_Event event);
     void handle_keyboard(SDL_Event event);
-    mouse_click handle_mouse(SDL_Event event);
+    Mouse::click handle_mouse(SDL_Event event);
 };

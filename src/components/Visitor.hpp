@@ -1,21 +1,24 @@
 #pragma once
 
+#include "../utils/Mouse.hpp"
+
 
 /*
     Use forward declaration.
     Including .hpp files would create circular dependency.
-    These .hpp are only included in Visitor.cpp
+    The .hpp files are only included in Visitor.cpp
 */
 class Item;
 class Door;
 class HotSpot;
+class TextManager;
+class PlayerManager;
+class RoomManager;
 
 class Visitor
 {
 public:
-    Visitor() {}
-
-    void visit_item(Item* item);
-    void visit_door(Door* door);
-    void visit_hot_spot(HotSpot* hot_spot);
+    void visit(Item* item, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse);
+    void visit(Door* item, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse);
+    void visit(HotSpot* item, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse);
 };

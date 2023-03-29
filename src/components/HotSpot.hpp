@@ -28,6 +28,6 @@ public:
     std::string get_observation();
     std::string get_use_observation();
 
-    void accept(Visitor* visitor) override;
+    void accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse) override;
 
 };

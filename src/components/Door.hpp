@@ -37,6 +37,6 @@ public:
     void        state(bool _state);
     std::string key_id();
 
-    void accept(Visitor* visitor) override;
+    void accept(Visitor* visitor, TextManager* text_, PlayerManager* player_, RoomManager* room_, Mouse::click mouse) override;
 
 };

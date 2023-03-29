@@ -54,7 +54,7 @@ void ControlManager::handle_keyboard(SDL_Event event)
     }
 }
 
-mouse_click ControlManager::handle_mouse(SDL_Event event)
+Mouse::click ControlManager::handle_mouse(SDL_Event event)
 {
     if ( event.type != SDL_MOUSEBUTTONUP ) return std::make_tuple(false, 0, 0, false);
     
