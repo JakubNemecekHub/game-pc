@@ -32,6 +32,8 @@ public:
     void ini_gui(AssetManager* assets, RenderManager* renderer_);
 
     void toggle_visibility();
+    void show();
+    void hide();
     void update(RenderManager* renderer, int dt);
 
      bool has_space();

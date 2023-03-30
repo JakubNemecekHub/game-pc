@@ -32,7 +32,7 @@ private:
 
     SDL_Event event_;
 
-    void handle_click_(Mouse::click mouse_click_data);
+    void input_(SDL_Event event);
 
 public:
 
@@ -45,5 +45,10 @@ public:
     void visit(Item* item, Mouse::click mouse_click_data);
     void visit(Door* door, Mouse::click mouse_click_data);
     void visit(HotSpot* hot_spot, Mouse::click mouse_click_data);
+
+    void input_keyboard(ScreenGameplayNormal* screen, SDL_Event event);
+    void input_keyboard(ScreenGameplayInventory* screen, SDL_Event event);
+    void input_mouse(ScreenGameplayNormal* screen, SDL_Event event);
+    void input_mouse(ScreenGameplayInventory* screen, SDL_Event event);
 
 };

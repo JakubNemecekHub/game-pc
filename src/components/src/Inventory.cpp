@@ -14,6 +14,8 @@ void Inventory::ini_gui(AssetManager* assets, RenderManager* renderer_)
 
 
 void Inventory::toggle_visibility() { visible_ = !visible_; }
+void Inventory::show()  { visible_ = true; }
+void Inventory::hide()  { visible_ = false; }
 
 
 void Inventory::update(RenderManager* renderer, int dt)

@@ -13,6 +13,24 @@
 #include "PlayerManager.hpp"
 
 
+class Game;
+class ScreenControl;
+
+/*
+    Input's result will depend on the current active screen.
+    Possible Screens:
+    - Menu
+    - Gameplay normal
+    - Gameplay inventory
+*/
+enum SCREEN
+{
+    MENU,
+    GAMEPLAY_NORMAL,
+    GAMEPLAY_INVENTORY
+};
+
+
 struct Controls
 {
     SDL_Keycode KEY_INVENTORY;
@@ -32,8 +50,9 @@ private:
     RoomManager*   rooms_;
     PlayerManager* player_;
 
-    Controls    mapping_;
-    SDL_Event   event_;
+    ScreenControl* screen_;
+    Controls       mapping_;
+    SDL_Event      event_;
 
 
 public:
@@ -43,8 +62,37 @@ public:
 
     void startUp(YAML::Node mapping);
     void shutDown();
+
+    Controls mapping();
+    void screen(SCREEN type);
+    ScreenControl* screen();
     
     void handle_window(SDL_Event event);
-    void handle_keyboard(SDL_Event event);
     Mouse::click handle_mouse(SDL_Event event);
+    auto mouse_data(SDL_Event event);
+    
+};
+
+
+
+class ScreenControl
+{
+public:
+    ~ScreenControl() {}
+    virtual void accept_keyboard(Game* handler, SDL_Event event) = 0;
+    virtual void accept_mouse(Game* handler, SDL_Event event) = 0;
+};
+
+class ScreenGameplayNormal: public ScreenControl
+{
+public:
+    void accept_keyboard(Game* handler, SDL_Event event) override;
+    void accept_mouse(Game* handler, SDL_Event event) override;
+};
+
+class ScreenGameplayInventory : public ScreenControl
+{
+public:
+    void accept_keyboard(Game* handler, SDL_Event event) override;
+    void accept_mouse(Game* handler, SDL_Event event) override;
 };

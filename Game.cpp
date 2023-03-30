@@ -2,6 +2,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+#define kkey event.key.keysym.sym // because i don't understand why this doesn'z work: SDL_KeyCode key = event.key.keysym.sym;
+
 
 Game::Game()
 {
@@ -45,32 +47,40 @@ Game::Game()
 }
 
 
-void Game::handle_click_(Mouse::click mouse_click_data)
-{
-    if ( !std::get<1>(mouse_click_data) ) return;                       // Check if there was a click to handle. If not do nothing.
-    auto [x, y, right_click] = Mouse::destructure(mouse_click_data);    // Get mouse click information.
-    GameObject* object { m_RoomManager.get_object(x, y) };              // Get object from Room Manager.
-    if ( object) object->accept(this, mouse_click_data);                // Do something with that object.
-}
-
-
 bool Game::running() { return m_WindowManager.running; }
 
 
-/*
-    1) Handle input.
-    2) Update.
-    3) Render.
-*/
+void Game::input_(SDL_Event event)
+{
+    // This will get called when there is a keyboard or mouse event.
+    // Outcome of both keyboard and mouse events depends on the current active screen.
+    ScreenControl* screen { m_ControlManager.screen() };
+    if ( !screen )
+    {
+        m_LogManager.log("Something went wrong. I can't control anything");  
+        return;
+    }
+    if ( event.type == SDL_KEYUP )
+    {
+        screen->accept_keyboard(this, event);
+    }
+    else if ( event.type == SDL_MOUSEBUTTONUP )
+    {
+        screen->accept_mouse(this, event);
+    }
+}
+
+
 void Game::update(int dt)
 {
     // 1) Handle input.
     while ( SDL_PollEvent(&event_) )
     {
         m_ControlManager.handle_window(event_);
-        m_ControlManager.handle_keyboard(event_);
-        Mouse::click mouse_click_data { m_ControlManager.handle_mouse(event_) };
-        handle_click_(mouse_click_data);
+        if ( event_.type == SDL_KEYUP || event_.type == SDL_MOUSEBUTTONUP )
+        {
+            input_(event_);
+        }
     }
     // 2) Update.
     m_RoomManager.update(&m_RenderManager, dt);
@@ -83,6 +93,94 @@ void Game::update(int dt)
 /*****************************************************************************************************************
  * Game Logic
 *****************************************************************************************************************/
+
+/*
+    Keyboard input
+*/
+
+/*
+    Screen Gameplay Normal.
+    Query active room for Game Object on the target location
+*/
+void Game::input_keyboard(ScreenGameplayNormal* screen, SDL_Event event)
+{
+    if ( event.type != SDL_KEYUP ) return;
+
+    const Controls mapping { m_ControlManager.mapping() };  // Mapping isn't constant, so we cannot use switch statement :( 
+
+         if ( kkey == SDLK_ESCAPE ) m_WindowManager.close();
+    // Fullscreen
+    else if ( kkey == SDLK_F11 ) m_WindowManager.toggle_fullscreen();
+    // Show click map
+    else if ( kkey == mapping.KEY_HOT_SPOTS ) m_RoomManager.handle_keyboard(ACTION_ROOM::BITMAP);
+    // Toggle walk area's polygon rendering
+    else if ( kkey == mapping.KEY_WALK_POLYGON ) m_RoomManager.handle_keyboard(ACTION_ROOM::WALK_POLYGON);
+    // Toggle items' click area's polygon rendering
+    else if ( kkey == mapping.KEY_ITEM_POLYGON ) m_RoomManager.handle_keyboard(ACTION_ROOM::ITEM_POLYGON);
+    // Toggle items' position vector rendering
+    else if ( kkey == mapping.KEY_ITEM_VECTOR ) m_RoomManager.handle_keyboard(ACTION_ROOM::ITEM_VECTOR);
+    // Show Inventory
+    else if ( kkey == mapping.KEY_INVENTORY )
+    {
+        m_PlayerManager.inventory.show();
+        m_ControlManager.screen(SCREEN::GAMEPLAY_INVENTORY);
+    }
+}
+
+
+void Game::input_keyboard(ScreenGameplayInventory* screen, SDL_Event event)
+{
+    if ( event.type != SDL_KEYUP ) return;
+
+    const Controls mapping { m_ControlManager.mapping() };
+
+    if ( kkey == mapping.KEY_INVENTORY )
+    {
+        m_PlayerManager.inventory.hide();
+        m_ControlManager.screen(SCREEN::GAMEPLAY_NORMAL);
+    }
+    else
+    {
+        m_TextManager.register_text("But I won't do that.", 100, 100, COLOR::GREEN);
+    }
+}
+
+
+/*
+    Mouse input
+*/
+
+/*
+    Screen Gameplay Normal.
+    Query active Room for Game Object on the target location.  Resolve Game Oject interaction.
+*/
+void Game::input_mouse(ScreenGameplayNormal* screen, SDL_Event event)
+{
+    // We are assuming a mouse event did occur.
+    Mouse::click mouse_data { m_ControlManager.handle_mouse(event) };   // This could be merged with the next line.
+    auto [x, y, right_click] = Mouse::destructure(mouse_data);          // Get mouse click information.
+
+    // auto [x, y, right_click] = m_ControlManager.mouse_data(event)    // Get mouse click information.
+
+
+    GameObject* object { m_RoomManager.get_object(x, y) };              // Get object from Room Manager.
+    if ( object) object->accept(this, mouse_data);                      // Do something with that object.
+                                                                        // What do I need from the mouse data?
+}
+
+
+/*
+    Screen Gameplay Inventory.
+    Inventory is visible. Can interact only with the Inventory, no with the Room.
+*/
+void Game::input_mouse(ScreenGameplayInventory* screen, SDL_Event event)
+{
+    // We are assuming a mouse event did occur.
+    Mouse::click mouse_data { m_ControlManager.handle_mouse(event) };   // This could be merged with the next line.
+    auto [x, y, right_click] = Mouse::destructure(mouse_data);          // Get mouse click information.
+    m_TextManager.register_text("Missed!", x, y, COLOR::PURPLE);
+}
+
 
 void Game::visit(Item* item, Mouse::click mouse)
 {
