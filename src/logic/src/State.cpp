@@ -83,19 +83,11 @@ void Gameplay::Normal::input_keyboard_(SDL_Event event)
 
     const Controls mapping { managers_->control.mapping() };  // Mapping isn't constant, so we cannot use switch statement :( 
 
-         if ( kkey == SDLK_ESCAPE ) managers_->window.close();
-    // Fullscreen
-    else if ( kkey == SDLK_F11 ) managers_->window.toggle_fullscreen();
-    // Show click map
-    else if ( kkey == mapping.KEY_HOT_SPOTS ) managers_->rooms.handle_keyboard(ACTION_ROOM::BITMAP);
-    // Toggle walk area's polygon rendering
-    else if ( kkey == mapping.KEY_WALK_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::WALK_POLYGON);
-    // Toggle items' click area's polygon rendering
-    else if ( kkey == mapping.KEY_ITEM_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_POLYGON);
-    // Toggle items' position vector rendering
-    else if ( kkey == mapping.KEY_ITEM_VECTOR ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_VECTOR);
-    // Show Inventory
-    else if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Inventory::get());
+         if ( kkey == mapping.KEY_HOT_SPOTS ) managers_->rooms.handle_keyboard(ACTION_ROOM::BITMAP);            // Show click map
+    else if ( kkey == mapping.KEY_WALK_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::WALK_POLYGON);   // Toggle walk area's polygon rendering
+    else if ( kkey == mapping.KEY_ITEM_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_POLYGON);   // Toggle items' click area's polygon rendering
+    else if ( kkey == mapping.KEY_ITEM_VECTOR ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_VECTOR);     // Toggle items' position vector rendering
+    else if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Inventory::get());                // Show Inventory
 }
 
 void Gameplay::Normal::input_mouse_(SDL_Event event)

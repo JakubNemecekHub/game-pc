@@ -26,8 +26,8 @@ void ControlManager::shutDown()
 
 void ControlManager::handle_window(SDL_Event event)
 {
-    if ( event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) window_->close(); 
-    else if ( event.key.keysym.sym == SDLK_F11 ) window_->toggle_fullscreen();
+         if ( event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) window_->close(); 
+    else if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_F11 ) window_->toggle_fullscreen();
 }
 
 
