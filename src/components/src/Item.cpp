@@ -2,7 +2,7 @@
 
 #include <stdlib.h> // rand
 
-#include "../logic/State.hpp"
+#include "../logic/States.hpp"
 
 
 Item::Item(YAML::Node data, AssetManager* assets)

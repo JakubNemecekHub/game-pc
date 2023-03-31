@@ -2,7 +2,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "src/logic/State.hpp"
+#include "src/logic/States.hpp"
 
 
 #define kkey event.key.keysym.sym // because i don't understand why this doesn'z work: SDL_KeyCode key = event.key.keysym.sym;

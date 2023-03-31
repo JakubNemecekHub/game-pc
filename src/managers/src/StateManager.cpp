@@ -1,6 +1,6 @@
 #include "../StateManager.hpp"
 
-#include "../logic/State.hpp"
+#include "../logic/States.hpp"
 
 
 StateManager::StateManager()

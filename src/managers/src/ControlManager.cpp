@@ -1,6 +1,6 @@
 #include "../ControlManager.hpp"
 
-#include "../logic/State.hpp"
+#include "../logic/States.hpp"
 
 
 ControlManager::ControlManager(LogManager* log, StateManager* state, WindowManager* window)

@@ -9,7 +9,10 @@ project(
 
 add_library(
     ${PROJECT_NAME}
-    src/State.cpp
+    src/IntroState.cpp
+    src/ExitState.cpp
+    src/Gameplay.NormalState.cpp
+    src/Gameplay.InventoryState.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

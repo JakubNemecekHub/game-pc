@@ -2,7 +2,7 @@
 
 #include <stdlib.h> // rand
 
-#include "../logic/State.hpp"
+#include "../logic/States.hpp"
 
 
 // Door::Door() {}

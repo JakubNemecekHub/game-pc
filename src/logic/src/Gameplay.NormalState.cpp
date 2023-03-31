@@ -1,106 +1,12 @@
-#include "../State.hpp"
+#include "../Gameplay.NormalState.hpp"
 
 #include "../../Game.hpp"
 #include "../components/Sprite.hpp"
+#include "../Gameplay.InventoryState.hpp"
 
 #define kkey event.key.keysym.sym // because i don't understand why this doesn't work: SDL_KeyCode key = event.key.keysym.sym;
 
 
-/***********************************************************************************************************************
- * Intro
-***********************************************************************************************************************/
-IntroState IntroState::self_;
-IntroState::IntroState() {}
-IntroState* IntroState::get() { return &self_; }
-
-bool IntroState::enter(Managers* managers)
-{
-    managers_ = managers;
-    managers_->log.log("Entered Intro State.");
-    logo_ = managers->assets.sprite("logo");
-    logo_->scale_full_h();
-    logo_->center();
-    return true;
-}
-
-bool IntroState::exit()
-{
-    managers_->log.log("Left Intro State.");
-    logo_ = nullptr;
-    return true;
-}
-
-void IntroState::input(SDL_Event event)
-{
-    if ( event.type != SDL_KEYUP ) return;
-    
-    if ( event.key.keysym.sym == SDLK_RETURN )
-    {
-        managers_->state.next(Gameplay::Normal::get());
-    }
-
-}
-
-void IntroState::update(int dt)
-{
-    logo_->update(&(managers_->renderer), dt);
-}
-
-void IntroState::render()
-{
-    managers_->renderer.render();
-}
-
-
-/***********************************************************************************************************************
- * Exit
-***********************************************************************************************************************/
-ExitState ExitState::self_;
-ExitState::ExitState() {}
-ExitState* ExitState::get() { return &self_; }
-
-bool ExitState::enter(Managers* managers)
-{
-    managers_ = managers;
-    managers_->log.log("Entered Exit State.");
-    outro_ = managers->assets.sprite("outro");
-    outro_->scale_full_h();
-    outro_->center();
-    return true;
-}
-
-bool ExitState::exit()
-{
-    managers_->log.log("Left Exit State.");
-    outro_ = nullptr;
-    return true;
-}
-
-void ExitState::input(SDL_Event event)
-{
-    if ( event.type != SDL_KEYUP ) return;
-    
-    if ( event.key.keysym.sym == SDLK_RETURN )
-    {
-        managers_->window.close();
-    }
-
-}
-
-void ExitState::update(int dt)
-{
-    outro_->update(&(managers_->renderer), dt);
-}
-
-void ExitState::render()
-{
-    managers_->renderer.render();
-}
-
-
-/***********************************************************************************************************************
- * Gameplay Normal
-***********************************************************************************************************************/
 Gameplay::Normal Gameplay::Normal::self_;
 Gameplay::Normal::Normal() {}
 Gameplay::Normal* Gameplay::Normal::get() { return &self_; }
@@ -235,59 +141,3 @@ void Gameplay::Normal::visit(HotSpot* hot_spot, Mouse::click mouse)
         managers_->text.register_text(observation, x, y, COLOR::GREEN);
     }
 }
-
-
-/***********************************************************************************************************************
- * Gameplay Inventory
-***********************************************************************************************************************/
-Gameplay::Inventory Gameplay::Inventory::self_;
-Gameplay::Inventory::Inventory() {}
-Gameplay::Inventory* Gameplay::Inventory::get() { return &self_; }
-
-bool Gameplay::Inventory::enter(Managers* managers)
-{
-    managers_ = managers;
-    managers_->player.inventory.show();
-    return true;
-}
-
-bool Gameplay::Inventory::exit()
-{
-    managers_->player.inventory.hide();
-    return true;
-}
-
-void Gameplay::Inventory::input_keyboard_(SDL_Event event)
-{
-    if ( event.type != SDL_KEYUP ) return;
-
-    const Controls mapping { managers_->control.mapping() };  // Mapping isn't constant, so we cannot use switch statement :( 
-
-    if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Normal::get());
-}
-
-void Gameplay::Inventory::input_mouse_(SDL_Event event)
-{
-}
-
-void Gameplay::Inventory::input(SDL_Event event)
-{
-    input_keyboard_(event);
-    input_mouse_(event);
-}
-
-void Gameplay::Inventory::update(int dt)
-{
-    managers_->rooms.update(&(managers_->renderer), dt);
-    managers_->player.update(&(managers_->renderer), dt);
-    managers_->text.update(dt);
-}
-
-void Gameplay::Inventory::render()
-{
-    managers_->renderer.render();
-}
-
-void Gameplay::Inventory::visit(Item* item, Mouse::click mouse_click_data) {}
-void Gameplay::Inventory::visit(Door* door, Mouse::click mouse_click_data) {}
-void Gameplay::Inventory::visit(HotSpot* hot_spot, Mouse::click mouse_click_data) {}
