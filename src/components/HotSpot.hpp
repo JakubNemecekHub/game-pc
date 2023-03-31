@@ -24,6 +24,6 @@ public:
     std::string observation();
     std::string use_observation();
 
-    void accept(State* handler, Mouse::click mouse) override;
+    void accept(Gameplay::GameplayState* handler, Mouse::click mouse) override;
 
 };

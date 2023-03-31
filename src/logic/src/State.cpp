@@ -51,10 +51,6 @@ void IntroState::render()
     managers_->renderer.render();
 }
 
-void IntroState::visit(Item* item, Mouse::click mouse_click_data) {}
-void IntroState::visit(Door* door, Mouse::click mouse_click_data) {}
-void IntroState::visit(HotSpot* hot_spot, Mouse::click mouse_click_data) {}
-
 
 /***********************************************************************************************************************
  * Exit
@@ -100,10 +96,6 @@ void ExitState::render()
 {
     managers_->renderer.render();
 }
-
-void ExitState::visit(Item* item, Mouse::click mouse_click_data) {}
-void ExitState::visit(Door* door, Mouse::click mouse_click_data) {}
-void ExitState::visit(HotSpot* hot_spot, Mouse::click mouse_click_data) {}
 
 
 /***********************************************************************************************************************

@@ -26,12 +26,6 @@ public:
     virtual void input(SDL_Event event) = 0; 
     virtual void update(int dt) = 0; 
     virtual void render() = 0; 
-
-    // Input methods
-
-    virtual void visit(Item* item, Mouse::click mouse_click_data) = 0;
-    virtual void visit(Door* door, Mouse::click mouse_click_data) = 0;
-    virtual void visit(HotSpot* hot_spot, Mouse::click mouse_click_data) = 0;
     
 };
 
@@ -61,12 +55,6 @@ public:
     void update(int dt) override; 
     void render() override;
 
-    // Input methods TO DO: get rid of them in InventoryState. Only Gameplay states will use them.
-
-    void visit(Item* item, Mouse::click mouse_click_data) override;
-    void visit(Door* door, Mouse::click mouse_click_data) override;
-    void visit(HotSpot* hot_spot, Mouse::click mouse_click_data) override;
-
 };
 
 
@@ -95,19 +83,21 @@ public:
     void update(int dt) override; 
     void render() override;
 
-    // Input methods TO DO: get rid of them in InventoryState. Only Gameplay states will use them.
-
-    void visit(Item* item, Mouse::click mouse_click_data) override;
-    void visit(Door* door, Mouse::click mouse_click_data) override;
-    void visit(HotSpot* hot_spot, Mouse::click mouse_click_data) override;
-
 };
 
 
 namespace Gameplay
 {
 
-class Normal : public State
+class GameplayState : public State
+{
+public:
+    virtual void visit(Item* item, Mouse::click mouse_click_data) = 0;
+    virtual void visit(Door* door, Mouse::click mouse_click_data) = 0;
+    virtual void visit(HotSpot* hot_spot, Mouse::click mouse_click_data) = 0;
+};
+
+class Normal : public GameplayState
 {
 private:
 
@@ -144,7 +134,7 @@ public:
 };
 
 
-class Inventory : public State
+class Inventory : public GameplayState
 {
 private:
 

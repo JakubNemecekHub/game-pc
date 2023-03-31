@@ -2,13 +2,13 @@
 
 #include "../utils/Mouse.hpp"
 
-
-class State;
+namespace Gameplay { class GameplayState; }
+// class Gameplay::GameplayState;
 
 class GameObject
 {
 public:
     ~GameObject() {}
-    virtual void accept(State* handler, Mouse::click mouse) = 0;
+    virtual void accept(Gameplay::GameplayState* handler, Mouse::click mouse) = 0;
 };
  

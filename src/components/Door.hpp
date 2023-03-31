@@ -34,6 +34,6 @@ public:
     void        state(bool _state);
     std::string key_id();
 
-    void accept(State* handler, Mouse::click mouse) override;
+    void accept(Gameplay::GameplayState* handler, Mouse::click mouse) override;
 
 };
