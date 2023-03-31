@@ -2,7 +2,7 @@
 
 #include <stdlib.h> // rand
 
-#include "../../Game.hpp"
+#include "../logic/State.hpp"
 
 
 // Door::Door() {}
@@ -42,4 +42,4 @@ void Door::state(bool new_state) { state_ = new_state; }
 
 std::string Door::key_id() { return key_id_; }
 
-void Door::accept(Game* handler, Mouse::click mouse) { handler->visit(this, mouse); }
+void Door::accept(State* handler, Mouse::click mouse) { handler->visit(this, mouse); }

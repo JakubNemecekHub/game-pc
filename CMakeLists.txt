@@ -17,6 +17,7 @@ LINK_DIRECTORIES(D:/Prog/cpp/vcpkg/installed/x64-windows/lib/)
 add_subdirectory(src/components)
 add_subdirectory(src/managers)
 add_subdirectory(src/math)
+add_subdirectory(src/logic)
 
 add_executable(${PROJECT_NAME} main.cpp Game.cpp)
 find_package(SDL2 CONFIG REQUIRED)
@@ -28,5 +29,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
   $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
   yaml-cpp
-  math components managers
+  math components managers logic
 )

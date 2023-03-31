@@ -1,12 +1,8 @@
 #include "../ControlManager.hpp"
 
-#include <iostream>
 
-#include "../../Game.hpp"
-
-
-ControlManager::ControlManager(LogManager* log, WindowManager* window, RoomManager* rooms, PlayerManager* player)
-    : log_{log}, window_{window}, rooms_{rooms}, player_{player} {}
+ControlManager::ControlManager(LogManager* log, WindowManager* window)
+    : log_{log}, window_{window} {}
 
 void ControlManager::startUp(YAML::Node mapping)
 {
@@ -18,7 +14,6 @@ void ControlManager::startUp(YAML::Node mapping)
         SDL_GetKeyFromName(mapping["Item_Vector"].as<std::string>().c_str()),
         SDL_GetKeyFromName(mapping["Hots_pots"].as<std::string>().c_str()),
     };
-    screen_ = new ScreenGameplayNormal;
     log_->log("Control Manager started.");
 }
 
@@ -31,7 +26,8 @@ void ControlManager::shutDown()
 
 void ControlManager::handle_window(SDL_Event event)
 {
-    if ( event.type == SDL_QUIT) window_->close(); 
+    if ( event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) window_->close(); 
+    else if ( event.key.keysym.sym == SDLK_F11 ) window_->toggle_fullscreen();
 }
 
 
@@ -46,6 +42,7 @@ Mouse::click ControlManager::handle_mouse(SDL_Event event)
     return std::make_tuple(true, x, y, right_click);
 }
 
+
 auto ControlManager::mouse_data(SDL_Event event)
 {
     struct result { int x; int y; bool right_click; };
@@ -57,40 +54,3 @@ auto ControlManager::mouse_data(SDL_Event event)
 
 
 Controls ControlManager::mapping() { return mapping_; }
-
-/*****************************************************************************************
- * Screens
-*****************************************************************************************/
-
-void ControlManager::screen(SCREEN type)
-{
-    delete screen_;
-    switch ( type )
-    {
-        case SCREEN::GAMEPLAY_NORMAL: screen_ = new ScreenGameplayNormal; break;
-        case SCREEN::GAMEPLAY_INVENTORY: screen_ = new ScreenGameplayInventory; break;
-        default: break;
-    }
-}
-
-ScreenControl* ControlManager::screen() { return screen_; }
-
-void ScreenGameplayNormal::accept_keyboard(Game* handler, SDL_Event event)
-{
-    handler->input_keyboard(this, event);
-}
-
-void ScreenGameplayInventory::accept_keyboard(Game* handler, SDL_Event event)
-{
-    handler->input_keyboard(this, event);
-}
-
-void ScreenGameplayNormal::accept_mouse(Game* handler, SDL_Event event)
-{
-    handler->input_mouse(this, event);
-}
-
-void ScreenGameplayInventory::accept_mouse(Game* handler, SDL_Event event)
-{
-    handler->input_mouse(this, event);
-}

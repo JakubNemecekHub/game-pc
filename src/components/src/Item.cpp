@@ -2,7 +2,7 @@
 
 #include <stdlib.h> // rand
 
-#include "../../Game.hpp"
+#include "../logic/State.hpp"
 
 
 Item::Item(YAML::Node data, AssetManager* assets)
@@ -52,4 +52,4 @@ void Item::lock(bool new_lock) { lock_ = new_lock; }
 Sprite* Item::sprite() { return sprite_; }
 Polygon* Item::click_area() { return &click_area_; }
 
-void Item::accept(Game* handler, Mouse::click mouse) { handler->visit(this, mouse); }
+void Item::accept(State* handler, Mouse::click mouse) { handler->visit(this, mouse); }

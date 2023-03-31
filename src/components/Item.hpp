@@ -39,6 +39,6 @@ public:
     Sprite*     sprite();
     Polygon*    click_area();
 
-    void accept(Game* handler, Mouse::click mouse) override;
+    void accept(State* handler, Mouse::click mouse) override;
     
 };

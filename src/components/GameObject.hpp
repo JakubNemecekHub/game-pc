@@ -3,12 +3,12 @@
 #include "../utils/Mouse.hpp"
 
 
-class Game;
+class State;
 
 class GameObject
 {
 public:
     ~GameObject() {}
-    virtual void accept(Game* handler, Mouse::click mouse) = 0;
+    virtual void accept(State* handler, Mouse::click mouse) = 0;
 };
  
