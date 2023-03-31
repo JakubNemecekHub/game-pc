@@ -69,6 +69,41 @@ public:
 
 };
 
+
+class ExitState : public State
+{
+private:
+
+    static ExitState self_;
+    ExitState();
+
+    Managers* managers_;
+
+    Sprite* outro_;
+
+public:
+    static ExitState* get();
+
+    // State lifecycle
+
+    bool enter(Managers* managers) override;
+    bool exit() override;
+
+    // Game loop methods
+
+    void input(SDL_Event event) override; 
+    void update(int dt) override; 
+    void render() override;
+
+    // Input methods TO DO: get rid of them in InventoryState. Only Gameplay states will use them.
+
+    void visit(Item* item, Mouse::click mouse_click_data) override;
+    void visit(Door* door, Mouse::click mouse_click_data) override;
+    void visit(HotSpot* hot_spot, Mouse::click mouse_click_data) override;
+
+};
+
+
 namespace Gameplay
 {
 

@@ -32,7 +32,7 @@ Managers::Managers()
     items = ItemManager(&log);
     rooms = RoomManager(&log);
     player = PlayerManager(&log);
-    control = ControlManager(&log, &window);
+    control = ControlManager(&log, &state, &window);
 
     window.startUp();
     renderer.startUp(window.window());

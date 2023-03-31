@@ -56,6 +56,55 @@ void IntroState::visit(Door* door, Mouse::click mouse_click_data) {}
 void IntroState::visit(HotSpot* hot_spot, Mouse::click mouse_click_data) {}
 
 
+/***********************************************************************************************************************
+ * Exit
+***********************************************************************************************************************/
+ExitState ExitState::self_;
+ExitState::ExitState() {}
+ExitState* ExitState::get() { return &self_; }
+
+bool ExitState::enter(Managers* managers)
+{
+    managers_ = managers;
+    managers_->log.log("Entered Exit State.");
+    outro_ = managers->assets.sprite("outro");
+    outro_->scale_full_h();
+    outro_->center();
+    return true;
+}
+
+bool ExitState::exit()
+{
+    managers_->log.log("Left Exit State.");
+    outro_ = nullptr;
+    return true;
+}
+
+void ExitState::input(SDL_Event event)
+{
+    if ( event.type != SDL_KEYUP ) return;
+    
+    if ( event.key.keysym.sym == SDLK_RETURN )
+    {
+        managers_->window.close();
+    }
+
+}
+
+void ExitState::update(int dt)
+{
+    outro_->update(&(managers_->renderer), dt);
+}
+
+void ExitState::render()
+{
+    managers_->renderer.render();
+}
+
+void ExitState::visit(Item* item, Mouse::click mouse_click_data) {}
+void ExitState::visit(Door* door, Mouse::click mouse_click_data) {}
+void ExitState::visit(HotSpot* hot_spot, Mouse::click mouse_click_data) {}
+
 
 /***********************************************************************************************************************
  * Gameplay Normal

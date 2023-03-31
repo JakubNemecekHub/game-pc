@@ -1,8 +1,10 @@
 #include "../ControlManager.hpp"
 
+#include "../logic/State.hpp"
 
-ControlManager::ControlManager(LogManager* log, WindowManager* window)
-    : log_{log}, window_{window} {}
+
+ControlManager::ControlManager(LogManager* log, StateManager* state, WindowManager* window)
+    : log_{log}, state_{state}, window_{window} {}
 
 void ControlManager::startUp(YAML::Node mapping)
 {
@@ -26,7 +28,10 @@ void ControlManager::shutDown()
 
 void ControlManager::handle_window(SDL_Event event)
 {
-         if ( event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) window_->close(); 
+         if ( event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
+         {
+            state_->next(ExitState::get());
+         } 
     else if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_F11 ) window_->toggle_fullscreen();
 }
 

@@ -8,6 +8,7 @@
 
 #include "../utils/Mouse.hpp"
 #include "LogManager.hpp"
+#include "StateManager.hpp"
 #include "WindowManager.hpp"
 
 
@@ -27,6 +28,7 @@ private:
 
     LogManager*    log_;
     WindowManager* window_;
+    StateManager* state_;
 
     Controls       mapping_;
     SDL_Event      event_;
@@ -34,7 +36,7 @@ private:
 public:
 
     ControlManager() {};
-    ControlManager(LogManager* log, WindowManager* window);
+    ControlManager(LogManager* log, StateManager* state_,  WindowManager* window);
 
     void startUp(YAML::Node mapping);
     void shutDown();
