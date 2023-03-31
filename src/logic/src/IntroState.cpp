@@ -14,7 +14,6 @@ IntroState* IntroState::get() { return &self_; }
 bool IntroState::enter(Managers* managers)
 {
     managers_ = managers;
-    managers_->log.log("Entered Intro State.");
     logo_ = managers->assets.sprite("logo");
     logo_->scale_full_h();
     logo_->center();
@@ -23,7 +22,6 @@ bool IntroState::enter(Managers* managers)
 
 bool IntroState::exit()
 {
-    managers_->log.log("Left Intro State.");
     logo_ = nullptr;
     return true;
 }

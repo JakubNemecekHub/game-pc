@@ -13,7 +13,6 @@ ExitState* ExitState::get() { return &self_; }
 bool ExitState::enter(Managers* managers)
 {
     managers_ = managers;
-    managers_->log.log("Entered Exit State.");
     outro_ = managers->assets.sprite("outro");
     outro_->scale_full_h();
     outro_->center();
@@ -22,7 +21,6 @@ bool ExitState::enter(Managers* managers)
 
 bool ExitState::exit()
 {
-    managers_->log.log("Left Exit State.");
     outro_ = nullptr;
     return true;
 }
