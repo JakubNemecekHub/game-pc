@@ -116,6 +116,13 @@ private:
     static Inventory self_;
     Inventory();
 
+    Managers* managers_;
+
+    // Helper
+
+    void input_keyboard_(SDL_Event event);
+    void input_mouse_(SDL_Event event);
+
 public:
     static Inventory* get();
 
