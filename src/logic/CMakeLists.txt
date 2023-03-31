@@ -13,6 +13,7 @@ add_library(
     src/ExitState.cpp
     src/Gameplay.NormalState.cpp
     src/Gameplay.InventoryState.cpp
+    src/Gameplay.EditorState.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

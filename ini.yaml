@@ -27,3 +27,4 @@ control:
   Item_Polygon: t
   Item_Vector: v
   Hots_pots: b
+  Editor: e

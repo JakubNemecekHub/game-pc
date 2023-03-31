@@ -19,6 +19,7 @@ struct Controls
     SDL_Keycode KEY_ITEM_POLYGON;
     SDL_Keycode KEY_ITEM_VECTOR;
     SDL_Keycode KEY_HOT_SPOTS;
+    SDL_Keycode KEY_EDITOR;
 };
 
 

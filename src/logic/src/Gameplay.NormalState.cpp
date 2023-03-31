@@ -3,6 +3,7 @@
 #include "../../Game.hpp"
 #include "../components/Sprite.hpp"
 #include "../Gameplay.InventoryState.hpp"
+#include "../Gameplay.EditorState.hpp"
 
 #define kkey event.key.keysym.sym // because i don't understand why this doesn't work: SDL_KeyCode key = event.key.keysym.sym;
 
@@ -29,12 +30,9 @@ void Gameplay::Normal::input_keyboard_(SDL_Event event)
     if ( event.type != SDL_KEYUP ) return;
 
     const Controls mapping { managers_->control.mapping() };  // Mapping isn't constant, so we cannot use switch statement :( 
-
-         if ( kkey == mapping.KEY_HOT_SPOTS ) managers_->rooms.handle_keyboard(ACTION_ROOM::BITMAP);            // Show click map
-    else if ( kkey == mapping.KEY_WALK_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::WALK_POLYGON);   // Toggle walk area's polygon rendering
-    else if ( kkey == mapping.KEY_ITEM_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_POLYGON);   // Toggle items' click area's polygon rendering
-    else if ( kkey == mapping.KEY_ITEM_VECTOR ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_VECTOR);     // Toggle items' position vector rendering
-    else if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Inventory::get());                // Show Inventory
+ 
+         if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Inventory::get());                // Show Inventory
+    else if ( kkey == mapping.KEY_EDITOR ) managers_->state.next(Gameplay::Editor::get());                      // Switch to editor
 }
 
 void Gameplay::Normal::input_mouse_(SDL_Event event)
@@ -74,7 +72,7 @@ void Gameplay::Normal::visit(Item* item, Mouse::click mouse)
     if ( right_click )  // Look.
     {
         std::string observation { item->observation() };
-        managers_->text.register_text(observation, x, y, COLOR::GREEN);
+        managers_->text.submit_player(observation, x, y, COLOR::GREEN);
     }
     else                // Try to pick up. TO DO: move to Inventory
     {
@@ -82,11 +80,11 @@ void Gameplay::Normal::visit(Item* item, Mouse::click mouse)
         {
             managers_->player.inventory.add(item);
             managers_->rooms.remove_item(item->id());
-            managers_->text.register_text(item->pick_observation(), x, y, COLOR::PURPLE);
+            managers_->text.submit_player(item->pick_observation(), x, y, COLOR::PURPLE);
         }
         else
         {
-            managers_->text.register_text("My Inventory is full.", x, y, COLOR::BEIGE);
+            managers_->text.submit_player("My Inventory is full.", x, y, COLOR::BEIGE);
         }
     }
 }
@@ -98,7 +96,7 @@ void Gameplay::Normal::visit(Door* door, Mouse::click mouse)
     if ( right_click )  // Look
     {
         std::string observation { door->observation() };
-        managers_->text.register_text(observation, x, y, COLOR::GREEN);
+        managers_->text.submit_player(observation, x, y, COLOR::GREEN);
     }
     else
     {
@@ -109,12 +107,12 @@ void Gameplay::Normal::visit(Door* door, Mouse::click mouse)
             {
                 door->unlock();
                 managers_->player.inventory.remove(key_id);
-                managers_->text.register_text("Unlocked.", x, y, COLOR::PURPLE);
+                managers_->text.submit_player("Unlocked.", x, y, COLOR::PURPLE);
             }
             else
             {
                 std::string observation { door->locked_observation() };
-               managers_->text.register_text(observation, x, y, COLOR::GREEN);
+               managers_->text.submit_player(observation, x, y, COLOR::GREEN);
             }
         }
         else
@@ -133,11 +131,11 @@ void Gameplay::Normal::visit(HotSpot* hot_spot, Mouse::click mouse)
     if ( right_click )
     {
         observation = hot_spot->observation();
-        managers_->text.register_text(observation, x, y, COLOR::BEIGE);
+        managers_->text.submit_player(observation, x, y, COLOR::BEIGE);
     }
     else
     {
         observation = hot_spot->use_observation();
-        managers_->text.register_text(observation, x, y, COLOR::GREEN);
+        managers_->text.submit_player(observation, x, y, COLOR::GREEN);
     }
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>   // unique_ptr
 #include <unordered_map>
+#include <list>
+#include <tuple>
 
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>
@@ -11,6 +13,9 @@
 #include "LogManager.hpp"
 #include "RenderManager.hpp"
 #include "../components/Sprite.hpp"
+
+
+typedef std::tuple<std::unique_ptr<Sprite>, int> text_tuple;
 
 
 enum COLOR { BEIGE, PURPLE, GREEN, RED };
@@ -36,15 +41,21 @@ class TextManager
 {
 private:
 
-    RenderManager*                  renderer_;
-    LogManager*                     log_;
-    std::string                     font_file_;
-    int                             font_size_;
-    TTF_Font*                       font_;              // .ttf font to use to display text
-    int                             max_duration_;
-    std::unique_ptr<Sprite>         sprite_;            // One Sprite representing a text to be shown
-    int                             text_timer_;
+    
+
+    RenderManager*          renderer_;
+    LogManager*             log_;
+    std::string             font_file_;
+    int                     font_size_;
+    TTF_Font*               font_;              // .ttf font to use to display text
+    int                     max_duration_;
+    text_tuple              text_player_;
+    std::unique_ptr<Sprite> text_label_;
+    std::list<text_tuple>   text_free_;
     std::unordered_map<int, Color>  colors_;
+
+    SDL_Texture* create_texture_(std::string text, COLOR color);
+    void transform_(std::unique_ptr<Sprite>& sprite, int x, int y);
 
 public:
 
@@ -56,6 +67,9 @@ public:
 
     void update(int dt);
 
-    void register_text(std::string text, int x, int y, COLOR color=BEIGE);
+    void submit_player(std::string text, int x, int y, COLOR color=BEIGE);
+    void submit_label(std::string text, int x, int y, COLOR color=BEIGE);
+    void submit_free(std::string text, int x, int y, COLOR color=BEIGE);
     void clean();
+    
 };
