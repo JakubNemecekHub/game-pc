@@ -45,6 +45,12 @@ public:
     Controls mapping();
     
     void handle_window(SDL_Event event);
-    Mouse::Transform mouse_transform(SDL_Event event);
+    auto mouse_position(SDL_Event& event)
+    {
+        struct result{ int x; int y; };
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        return result{x, y};
+    }
     
 };

@@ -39,7 +39,13 @@ public:
     Sprite*     sprite();
     Polygon*    click_area();
 
-    void accept_click(Gameplay::GameplayState* handler ,Mouse::Transform mouse_transform) override;
-    void accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) override;
+    // Position
+    void x(int x);
+    void y(int y);
+    void move (int dx, int dy);
+
+    void accept_click(Gameplay::GameplayState* handler, SDL_Event event) override;
+    void accept_over(Gameplay::GameplayState* handler, SDL_Event event) override;
+    void accept_drag(Gameplay::GameplayState* handler, SDL_Event event) override;
     
 };

@@ -36,12 +36,15 @@ public:
 
     // Input methods
 
-    void visit_click(Item* item, Mouse::Transform mouse_transform) override;
-    void visit_click(Door* door, Mouse::Transform mouse_transform) override;
-    void visit_click(HotSpot* hot_spot, Mouse::Transform mouse_transform) override;
-    void visit_over(Item* item, Mouse::Transform mouse_transform) override;
-    void visit_over(Door* door, Mouse::Transform mouse_transform) override;
-    void visit_over(HotSpot* hot_spot, Mouse::Transform mouse_transform) override;
+    void visit_click(Item* item, SDL_Event event) override;
+    void visit_click(Door* door, SDL_Event event) override;
+    void visit_click(HotSpot* hot_spot, SDL_Event event) override;
+    void visit_over(Item* item, SDL_Event event) override;
+    void visit_over(Door* door, SDL_Event event) override;
+    void visit_over(HotSpot* hot_spot, SDL_Event event) override;
+    void visit_drag(Item* item, SDL_Event event) override;
+    void visit_drag(Door* door, SDL_Event event) override;
+    void visit_drag(HotSpot* hot_spot, SDL_Event event) override;
 
 };
 

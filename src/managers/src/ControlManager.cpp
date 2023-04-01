@@ -37,13 +37,4 @@ void ControlManager::handle_window(SDL_Event event)
 }
 
 
-Mouse::Transform ControlManager::mouse_transform(SDL_Event event)
-{
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    bool right_click { event.button.button == SDL_BUTTON_RIGHT };
-    return Mouse::Transform{x, y, right_click};
-}
-
-
 Controls ControlManager::mapping() { return mapping_; }

@@ -52,5 +52,26 @@ void Item::lock(bool new_lock) { lock_ = new_lock; }
 Sprite* Item::sprite() { return sprite_; }
 Polygon* Item::click_area() { return &click_area_; }
 
-void Item::accept_click(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_click(this, mouse_transform); }
-void Item::accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_over(this, mouse_transform); }
+void Item::x(int x)
+{
+    int old_x { sprite_->x() };
+    int dx { x - old_x };
+    click_area_.move(dx, 0);
+    sprite_->x(x);
+}
+void Item::y(int y)
+{
+    int old_y { sprite_->y() };
+    int dy { y - old_y };
+    click_area_.move(0, dy);
+    sprite_->y(y);
+}
+void Item::move (int dx, int dy)
+{
+    sprite_->move(dx, dy);
+    click_area_.move(dx, dy);
+}
+
+void Item::accept_click(Gameplay::GameplayState* handler, SDL_Event event) { handler->visit_click(this, event); }
+void Item::accept_over(Gameplay::GameplayState* handler, SDL_Event event) { handler->visit_over(this, event); }
+void Item::accept_drag(Gameplay::GameplayState* handler, SDL_Event event) { handler->visit_drag(this, event); }

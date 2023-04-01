@@ -68,9 +68,12 @@ void Gameplay::Inventory::render()
     managers_->renderer.render();
 }
 
-void Gameplay::Inventory::visit_click(Item* item, Mouse::Transform mouse_transform) {}
-void Gameplay::Inventory::visit_click(Door* door, Mouse::Transform mouse_transform) {}
-void Gameplay::Inventory::visit_click(HotSpot* hot_spot, Mouse::Transform mouse_transform) {}
-void Gameplay::Inventory::visit_over(Item* item, Mouse::Transform mouse_transform) {}
-void Gameplay::Inventory::visit_over(Door* door, Mouse::Transform mouse_transform) {}
-void Gameplay::Inventory::visit_over(HotSpot* hot_spot, Mouse::Transform mouse_transform) {}
+void Gameplay::Inventory::visit_click(Item* item, SDL_Event event) {}
+void Gameplay::Inventory::visit_click(Door* door, SDL_Event event) {}
+void Gameplay::Inventory::visit_click(HotSpot* hot_spot, SDL_Event event) {}
+void Gameplay::Inventory::visit_over(Item* item, SDL_Event event) {}
+void Gameplay::Inventory::visit_over(Door* door, SDL_Event event) {}
+void Gameplay::Inventory::visit_over(HotSpot* hot_spot, SDL_Event event) {}
+void Gameplay::Inventory::visit_drag(Item* item, SDL_Event event) {}
+void Gameplay::Inventory::visit_drag(Door* door, SDL_Event event) {}
+void Gameplay::Inventory::visit_drag(HotSpot* hot_spot, SDL_Event event) {}

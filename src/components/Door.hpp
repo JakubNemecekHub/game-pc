@@ -34,7 +34,8 @@ public:
     void        state(bool _state);
     std::string key_id();
 
-    void accept_click(Gameplay::GameplayState* handler,Mouse::Transform mouse_transform) override;
-    void accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) override;
+    void accept_click(Gameplay::GameplayState* handler, SDL_Event event) override;
+    void accept_over(Gameplay::GameplayState* handler, SDL_Event event) override;
+    void accept_drag(Gameplay::GameplayState* handler, SDL_Event event) override;
 
 };

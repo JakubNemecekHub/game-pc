@@ -85,12 +85,12 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
         item->sprite()->scale(room_scale * item_scale);
 
         // Scale the click area Polygon in the same way
-        item->click_area()->scale(item_scale);
-        item->click_area()->move(position[0], position[1]);
+        item->click_area()->scale(item_scale * room_scale);
+        item->click_area()->move(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
         // Also scale its visual 
-        item->click_area()->visual.scale = sprite_->scale();
-        item->click_area()->visual.dx = sprite_->x();
-        item->click_area()->visual.dy = sprite_->y();
+        item->click_area()->visual.scale = 1;
+        item->click_area()->visual.dx = 0;
+        item->click_area()->visual.dy = 0;
 
         item->state(item_data["state"].as<bool>());
         item->lock(true);
@@ -227,10 +227,9 @@ GameObject* Room::get_object(int x, int y)
     // Order: Item -> Door -> Hot Spot
 
     // Look for items.
-    auto [room_x, room_y] = relative_coordinates(x, y);
     for ( auto& item : items_ )
     {
-        if ( item.second->clicked(room_x, room_y) && item.second->state() )
+        if ( item.second->clicked(x, y) && item.second->state() )
         {
             return item.second;
         }
