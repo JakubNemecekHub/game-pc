@@ -54,12 +54,10 @@ void Gameplay::Editor::input_mouse_(SDL_Event& event)
     case SDL_MOUSEMOTION:
         if ( mouse_down_ )
         {
-            managers_->log.log("MOUSE DRAG", x, y);
             if ( selection_ ) selection_->accept_drag(this, event);
         }
         else
         {
-            managers_->log.log("MOUSE MOVE", x, y);
             if ( object) object->accept_over(this, event);
             else managers_->text.clean_player();
         }
