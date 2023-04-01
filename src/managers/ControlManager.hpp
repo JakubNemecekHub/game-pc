@@ -45,7 +45,6 @@ public:
     Controls mapping();
     
     void handle_window(SDL_Event event);
-    Mouse::click handle_mouse(SDL_Event event);
-    auto mouse_data(SDL_Event event);
+    Mouse::Transform mouse_transform(SDL_Event event);
     
 };

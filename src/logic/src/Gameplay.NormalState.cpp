@@ -39,19 +39,28 @@ void Gameplay::Normal::input_mouse_(SDL_Event event)
 {
     if ( event.type != SDL_MOUSEBUTTONUP ) return;
 
-    Mouse::click mouse_data { managers_->control.handle_mouse(event) }; // This could be merged with the next line.
-    auto [x, y, right_click] = Mouse::destructure(mouse_data);          // Get mouse click information.
-    // auto [x, y, right_click] = managers.control.mouse_data(event)    // Get mouse click information.
-
-    GameObject* object { managers_->rooms.get_object(x, y) };           // Get object from Room Manager.
-    if ( object) object->accept(this, mouse_data);                      // Do something with that object.
-                                                                        // What do I need from the mouse data?
+    Mouse::Transform mouse_transform { managers_->control.mouse_transform(event) };
+    GameObject* object { managers_->rooms.get_object(mouse_transform.x, mouse_transform.y) };   // Get object from Room Manager.
+    if ( object) object->accept_click(this, mouse_transform);                                         // Do something with that object.
 }
 
 void Gameplay::Normal::input(SDL_Event event)
 {
-    input_keyboard_(event);
-    input_mouse_(event);
+    switch (event.type)
+    {
+    // case SDL_KEYDOWN:
+    // case SDL_TEXTEDITING:
+    // case SDL_TEXTINPUT:
+    case SDL_KEYUP:
+        input_keyboard_(event);
+        break;
+    case SDL_MOUSEMOTION:
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEWHEEL:
+        input_mouse_(event);
+        break;
+    }
 }
 
 void Gameplay::Normal::update(int dt)
@@ -66,13 +75,12 @@ void Gameplay::Normal::render()
     managers_->renderer.render();
 }
 
-void Gameplay::Normal::visit(Item* item, Mouse::click mouse)
+void Gameplay::Normal::visit_click(Item* item, Mouse::Transform mouse_transform)
 {
-    auto [x, y, right_click] = Mouse::destructure(mouse);
-    if ( right_click )  // Look.
+    if ( mouse_transform.right_click )  // Look.
     {
         std::string observation { item->observation() };
-        managers_->text.submit_player(observation, x, y, COLOR::GREEN);
+        managers_->text.submit_player(observation, mouse_transform.x, mouse_transform.y, COLOR::GREEN);
     }
     else                // Try to pick up. TO DO: move to Inventory
     {
@@ -80,23 +88,22 @@ void Gameplay::Normal::visit(Item* item, Mouse::click mouse)
         {
             managers_->player.inventory.add(item);
             managers_->rooms.remove_item(item->id());
-            managers_->text.submit_player(item->pick_observation(), x, y, COLOR::PURPLE);
+            managers_->text.submit_player(item->pick_observation(), mouse_transform.x, mouse_transform.y, COLOR::PURPLE);
         }
         else
         {
-            managers_->text.submit_player("My Inventory is full.", x, y, COLOR::BEIGE);
+            managers_->text.submit_player("My Inventory is full.", mouse_transform.x, mouse_transform.y, COLOR::BEIGE);
         }
     }
 }
 
 
-void Gameplay::Normal::visit(Door* door, Mouse::click mouse)
+void Gameplay::Normal::visit_click(Door* door, Mouse::Transform mouse_transform)
 {
-    auto [x, y, right_click] = Mouse::destructure(mouse);
-    if ( right_click )  // Look
+    if ( mouse_transform.right_click )  // Look
     {
         std::string observation { door->observation() };
-        managers_->text.submit_player(observation, x, y, COLOR::GREEN);
+        managers_->text.submit_player(observation, mouse_transform.x, mouse_transform.y, COLOR::GREEN);
     }
     else
     {
@@ -107,12 +114,12 @@ void Gameplay::Normal::visit(Door* door, Mouse::click mouse)
             {
                 door->unlock();
                 managers_->player.inventory.remove(key_id);
-                managers_->text.submit_player("Unlocked.", x, y, COLOR::PURPLE);
+                managers_->text.submit_player("Unlocked.", mouse_transform.x, mouse_transform.y, COLOR::PURPLE);
             }
             else
             {
                 std::string observation { door->locked_observation() };
-               managers_->text.submit_player(observation, x, y, COLOR::GREEN);
+               managers_->text.submit_player(observation, mouse_transform.x, mouse_transform.y, COLOR::GREEN);
             }
         }
         else
@@ -124,18 +131,21 @@ void Gameplay::Normal::visit(Door* door, Mouse::click mouse)
 }
 
 
-void Gameplay::Normal::visit(HotSpot* hot_spot, Mouse::click mouse)
+void Gameplay::Normal::visit_click(HotSpot* hot_spot, Mouse::Transform mouse_transform)
 {
-    auto [x, y, right_click] = Mouse::destructure(mouse);
     std::string observation;
-    if ( right_click )
+    if ( mouse_transform.right_click )
     {
         observation = hot_spot->observation();
-        managers_->text.submit_player(observation, x, y, COLOR::BEIGE);
+        managers_->text.submit_player(observation, mouse_transform.x, mouse_transform.y, COLOR::BEIGE);
     }
     else
     {
         observation = hot_spot->use_observation();
-        managers_->text.submit_player(observation, x, y, COLOR::GREEN);
+        managers_->text.submit_player(observation, mouse_transform.x, mouse_transform.y, COLOR::GREEN);
     }
 }
+
+void Gameplay::Normal::visit_over(Item* item, Mouse::Transform mouse_transform) {}
+void Gameplay::Normal::visit_over(Door* door, Mouse::Transform mouse_transform) {}
+void Gameplay::Normal::visit_over(HotSpot* hot_spot, Mouse::Transform mouse_transform) {}

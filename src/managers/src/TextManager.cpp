@@ -176,3 +176,10 @@ void TextManager::clean()
     text_label_.release();
     text_free_.clear();
 }
+
+
+void TextManager::clean_player()
+{
+    std::get<0>(text_player_).release();
+    std::get<1>(text_player_) = 0;
+}

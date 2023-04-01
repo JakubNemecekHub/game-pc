@@ -21,7 +21,6 @@ bool Gameplay::Editor::enter(Managers* managers)
 
 bool Gameplay::Editor::exit()
 {
-    managers_->log.log("STOP");
     managers_->text.clean();
     return true;
 }
@@ -41,21 +40,39 @@ void Gameplay::Editor::input_keyboard_(SDL_Event event)
 
 void Gameplay::Editor::input_mouse_(SDL_Event event)
 {
-    if ( event.type != SDL_MOUSEBUTTONUP ) return;
-
-    Mouse::click mouse_data { managers_->control.handle_mouse(event) }; // This could be merged with the next line.
-    auto [x, y, right_click] = Mouse::destructure(mouse_data);          // Get mouse click information.
-    // auto [x, y, right_click] = managers.control.mouse_data(event)    // Get mouse click information.
-
-    GameObject* object { managers_->rooms.get_object(x, y) };           // Get object from Room Manager.
-    if ( object) object->accept(this, mouse_data);                      // Do something with that object.
-                                                                        // What do I need from the mouse data?
+    Mouse::Transform mouse_transform { managers_->control.mouse_transform(event) };             // Get mouse information.
+    GameObject* object { managers_->rooms.get_object(mouse_transform.x, mouse_transform.y) };   // Get object from Room Manager.
+    switch (event.type)
+    {
+    case SDL_MOUSEBUTTONUP:
+        if ( object) object->accept_click(this, mouse_transform);
+        break;
+    case SDL_MOUSEMOTION:
+            if ( object) object->accept_over(this, mouse_transform);
+            else managers_->text.clean_player();
+        break;
+    default:
+        break;
+    }
 }
 
 void Gameplay::Editor::input(SDL_Event event)
 {
-    input_keyboard_(event);
-    input_mouse_(event);
+    switch (event.type)
+    {
+    // case SDL_KEYDOWN:
+    // case SDL_TEXTEDITING:
+    // case SDL_TEXTINPUT:
+    case SDL_KEYUP:
+        input_keyboard_(event);
+        break;
+    case SDL_MOUSEMOTION:
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEWHEEL:
+        input_mouse_(event);
+        break;
+    }
 }
 
 void Gameplay::Editor::update(int dt)
@@ -70,13 +87,29 @@ void Gameplay::Editor::render()
     managers_->renderer.render();
 }
 
-void Gameplay::Editor::visit(Item* item, Mouse::click mouse) {};
-void Gameplay::Editor::visit(Door* door, Mouse::click mouse)
+void Gameplay::Editor::visit_click(Item* item, Mouse::Transform mouse_transform)
 {
-    auto [x, y, right_click] = Mouse::destructure(mouse);
-    managers_->text.submit_player(door->target(), x, y, COLOR::RED);
-};
-void Gameplay::Editor::visit(HotSpot* hot_spot, Mouse::click mouse)
+
+}
+void Gameplay::Editor::visit_click(Door* door, Mouse::Transform mouse_transform)
 {
     
-};
+}
+void Gameplay::Editor::visit_click(HotSpot* hot_spot, Mouse::Transform mouse_transform)
+{
+    
+}
+
+
+void Gameplay::Editor::visit_over(Item* item, Mouse::Transform mouse_transform)
+{
+    managers_->text.submit_player(item->id(), mouse_transform.x, mouse_transform.y, COLOR::RED);
+}
+void Gameplay::Editor::visit_over(Door* door, Mouse::Transform mouse_transform)
+{
+    managers_->text.submit_player(door->target(), mouse_transform.x, mouse_transform.y, COLOR::RED);
+}
+void Gameplay::Editor::visit_over(HotSpot* hot_spot, Mouse::Transform mouse_transform)
+{
+    
+}

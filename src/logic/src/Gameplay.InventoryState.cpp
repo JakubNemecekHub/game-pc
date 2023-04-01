@@ -39,8 +39,21 @@ void Gameplay::Inventory::input_mouse_(SDL_Event event)
 
 void Gameplay::Inventory::input(SDL_Event event)
 {
-    input_keyboard_(event);
-    input_mouse_(event);
+    switch (event.type)
+    {
+    // case SDL_KEYDOWN:
+    // case SDL_TEXTEDITING:
+    // case SDL_TEXTINPUT:
+    case SDL_KEYUP:
+        input_keyboard_(event);
+        break;
+    case SDL_MOUSEMOTION:
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEWHEEL:
+        input_mouse_(event);
+        break;
+    }
 }
 
 void Gameplay::Inventory::update(int dt)
@@ -55,6 +68,9 @@ void Gameplay::Inventory::render()
     managers_->renderer.render();
 }
 
-void Gameplay::Inventory::visit(Item* item, Mouse::click mouse_click_data) {}
-void Gameplay::Inventory::visit(Door* door, Mouse::click mouse_click_data) {}
-void Gameplay::Inventory::visit(HotSpot* hot_spot, Mouse::click mouse_click_data) {}
+void Gameplay::Inventory::visit_click(Item* item, Mouse::Transform mouse_transform) {}
+void Gameplay::Inventory::visit_click(Door* door, Mouse::Transform mouse_transform) {}
+void Gameplay::Inventory::visit_click(HotSpot* hot_spot, Mouse::Transform mouse_transform) {}
+void Gameplay::Inventory::visit_over(Item* item, Mouse::Transform mouse_transform) {}
+void Gameplay::Inventory::visit_over(Door* door, Mouse::Transform mouse_transform) {}
+void Gameplay::Inventory::visit_over(HotSpot* hot_spot, Mouse::Transform mouse_transform) {}

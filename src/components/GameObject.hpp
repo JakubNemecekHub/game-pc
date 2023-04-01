@@ -9,6 +9,7 @@ class GameObject
 {
 public:
     ~GameObject() {}
-    virtual void accept(Gameplay::GameplayState* handler, Mouse::click mouse) = 0;
+    virtual void accept_click(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) = 0;
+    virtual void accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) = 0;
 };
  

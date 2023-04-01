@@ -42,4 +42,5 @@ void Door::state(bool new_state) { state_ = new_state; }
 
 std::string Door::key_id() { return key_id_; }
 
-void Door::accept(Gameplay::GameplayState* handler, Mouse::click mouse) { handler->visit(this, mouse); }
+void Door::accept_click(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_click(this, mouse_transform); }
+void Door::accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_over(this, mouse_transform); }

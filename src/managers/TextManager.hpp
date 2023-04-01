@@ -71,5 +71,6 @@ public:
     void submit_label(std::string text, int x, int y, COLOR color=BEIGE);
     void submit_free(std::string text, int x, int y, COLOR color=BEIGE);
     void clean();
+    void clean_player();
     
 };

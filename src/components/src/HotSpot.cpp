@@ -27,4 +27,5 @@ std::string HotSpot::use_observation()
     return use_observations_[rand() % use_observations_.size()];
 }
 
-void HotSpot::accept(Gameplay::GameplayState* handler, Mouse::click mouse) { handler->visit(this, mouse); }
+void HotSpot::accept_click(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_click(this, mouse_transform); }
+void HotSpot::accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_over(this, mouse_transform); }

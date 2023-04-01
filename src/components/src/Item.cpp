@@ -52,4 +52,5 @@ void Item::lock(bool new_lock) { lock_ = new_lock; }
 Sprite* Item::sprite() { return sprite_; }
 Polygon* Item::click_area() { return &click_area_; }
 
-void Item::accept(Gameplay::GameplayState* handler, Mouse::click mouse) { handler->visit(this, mouse); }
+void Item::accept_click(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_click(this, mouse_transform); }
+void Item::accept_over(Gameplay::GameplayState* handler, Mouse::Transform mouse_transform) { handler->visit_over(this, mouse_transform); }

@@ -36,9 +36,12 @@ namespace Gameplay
 class GameplayState : public State
 {
 public:
-    virtual void visit(Item* item, Mouse::click mouse_click_data) = 0;
-    virtual void visit(Door* door, Mouse::click mouse_click_data) = 0;
-    virtual void visit(HotSpot* hot_spot, Mouse::click mouse_click_data) = 0;
+    virtual void visit_click(Item* item, Mouse::Transform mouse_transform) = 0;
+    virtual void visit_click(Door* door, Mouse::Transform mouse_transform) = 0;
+    virtual void visit_click(HotSpot* hot_spot, Mouse::Transform mouse_transform) = 0;
+    virtual void visit_over(Item* item, Mouse::Transform mouse_transform) = 0;
+    virtual void visit_over(Door* door, Mouse::Transform mouse_transform) = 0;
+    virtual void visit_over(HotSpot* hot_spot, Mouse::Transform mouse_transform) = 0;
 };
 
 } // namespace

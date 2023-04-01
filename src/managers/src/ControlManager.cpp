@@ -37,25 +37,12 @@ void ControlManager::handle_window(SDL_Event event)
 }
 
 
-Mouse::click ControlManager::handle_mouse(SDL_Event event)
+Mouse::Transform ControlManager::mouse_transform(SDL_Event event)
 {
-    if ( event.type != SDL_MOUSEBUTTONUP ) return std::make_tuple(false, 0, 0, false);
-    
     int x, y;
     SDL_GetMouseState(&x, &y);
-    bool right_click;
-    right_click = ( event.button.button == SDL_BUTTON_RIGHT );
-    return std::make_tuple(true, x, y, right_click);
-}
-
-
-auto ControlManager::mouse_data(SDL_Event event)
-{
-    struct result { int x; int y; bool right_click; };
-    int x_, y_;
-    SDL_GetMouseState(&x_, &y_);
     bool right_click { event.button.button == SDL_BUTTON_RIGHT };
-    return result{x_, y_, right_click};
+    return Mouse::Transform{x, y, right_click};
 }
 
 

@@ -56,19 +56,12 @@ bool Game::running() { return managers.window.running; }
 void Game::update(int dt)
 {
     State* current_sate { managers.state.state() };
-    // 1) Handle input
-    while ( SDL_PollEvent(&event_) )
+    while ( SDL_PollEvent(&event_) )            // 1) Handle input
     {
         managers.control.handle_window(event_); // Global input
-        if ( event_.type == SDL_KEYUP || event_.type == SDL_MOUSEBUTTONUP )
-        {
-            current_sate->input(event_);        // State specific input
-        }
+        current_sate->input(event_);            // State specific input
     }
-    // 2) Update
-    current_sate->update(dt);
-    // 3) Change state
-    managers.state.change(&managers);
-    // 4) Render
-    current_sate->render();
+    current_sate->update(dt);                   // 2) Update
+    managers.state.change(&managers);           // 3) Change state
+    current_sate->render();                     // 4) Render
 }
