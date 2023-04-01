@@ -25,7 +25,7 @@ bool Gameplay::Normal::exit()
     return true;
 }
 
-void Gameplay::Normal::input_keyboard_(SDL_Event event)
+void Gameplay::Normal::input_keyboard_(SDL_Event& event)
 {
     if ( event.type != SDL_KEYUP ) return;
 
@@ -35,7 +35,7 @@ void Gameplay::Normal::input_keyboard_(SDL_Event event)
     else if ( kkey == mapping.KEY_EDITOR ) managers_->state.next(Gameplay::Editor::get());                      // Switch to editor
 }
 
-void Gameplay::Normal::input_mouse_(SDL_Event event)
+void Gameplay::Normal::input_mouse_(SDL_Event& event)
 {
     if ( event.type != SDL_MOUSEBUTTONUP ) return;
 
@@ -45,7 +45,7 @@ void Gameplay::Normal::input_mouse_(SDL_Event event)
     if ( object) object->accept_click(this, event);             // Do something with that object.
 }
 
-void Gameplay::Normal::input(SDL_Event event)
+void Gameplay::Normal::input(SDL_Event& event)
 {
     switch (event.type)
     {
@@ -76,7 +76,7 @@ void Gameplay::Normal::render()
     managers_->renderer.render();
 }
 
-void Gameplay::Normal::visit_click(Item* item, SDL_Event event)
+void Gameplay::Normal::visit_click(Item* item, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     bool right_click { event.button.button == SDL_BUTTON_RIGHT };
@@ -101,7 +101,7 @@ void Gameplay::Normal::visit_click(Item* item, SDL_Event event)
 }
 
 
-void Gameplay::Normal::visit_click(Door* door, SDL_Event event)
+void Gameplay::Normal::visit_click(Door* door, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     bool right_click { event.button.button == SDL_BUTTON_RIGHT };
@@ -136,7 +136,7 @@ void Gameplay::Normal::visit_click(Door* door, SDL_Event event)
 }
 
 
-void Gameplay::Normal::visit_click(HotSpot* hot_spot, SDL_Event event)
+void Gameplay::Normal::visit_click(HotSpot* hot_spot, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     bool right_click { event.button.button == SDL_BUTTON_RIGHT };
@@ -153,9 +153,9 @@ void Gameplay::Normal::visit_click(HotSpot* hot_spot, SDL_Event event)
     }
 }
 
-void Gameplay::Normal::visit_over(Item* item, SDL_Event event) {}
-void Gameplay::Normal::visit_over(Door* door, SDL_Event event) {}
-void Gameplay::Normal::visit_over(HotSpot* hot_spot, SDL_Event event) {}
-void Gameplay::Normal::visit_drag(Item* item, SDL_Event event) {}
-void Gameplay::Normal::visit_drag(Door* door, SDL_Event event) {}
-void Gameplay::Normal::visit_drag(HotSpot* hot_spot, SDL_Event event) {}
+void Gameplay::Normal::visit_over(Item* item, SDL_Event& event) {}
+void Gameplay::Normal::visit_over(Door* door, SDL_Event& event) {}
+void Gameplay::Normal::visit_over(HotSpot* hot_spot, SDL_Event& event) {}
+void Gameplay::Normal::visit_drag(Item* item, SDL_Event& event) {}
+void Gameplay::Normal::visit_drag(Door* door, SDL_Event& event) {}
+void Gameplay::Normal::visit_drag(HotSpot* hot_spot, SDL_Event& event) {}

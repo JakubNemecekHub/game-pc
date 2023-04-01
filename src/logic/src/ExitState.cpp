@@ -25,7 +25,7 @@ bool ExitState::exit()
     return true;
 }
 
-void ExitState::input(SDL_Event event)
+void ExitState::input(SDL_Event& event)
 {
     if ( event.type != SDL_KEYUP ) return;
     

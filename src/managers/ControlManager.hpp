@@ -32,7 +32,6 @@ private:
     StateManager* state_;
 
     Controls       mapping_;
-    SDL_Event      event_;
 
 public:
 
@@ -44,7 +43,7 @@ public:
 
     Controls mapping();
     
-    void handle_window(SDL_Event event);
+    void handle_window(SDL_Event& event);
     auto mouse_position(SDL_Event& event)
     {
         struct result{ int x; int y; };

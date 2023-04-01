@@ -42,6 +42,6 @@ void Door::state(bool new_state) { state_ = new_state; }
 
 std::string Door::key_id() { return key_id_; }
 
-void Door::accept_click(Gameplay::GameplayState* handler, SDL_Event event) { handler->visit_click(this, event); }
-void Door::accept_over(Gameplay::GameplayState* handler, SDL_Event event) { handler->visit_over(this, event); }
-void Door::accept_drag(Gameplay::GameplayState* handler, SDL_Event event) { handler->visit_drag(this, event); }
+void Door::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
+void Door::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void Door::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }

@@ -24,7 +24,7 @@ public:
 
     // Game loop methods
 
-    void input(SDL_Event event) override; 
+    void input(SDL_Event& event) override; 
     void update(int dt) override; 
     void render() override;
 

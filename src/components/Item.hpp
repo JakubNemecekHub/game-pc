@@ -44,8 +44,8 @@ public:
     void y(int y);
     void move (int dx, int dy);
 
-    void accept_click(Gameplay::GameplayState* handler, SDL_Event event) override;
-    void accept_over(Gameplay::GameplayState* handler, SDL_Event event) override;
-    void accept_drag(Gameplay::GameplayState* handler, SDL_Event event) override;
+    void accept_click(Gameplay::GameplayState* handler, SDL_Event& event) override;
+    void accept_over(Gameplay::GameplayState* handler, SDL_Event& event) override;
+    void accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) override;
     
 };

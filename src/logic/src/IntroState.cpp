@@ -26,7 +26,7 @@ bool IntroState::exit()
     return true;
 }
 
-void IntroState::input(SDL_Event event)
+void IntroState::input(SDL_Event& event)
 {
     if ( event.type != SDL_KEYUP ) return;
     

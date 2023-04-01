@@ -31,7 +31,7 @@ bool Gameplay::Editor::exit()
 }
 
 
-void Gameplay::Editor::input_keyboard_(SDL_Event event)
+void Gameplay::Editor::input_keyboard_(SDL_Event& event)
 {
     if ( event.type != SDL_KEYUP ) return;
 
@@ -45,7 +45,7 @@ void Gameplay::Editor::input_keyboard_(SDL_Event event)
 }
 
 
-void Gameplay::Editor::input_mouse_(SDL_Event event)
+void Gameplay::Editor::input_mouse_(SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     GameObject* object { managers_->rooms.get_object(x, y) };   // Get object from Room Manager.
@@ -78,7 +78,7 @@ void Gameplay::Editor::input_mouse_(SDL_Event event)
 }
 
 
-void Gameplay::Editor::input(SDL_Event event)
+void Gameplay::Editor::input(SDL_Event& event)
 {
     switch (event.type)
     {
@@ -115,19 +115,19 @@ void Gameplay::Editor::render()
 /***********************************************************************************************************************************************************************
  * Visit Mouse click
 ************************************************************************************************************************************************************************/
-void Gameplay::Editor::visit_click(Item* item, SDL_Event event)
+void Gameplay::Editor::visit_click(Item* item, SDL_Event& event)
 {
 
 }
 
 
-void Gameplay::Editor::visit_click(Door* door, SDL_Event event)
+void Gameplay::Editor::visit_click(Door* door, SDL_Event& event)
 {
     
 }
 
 
-void Gameplay::Editor::visit_click(HotSpot* hot_spot, SDL_Event event)
+void Gameplay::Editor::visit_click(HotSpot* hot_spot, SDL_Event& event)
 {
     
 }
@@ -135,21 +135,21 @@ void Gameplay::Editor::visit_click(HotSpot* hot_spot, SDL_Event event)
 /***********************************************************************************************************************************************************************
  * Visit Mouseover
 ************************************************************************************************************************************************************************/
-void Gameplay::Editor::visit_over(Item* item, SDL_Event event)
+void Gameplay::Editor::visit_over(Item* item, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     managers_->text.submit_player(item->id(), x, y, COLOR::RED);
 }
 
 
-void Gameplay::Editor::visit_over(Door* door, SDL_Event event)
+void Gameplay::Editor::visit_over(Door* door, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     managers_->text.submit_player(door->target(), x, y, COLOR::RED);
 }
 
 
-void Gameplay::Editor::visit_over(HotSpot* hot_spot, SDL_Event event)
+void Gameplay::Editor::visit_over(HotSpot* hot_spot, SDL_Event& event)
 {
     
 }
@@ -158,7 +158,7 @@ void Gameplay::Editor::visit_over(HotSpot* hot_spot, SDL_Event event)
 /***********************************************************************************************************************************************************************
  * Visit Drag
 ************************************************************************************************************************************************************************/
-void Gameplay::Editor::visit_drag(Item* item, SDL_Event event)
+void Gameplay::Editor::visit_drag(Item* item, SDL_Event& event)
 {
     int dx = event.motion.xrel;
     int dy = event.motion.yrel;
@@ -166,14 +166,14 @@ void Gameplay::Editor::visit_drag(Item* item, SDL_Event event)
 }
 
 
-void Gameplay::Editor::visit_drag(Door* door, SDL_Event event)
+void Gameplay::Editor::visit_drag(Door* door, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
     managers_->text.submit_player(door->target(), x, y, COLOR::RED);
 }
 
 
-void Gameplay::Editor::visit_drag(HotSpot* hot_spot, SDL_Event event)
+void Gameplay::Editor::visit_drag(HotSpot* hot_spot, SDL_Event& event)
 {
     
 }

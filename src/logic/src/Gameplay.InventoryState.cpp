@@ -24,7 +24,7 @@ bool Gameplay::Inventory::exit()
     return true;
 }
 
-void Gameplay::Inventory::input_keyboard_(SDL_Event event)
+void Gameplay::Inventory::input_keyboard_(SDL_Event& event)
 {
     if ( event.type != SDL_KEYUP ) return;
 
@@ -33,11 +33,11 @@ void Gameplay::Inventory::input_keyboard_(SDL_Event event)
     if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Normal::get());
 }
 
-void Gameplay::Inventory::input_mouse_(SDL_Event event)
+void Gameplay::Inventory::input_mouse_(SDL_Event& event)
 {
 }
 
-void Gameplay::Inventory::input(SDL_Event event)
+void Gameplay::Inventory::input(SDL_Event& event)
 {
     switch (event.type)
     {
@@ -68,12 +68,12 @@ void Gameplay::Inventory::render()
     managers_->renderer.render();
 }
 
-void Gameplay::Inventory::visit_click(Item* item, SDL_Event event) {}
-void Gameplay::Inventory::visit_click(Door* door, SDL_Event event) {}
-void Gameplay::Inventory::visit_click(HotSpot* hot_spot, SDL_Event event) {}
-void Gameplay::Inventory::visit_over(Item* item, SDL_Event event) {}
-void Gameplay::Inventory::visit_over(Door* door, SDL_Event event) {}
-void Gameplay::Inventory::visit_over(HotSpot* hot_spot, SDL_Event event) {}
-void Gameplay::Inventory::visit_drag(Item* item, SDL_Event event) {}
-void Gameplay::Inventory::visit_drag(Door* door, SDL_Event event) {}
-void Gameplay::Inventory::visit_drag(HotSpot* hot_spot, SDL_Event event) {}
+void Gameplay::Inventory::visit_click(Item* item, SDL_Event& event) {}
+void Gameplay::Inventory::visit_click(Door* door, SDL_Event& event) {}
+void Gameplay::Inventory::visit_click(HotSpot* hot_spot, SDL_Event& event) {}
+void Gameplay::Inventory::visit_over(Item* item, SDL_Event& event) {}
+void Gameplay::Inventory::visit_over(Door* door, SDL_Event& event) {}
+void Gameplay::Inventory::visit_over(HotSpot* hot_spot, SDL_Event& event) {}
+void Gameplay::Inventory::visit_drag(Item* item, SDL_Event& event) {}
+void Gameplay::Inventory::visit_drag(Door* door, SDL_Event& event) {}
+void Gameplay::Inventory::visit_drag(HotSpot* hot_spot, SDL_Event& event) {}
