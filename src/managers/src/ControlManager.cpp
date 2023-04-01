@@ -29,7 +29,7 @@ void ControlManager::shutDown()
 
 void ControlManager::handle_window(SDL_Event& event)
 {
-         if ( event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
+         if ( event.type == SDL_QUIT || (event.key.keysym.sym == SDLK_ESCAPE && event.type == SDL_KEYUP) )
          {
             state_->next(ExitState::get());
          } 

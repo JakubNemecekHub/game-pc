@@ -24,6 +24,7 @@ void StateManager::next(State* state)
 void StateManager::change(Managers* managers)
 {
     if ( !next_state_ ) return;
+    if ( state_ == ExitState::get() && next_state_ == ExitState::get()) return;
     state_->exit();
     next_state_->enter(managers);
     state_ = next_state_;
