@@ -93,12 +93,12 @@ void TextManager::transform_(std::unique_ptr<Sprite>& sprite, int x, int y)
     */
     int screen_width { renderer_->get_screen_width() };
     int final_x, final_y;
-    final_x = screen_width - sprite->src_rect()->w;
+    final_x = screen_width - sprite->w();
     if ( final_x > x )
     {
         final_x = x;
     }
-    final_y = y - sprite->src_rect()->h;
+    final_y = y - sprite->h();
     sprite->position(final_x, final_y);
     renderer_->submit(sprite.get());
 }
@@ -112,6 +112,7 @@ void TextManager::submit_player(std::string text, int x, int y, COLOR color)
     }
     SDL_Texture* text_texture = create_texture_(text, color);
     std::get<0>(text_player_) = std::make_unique<Sprite>(text_texture, 1, 3);
+    std::get<0>(text_player_)->depiction("text");
     transform_(std::get<0>(text_player_), x, y);
     std::get<1>(text_player_) = 0;
 }
@@ -125,6 +126,7 @@ void TextManager::submit_label(std::string text, int x, int y, COLOR color)
     }
     SDL_Texture* text_texture = create_texture_(text, color);
     text_label_ = std::make_unique<Sprite>(text_texture, 1, 3);
+    text_label_->depiction("text");
     transform_(text_label_, x, y);
 }
 
@@ -134,6 +136,7 @@ void TextManager::submit_free(std::string text, int x, int y, COLOR color)
     SDL_Texture* text_texture = create_texture_(text, color);                   // Create Sprite from text
     text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1, 3), 0);   // Insert new Sprite into list
     std::unique_ptr<Sprite>& sprite { std::get<0>(text_free_.back()) };
+    sprite->depiction("text");
     transform_(sprite, x, y);                                                   // Set Sprite's dimensions
 }
 

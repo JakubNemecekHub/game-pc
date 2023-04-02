@@ -29,6 +29,10 @@ private:
     std::queue<fs::directory_entry>           rooms_meta_;
 
     // Level 1
+    std::map<std::string, Animation> animations_;
+    std::map<std::string, Texture>   my_textures_;
+
+    // Level 2
     std::map<std::string, Sprite> sprites_;
 
     // Private getters

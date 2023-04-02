@@ -86,15 +86,55 @@ bool AssetManager::startUp(RenderManager* renderer)
             sprites_.emplace(std::piecewise_construct,
                 std::forward_as_tuple(sprite_id),
                 std::forward_as_tuple(renderer));
-            for ( auto& texture : sprite["textures"] ) 
+            for ( auto& depiction : sprite["textures"] ) 
             {
-                std::string texture_id { texture.as<std::string>() };
-                sprites_.at(sprite_id).add_animation(texture_id, this->texture(texture_id), this->frames(texture_id));
+                std::string depiction_id { depiction["id"].as<std::string>() };
+                if ( !frames(depiction_id) )
+                {
+                    // Create Texture
+                    my_textures_.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(depiction_id),
+                        std::forward_as_tuple(texture(depiction_id)));
+                    sprites_.at(sprite_id).add_depiction(depiction_id, &my_textures_.at(depiction_id));
+                }
+                else
+                {
+                    // Create Animation
+                    bool loop { true };
+                    if (YAML::Node loop_flag = depiction["loop"])
+                    {
+                        loop = loop_flag.as<bool>();
+                    }
+                    animations_.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(depiction_id),
+                        std::forward_as_tuple(texture(depiction_id), frames(depiction_id), loop));
+                    sprites_.at(sprite_id).add_depiction(depiction_id, &animations_.at(depiction_id));
+                }
+                // Set current depiction
             }
-            // Set up the values of src_rect_, dest_rect_ and current_animation_
-            sprites_.at(sprite_id).animation(sprite["textures"][0].as<std::string>());
+            sprites_.at(sprite_id).depiction(sprite["textures"][0]["id"].as<std::string>());
         }
-        log_->log("Created Sprites ", entry.path().string());
+
+        // for (auto& sprite : data)
+        // {
+        //     std::string sprite_id { sprite["id"].as<std::string>() };
+        //     sprites_.emplace(std::piecewise_construct,
+        //         std::forward_as_tuple(sprite_id),
+        //         std::forward_as_tuple(renderer));
+        //     for ( auto& texture : sprite["textures"] ) 
+        //     {
+        //         std::string texture_id { texture["id"].as<std::string>() };
+        //         bool loop { true };
+        //         if (YAML::Node loop_flag = texture["loop"])
+        //         {
+        //             loop = loop_flag.as<bool>();
+        //         }
+        //         sprites_.at(sprite_id).add_animation(texture_id, this->texture(texture_id), this->frames(texture_id), loop);
+        //     }
+        //     // Set up the values of src_rect_, dest_rect_ and current_animation_
+        //     sprites_.at(sprite_id).animation(sprite["textures"][0]["id"].as<std::string>());
+        // }
+        log_->log("Created Sprites", entry.path().string());
         sprites_paths.pop();
     }
 

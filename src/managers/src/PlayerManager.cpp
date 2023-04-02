@@ -9,7 +9,7 @@
 {
     const std::string id { "player" };
     sprite_ = assets->sprite(id);
-    sprite_->animation("idle"); // sprite_->animation(IDLE);
+    sprite_->depiction("idle"); // sprite_->animation(IDLE);
     // Set position
     sprite_->position(this->position.x, this->position.y);
     // Set dimensions
@@ -28,7 +28,7 @@ void Player::walk(int x, int y)
     destination.x = x;
     destination.y = y;
     is_walking = true;
-    sprite_->animation("walk");
+    sprite_->depiction("walk");
 }
 
 

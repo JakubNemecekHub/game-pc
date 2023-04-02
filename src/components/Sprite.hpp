@@ -24,11 +24,56 @@ public:
         : src_rect_{x, y, w, h}, duration_{duration} {};
     Frame(std::vector<int> frame)
         : Frame(frame.at(0), frame.at(1), frame.at(2), frame.at(3), frame.at(4)) {};
-        // : src_rect{frame.at(0), frame.at(1), frame.at(2), frame.at(3)}, duration{frame.at(4)} {}
 
 };
 
-class Sprite
+class Depiction
+{
+public:
+    ~Depiction() {};
+    virtual int w() = 0;
+    virtual int h() = 0;
+
+    virtual void update(int dt) = 0;
+    virtual void reset() = 0;
+    virtual void render(SDL_Renderer* renderer, SDL_Rect destination) = 0; // This will need more info
+};
+
+class Animation : public Depiction
+{
+private:
+    SDL_Texture* texture_;
+    std::vector<Frame>* frames_;
+    bool flag_loop_;
+    bool flag_finished_;
+    int current_frame_;
+    int last_updated_;
+public:
+    Animation(SDL_Texture* texture, std::vector<Frame>* frames, bool loop);
+    int w() override; 
+    int h() override; 
+
+    void update(int dt) override;
+    void reset() override;
+    void render(SDL_Renderer* renderer, SDL_Rect destination) override;
+};
+
+class Texture : public Depiction
+{
+private:
+    SDL_Texture* texture_;
+    SDL_Rect src_rect_;
+public:
+    Texture(SDL_Texture* texture);
+    int w() override; 
+    int h() override; 
+
+    void update(int dt) override;
+    void reset() override;
+    void render(SDL_Renderer* renderer, SDL_Rect destination) override;
+};
+
+class Sprite 
 {
 private:
 
@@ -36,28 +81,23 @@ private:
 
     Vector2D position_;
     float    scale_;
-    SDL_Rect src_rect_;
     SDL_Rect dest_rect_;
     int      z_index_;
     
-    std::unordered_map<std::string, SDL_Texture*>	     textures_;
-    std::unordered_map<std::string, std::vector<Frame>*> frames_;
-    std::string	                                         current_animation_;
-    std::vector<Frame>*	                                 animation_frames_;
-    int	                                                 current_frame_;
-    int	                                                 last_updated_;
+    std::unordered_map<std::string, Depiction*> depictions_;
+    Depiction* current_depiction_;
 
 public:
 
     Sprite(RenderManager* renderer);
     Sprite(SDL_Texture* texture, float scale, int z_index);
 
-    void add_animation(std::string id, SDL_Texture* texture, std::vector<Frame>* frames = nullptr);
+    void add_depiction(std::string id, Depiction* depiction);
 
     void update(RenderManager* renderer, int dt);
     void render(SDL_Renderer* renderer);
 
-    void animation(std::string id);
+    void depiction(std::string id);
     void reset();
 
     // Setters
@@ -69,8 +109,6 @@ public:
     void dimensions(int w, int h);
     void match_dimensions();
     void scale(float s);
-    void set_src(int _x, int _y, int _w, int _h);
-    void src_rect(SDL_Rect& source);
     void set_dest(int _x, int _y, int _w, int _h);
     void dest_rect(SDL_Rect& source);
     void z_index(int index);

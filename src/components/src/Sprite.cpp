@@ -1,51 +1,144 @@
 #include "../Sprite.hpp"
 
-Sprite::Sprite(RenderManager* renderer)
-    : renderer_{renderer}, position_{0, 0}, scale_{1}, src_rect_{0, 0, 0, 0},
-      dest_rect_{0, 0, 0, 0}, z_index_{0}, current_frame_{0},
-      last_updated_{0} {}
 
-// To create a Sprite for Text in TextManager
-Sprite::Sprite(SDL_Texture* texture, float scale, int z_index)
-    : scale_{scale}, z_index_{z_index}
+/*****************************************************************************************************
+ *  Animation
+*****************************************************************************************************/
+
+
+Animation::Animation(SDL_Texture* texture, std::vector<Frame>* frames, bool loop)
+    : texture_{texture}, frames_{frames}, flag_loop_{loop},
+      flag_finished_{false}, current_frame_{0}, last_updated_{0} {}
+
+
+int Animation::w() { return (*frames_).at(current_frame_).src_rect_.w; }
+int Animation::h() { return (*frames_).at(current_frame_).src_rect_.h; }
+void Animation::update(int dt)
 {
-    textures_.insert(std::make_pair("text", texture));
-    current_animation_ = "text";
+    // Only update animations that are supposed to loop;
+    // or one time animation, that are not yet finished.
+    if ( !flag_loop_ && (flag_loop_ || flag_finished_) ) return;
+
+    last_updated_ += dt;
+
+    int duration { (*frames_).at(current_frame_).duration_ };
+    if ( last_updated_ <= duration ) return;
+
+    // If the new frame would again be 0th frame then we finish the
+    // one time animation.
+    if ( current_frame_ + 1 == (*frames_).size() && !flag_loop_ )
+    {
+        flag_finished_ = true;
+        return;
+    }
+
+    current_frame_ = (current_frame_ + 1) % (*frames_).size();
+    last_updated_ = 0;
+
+}
+void Animation::reset()
+{
+    current_frame_ = 0;
+    last_updated_ = 0;
+}
+
+
+void Animation::render(SDL_Renderer* renderer, SDL_Rect destination)
+{
+    SDL_Rect src_rect { (*frames_).at(current_frame_).src_rect_ };
+    SDL_RenderCopyEx(renderer, texture_, &src_rect, &destination, 0.0f, NULL, SDL_FLIP_NONE);
+}
+
+
+/*****************************************************************************************************
+ *  Texture
+*****************************************************************************************************/
+
+
+Texture::Texture(SDL_Texture* texture)
+    : texture_{texture}
+{
     src_rect_.x = 0;
     src_rect_.y = 0;
     SDL_QueryTexture(texture, NULL, NULL, &src_rect_.w, &src_rect_.h);
 }
 
-void Sprite::add_animation(std::string id, SDL_Texture* texture, std::vector<Frame>* frames)
+int Texture::w() { return src_rect_.w; }
+int Texture::h() { return src_rect_.h; }
+void Texture::update(int dt) {}
+void Texture::reset() {}
+
+
+void Texture::render(SDL_Renderer* renderer, SDL_Rect destination)
 {
-    textures_.insert(std::make_pair(id, texture));
-    if ( frames != nullptr ) frames_.insert(std::make_pair(id, frames));
+    SDL_RenderCopyEx(renderer, texture_, &src_rect_, &destination, 0.0f, NULL, SDL_FLIP_NONE);
 }
 
-void Sprite::animation(std::string id)
-{
-    // Select animation and its frames
-    current_animation_ = id;        // Should first check if such an id exists in textures_
-    // Reset the new animations
-    current_frame_ = 0;
-    last_updated_ = 0;
 
-    try
-    {
-        animation_frames_ = frames_.at(id);
-        src_rect_ = (*animation_frames_).at(current_frame_).src_rect_;
-        // Must also set destination rectangle correctly,
-        // position stays the same, but dimensions are different
-        dest_rect_.w = src_rect_.w * scale_;
-        dest_rect_.h = src_rect_.h * scale_;
-    }
-    catch (const std::out_of_range& e)
-    {
-        // "Static" animation -> really bad nomenclature
-        SDL_QueryTexture(this->textures_.at(id), NULL, NULL, &src_rect_.w, &src_rect_.h);
-        dest_rect_.w = src_rect_.w * scale_;
-        dest_rect_.h = src_rect_.h * scale_;
-    }
+/*****************************************************************************************************
+ *  Sprite
+*****************************************************************************************************/
+
+Sprite::Sprite(RenderManager* renderer)
+    : renderer_{renderer}, position_{0, 0}, scale_{1}, dest_rect_{0, 0, 0, 0},
+      z_index_{0} {}
+
+// To create a Sprite for Text in TextManager
+Sprite::Sprite(SDL_Texture* texture, float scale, int z_index)
+    : scale_{scale}, z_index_{z_index}
+{
+    depictions_.insert(std::make_pair("text", new Texture(texture)));
+}
+
+
+void Sprite::add_depiction(std::string id, Depiction* depiction)
+{
+    depictions_.insert(std::make_pair(id, depiction));
+}
+
+
+void Sprite::depiction(std::string id)
+{
+    current_depiction_ = depictions_.at(id);
+    current_depiction_->reset();    // last_updated_ and current_frame_ to 0
+    dest_rect_.w = current_depiction_->w() * scale_;
+    dest_rect_.h = current_depiction_->h() * scale_;
+}
+
+
+void Sprite::update(RenderManager* renderer, int dt)
+{
+    current_depiction_->update(dt);
+    dest_rect_.x = position_.x;
+    dest_rect_.y = position_.y;
+    dest_rect_.w = current_depiction_->w() * scale_;
+    dest_rect_.h = current_depiction_->h() * scale_;
+    renderer->submit(this);
+}
+
+
+void Sprite::reset()
+{
+    current_depiction_->reset();
+    dest_rect_.w = current_depiction_->w() * scale_;
+    dest_rect_.h = current_depiction_->h() * scale_;
+}
+
+void Sprite::render(SDL_Renderer* renderer)
+{
+    current_depiction_->render(renderer, dest_rect_);
+}
+
+/*
+    Match dimensions of destination rectangle to dimensions of
+    the current Frame's source rectangle.
+    (Current Frame's source rectangle should be at src_rect_
+    of the base class.)
+*/
+void Sprite::match_dimensions()
+{
+    dest_rect_.w = static_cast<int>(current_depiction_->w() * scale_);
+    dest_rect_.h = static_cast<int>(current_depiction_->h() * scale_);
 }
 
 
@@ -95,29 +188,6 @@ void Sprite::scale(float s)
     scale_ = s;
     dest_rect_.w *= s;
     dest_rect_.h *= s;
-}
-
-/*
-    Set src_rect values.
-*/
-void Sprite::set_src(int _x, int _y, int _w, int _h)
-{
-    src_rect_.x = _x;
-    src_rect_.y = _y;
-    src_rect_.w = _w;
-    src_rect_.h = _h;
-}
-
-
-/*
-    Copy the values from a given SDL_Rect source.
-*/
-void Sprite::src_rect(SDL_Rect& source)
-{
-    src_rect_.x = source.x;
-    src_rect_.y = source.y;
-    src_rect_.w = source.w;
-    src_rect_.h = source.h;
 }
 
 
@@ -191,8 +261,6 @@ void Sprite::center_vertically()
 
 
 // Get source rectangle.
-SDL_Rect* Sprite::src_rect() { return &src_rect_; }
-// Get source rectangle.
 SDL_Rect* Sprite::dest_rect() { return &dest_rect_; }
 // Get position
 Vector2D* Sprite::position() { return &position_; }
@@ -208,58 +276,3 @@ int Sprite::h() { return dest_rect_.h; }
 float Sprite::scale() { return scale_; }
 // Get the z-index
 int Sprite::z_index() { return z_index_; }
-
-
-void Sprite::update(RenderManager* renderer, int dt)
-{
-    if ( !frames_.empty() ) // If frames_ is empty do not update -> "static" sprite
-    {
-        last_updated_ += dt;
-        auto frame = frames_.at(current_animation_)->at(current_frame_);
-        if ( last_updated_ > frame.duration_ )
-        {
-            current_frame_ = (current_frame_ + 1) % (*animation_frames_).size();
-            last_updated_ = 0;
-            // Update source rectangle
-            src_rect_.x = frames_.at(current_animation_)->at(current_frame_).src_rect_.x;
-            src_rect_.y = frame.src_rect_.y;
-            src_rect_.w = frame.src_rect_.w;
-            src_rect_.h = frame.src_rect_.h;
-            // Update destination rectangle
-            dest_rect_.x = position_.x;
-            dest_rect_.y = position_.y;
-            dest_rect_.w = src_rect_.w * scale_;
-            dest_rect_.h = src_rect_.h * scale_;
-        }
-    }
-    renderer->submit(this);
-}
-
-void Sprite::reset()
-{
-    current_frame_ = 0;
-    last_updated_ = 0;
-    auto frame = frames_.at(current_animation_)->at(current_frame_);
-    // Update source rectangle
-    src_rect_.x = frames_.at(current_animation_)->at(current_frame_).src_rect_.x;
-    src_rect_.y = frame.src_rect_.y;
-    src_rect_.w = frame.src_rect_.w;
-    src_rect_.h = frame.src_rect_.h;
-}
-
-void Sprite::render(SDL_Renderer* renderer)
-{
-    SDL_RenderCopyEx(renderer, textures_.at(current_animation_), &src_rect_, &dest_rect_, 0.0f, NULL, SDL_FLIP_NONE);
-}
-
-/*
-    Match dimensions of destination rectangle to dimensions of
-    the current Frame's source rectangle.
-    (Current Frame's source rectangle should be at src_rect_
-    of the base class.)
-*/
-void Sprite::match_dimensions()
-{
-    dest_rect_.w = static_cast<int>(src_rect_.w * scale_);
-    dest_rect_.h = static_cast<int>(src_rect_.h * scale_);
-}
