@@ -1,7 +1,6 @@
 #include "../Room.hpp"
 
 #include <unordered_map>
-#include <memory>           // unique_ptr
 #include <string>
 #include <charconv>         // std::string to number conversion
 
@@ -10,21 +9,18 @@
     Load animation data, specified in the yaml object
     into animations vector.
 */
-using animation_counter = std::vector<Animation*>::size_type;
+using animation_counter = std::vector<Sprite*>::size_type;
 void RoomAnimations::load(YAML::Node data, AssetManager* assets)
 {
     animations_.resize(data.size()); // Set the size of the final animations vector
     for ( animation_counter i = 0; i < animations_.size(); i++ )
     {
-        animations_.at(i) = assets->get_animation(data[i]["id"].as<std::string>());
-        animations_.at(i)->texture()->set_z_index(1);
+        animations_.at(i) = assets->sprite(data[i]["id"].as<std::string>());
+        animations_.at(i)->z_index(1);
         animations_.at(i)->scale(data[i]["scale"].as<float>());
         int x { data[i]["position"][0].as<int>() };
         int y { data[i]["position"][1].as<int>() };
-        animations_.at(i)->texture()->set_position(x, y);
-        // Offset
-        // animations.at(i).offset_x = data[i]["offset"][0];
-        // animations.at(i).offset_y = data[i]["offset"][1];
+        animations_.at(i)->position(x, y);
         // Reset animation
         animations_.at(i)->reset();
     }
@@ -46,16 +42,21 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 /*
     Loads room's data based on info in the room data dictionary.
 */
-Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetManager* assets)
+Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
-    texture_ = assets->get_texture(id);
+    sprite_ = assets->sprite(id);
+    sprite_->scale_full_h();
+    sprite_->center_horizontally();
+    sprite_->z_index(0);
     // Load walk area polygon
     walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<int>>>());
+    walk_area_.visual.scale = sprite_->scale();
+    walk_area_.visual.dx = sprite_->x();
+    walk_area_.visual.dy = sprite_->y();
     // Load room click map
-    click_map_ = assets->get_bitmap(id);
-    click_map_texture_ = assets->get_texture(id + "_bitmap");
+    click_map_ = assets->bitmap(id);
     // Load HotSpots
     for ( auto& hot_spot : data["hot_spots"] )
     {
@@ -78,14 +79,18 @@ Room::Room(YAML::Node data, RenderManager* renderer, ItemManager* items, AssetMa
         std::vector<int> position { item_data["position"].as<std::vector<int>>() };
         // scale item by its scale and also by the Room's scale.
         float item_scale { item_data["scale"].as<float>() };
-        float room_scale { texture_->scale() };
-        item->texture()->match_src_dimension();
-        item->texture()->set_position(position[0] * room_scale + texture_->x(), position[1] * room_scale);
-        item->texture()->scale(room_scale * item_scale);
+        float room_scale { sprite_->scale() };
+        item->sprite()->match_dimensions();
+        item->sprite()->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
+        item->sprite()->scale(room_scale * item_scale);
 
         // Scale the click area Polygon in the same way
-        item->click_area().scale(item_scale);
-        item->click_area().move(position[0], position[1]);
+        item->click_area()->scale(item_scale * room_scale);
+        item->click_area()->move(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
+        // Also scale its visual 
+        item->click_area()->visual.scale = 1;
+        item->click_area()->visual.dx = 0;
+        item->click_area()->visual.dy = 0;
 
         item->state(item_data["state"].as<bool>());
         item->lock(true);
@@ -102,11 +107,22 @@ Room::~Room()
 }
 
 
+// Transform coordinates to room's coordinates.
+auto Room::relative_coordinates(int x, int y)
+{
+    struct result { int room_x; int room_y; };
+    return result
+    {
+        static_cast<int>((x - sprite_->x()) / sprite_->scale()),
+        static_cast<int>(y / sprite_->scale())   
+    };
+}
+
+
 // Return true if given point in the room's walk area.
 bool Room::walkable(int x, int y)
 {
-    int room_x, room_y;
-    get_room_coordinates_(x, y, &room_x, &room_y);
+    auto [room_x, room_y] = relative_coordinates(x, y);
     return walk_area_.point_in_polygon(room_x, room_y);
 }
 
@@ -114,96 +130,46 @@ bool Room::walkable(int x, int y)
 void Room::update(RenderManager* renderer, int dt)
 {
     // Register background
-    renderer->register_object(texture_);
+    renderer->submit(sprite_);
     // Register visible items
     for ( auto& item : items_ )
     {
         if ( item.second->state() )
         {
-            renderer->register_object(item.second->texture());
+            renderer->submit(item.second->sprite());
         }
     }
-    // Register Click map if should be visible
-    if ( visible_click_map_ )
+    // START OF DEBUG
+    if ( visible_click_map_ ) renderer->submit(click_map_, sprite_->dest_rect());   // Register Click map if should be visible
+    if ( visible_walk_area_ ) renderer->submit(&walk_area_);                        // Render Walk area if it should be visible
+    if ( visible_item_click_map_ )                                                  // Render all items' click polygons if they should be visible
     {
-        renderer->register_object(click_map_texture_);
-    }
-    // Register Walk area if should be visible
-    if ( visible_walk_area_ )
-    {
-        renderer->register_object(screen_walk_area_.get());
-        for ( auto& item : screen_items_ )
+        for ( auto& item : items_ )
         {
-            renderer->register_object(item);
+            renderer->submit(item.second->click_area());
         }
     }
+    if ( visible_item_vector_ )
+    {
+        for ( auto& item : items_ )
+        {
+            renderer->submit(item.second->sprite()->position());
+        }
+    }
+    // END OF DEBUG
     animations_.update(renderer, dt);
+    update_items(renderer, dt);
 }
 
-
-// /*
-//     Create renderable click map texture from the click map bitmap.
-//     For testing purposes.
-// */
-// void Room::create_click_map_texture()
-// {
-//     // could return bool about result
-//     // probably should check if click_map_texture doesn't already exists
-//     click_map_texture_ = std::make_unique<Texture>();
-//     click_map_texture_->texture = RenderManager::GetInstance()->texture_from_surface(click_map_);
-//     click_map_texture_->set_src(texture_->src_rect);
-//     click_map_texture_->set_dest(texture_->dest_rect);
-//     click_map_texture_->set_scale(texture_->scale);
-//     click_map_texture_->set_z_index(2);
-// }
-
-
 /*
-    Toggle rendering of click map.
+    Update each ambient animation and register it to the renderer
 */
-void Room::toggle_click_map()
+void Room::update_items(RenderManager* renderer, int dt)
 {
-    visible_click_map_ = !visible_click_map_;
-    // if ( visible_click_map_ && !click_map_texture_ )
-    // {
-    //     create_click_map_texture();
-    // }
-}
-
-
-/*
-    Create renderable PolygonObject from walk area math polygon.
-    For testing purposes.
-*/
-void Room::create_screen_walk_area_()
-{
-    screen_walk_area_ = std::make_unique<PolygonObject>(walk_area_,
-                                         texture_->scale(),
-                                         texture_->x(),
-                                         texture_->y()
-                                        );
-    for ( auto& pair : items_ )
-    {
-        PolygonObject* po = new PolygonObject(pair.second->click_area(),
-                                              texture_->scale(),
-                                              texture_->x(),
-                                              texture_->y()
-                                             );
-        screen_items_.push_back(po);
-    }
-}
-
-
-/*
-    Toggle rendering of walkarea.
-*/
-void Room::toggle_walk_area()
-{
-    visible_walk_area_ = !visible_walk_area_;
-    if ( visible_walk_area_ && !screen_walk_area_ )
-    {
-        create_screen_walk_area_();
-    }
+   for ( auto &item : items_ )
+   {
+       item.second->update(renderer, dt);
+   }
 }
 
 
@@ -222,8 +188,7 @@ void Room::toggle_walk_area()
 */
 Uint32 Room::get_mapped_object_(int x, int y)
 {
-    int room_x, room_y;
-    get_room_coordinates_(x, y, &room_x, &room_y);
+    auto [room_x, room_y] = relative_coordinates(x, y);
     int bpp = click_map_->format->BytesPerPixel; // bytes per pixel, depends on loaded image
     Uint8 *p = (Uint8 *)click_map_->pixels + room_y * click_map_->pitch + room_x * bpp;
     switch (bpp)
@@ -256,37 +221,28 @@ Uint32 Room::get_mapped_object_(int x, int y)
     }
 }
 
-HotSpot* Room::get_hot_spot(int x, int y)
+GameObject* Room::get_object(int x, int y)
 {
-    Uint32 id { get_mapped_object_(x, y) };
-    if ( hot_spots_.find(id) != hot_spots_.end() )
-    {
-        return &hot_spots_.at(id);
-    }
-    return nullptr;
-}
 
-Door* Room::get_door(int x, int y)
-{
+    // Order: Item -> Door -> Hot Spot
+
+    // Look for items.
+    for ( auto& item : items_ )
+    {
+        if ( item.second->clicked(x, y) && item.second->state() )
+        {
+            return item.second;
+        }
+    }
+    // Look for objects on click map.
     Uint32 id { get_mapped_object_(x, y) };
     if ( doors_.find(id) != doors_.end() )
     {
         return &doors_.at(id);
     }
-    return nullptr;
-}
-
-
-Item* Room::get_item(int x, int y)
-{
-    int room_x, room_y;
-    get_room_coordinates_(x, y, &room_x, &room_y);
-    for ( auto& item : items_ )
+    if ( hot_spots_.find(id) != hot_spots_.end() )
     {
-        if ( item.second->clicked(room_x, room_y) && item.second->state() )
-        {
-            return item.second;
-        }
+        return &hot_spots_.at(id);
     }
     return nullptr;
 }
@@ -308,8 +264,3 @@ void Room::remove_item(std::string id)
 // }
 
 
-void Room::get_room_coordinates_(int x, int y, int* world_x, int* world_y)
-{
-    *world_x = static_cast<int>((x - texture_->x()) / texture_->scale());
-    *world_y = static_cast<int>(y / texture_->scale());
-}

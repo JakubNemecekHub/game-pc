@@ -1,15 +1,17 @@
 #pragma once
 
+#include <filesystem>
 #include <map>
 #include <string>
+#include <queue>
 
 #include <SDL2/SDL.h>
 
-#include "../components/Texture.hpp"
-#include "../components/Animation.hpp"
 #include "../components/Sprite.hpp"
 #include "LogManager.hpp"
 #include "RenderManager.hpp"
+
+namespace fs = std::filesystem;
 
 
 class AssetManager
@@ -17,24 +19,39 @@ class AssetManager
 private:
 
     LogManager* log_;
-    std::string path_ {"D:/Prog/game_project/game/res/textures.yaml"};
+    fs::path path_ { "D:/Prog/game_project/game/res" };
 
-    std::map<std::string, Texture>      textures_;
-    std::map<std::string, SDL_Surface*> bitmaps_;
-    std::map<std::string, Animation>    animations_;
-    std::map<std::string, Sprite>       sprites_;
+    // Level 0
+    std::map<std::string, SDL_Texture*>       textures_;
+    std::map<std::string, SDL_Surface*>       bitmaps_;
+    std::map<std::string, std::vector<Frame>> frames_;
+    std::queue<fs::directory_entry>           items_meta_;
+    std::queue<fs::directory_entry>           rooms_meta_;
+
+    // Level 1
+    std::map<std::string, Animation> animations_;
+    std::map<std::string, Texture>   my_textures_;
+
+    // Level 2
+    std::map<std::string, Sprite> sprites_;
+
+    // Private getters
+    SDL_Texture* texture(std::string id);
+    std::vector<Frame>* frames(std::string id);
 
 public:
 
     AssetManager() {};
     AssetManager(LogManager* log);
+    // AssetManager& operator=(const AssetManager& other) { return AssetManager(); }
 
     bool startUp(RenderManager* renderer);
     bool shutDown();
 
-    Texture*        get_texture(std::string id);
-    SDL_Surface*    get_bitmap(std::string id);
-    Animation*      get_animation(std::string id);
-    Sprite*         get_sprite(std::string id);
+    // Public getters
+    Sprite* sprite(std::string id);
+    SDL_Surface* bitmap(std::string id);
+    std::queue<fs::directory_entry> items_meta();
+    std::queue<fs::directory_entry> rooms_meta();
 
 };

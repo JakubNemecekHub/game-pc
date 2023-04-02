@@ -17,17 +17,17 @@ LINK_DIRECTORIES(D:/Prog/cpp/vcpkg/installed/x64-windows/lib/)
 add_subdirectory(src/components)
 add_subdirectory(src/managers)
 add_subdirectory(src/math)
-add_subdirectory(src/math_objects)
+add_subdirectory(src/logic)
 
 add_executable(${PROJECT_NAME} main.cpp Game.cpp)
 find_package(SDL2 CONFIG REQUIRED)
-find_package(sdl2-image CONFIG REQUIRED)
+find_package(SDL2_image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   SDL2::SDL2 SDL2::SDL2main
-  SDL2::SDL2_image
+  $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
   $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
   yaml-cpp
-  math math_objects components managers
+  math components managers logic
 )

@@ -1,70 +1,40 @@
 #include "../ControlManager.hpp"
 
-#include "../LogManager.hpp"
-#include "../roommanager/RoomManager.hpp"
-#include "../WindowManager.hpp"
-
-#include <iostream>
+#include "../logic/States.hpp"
 
 
-ControlManager* ControlManager::singleton_ = nullptr;
+ControlManager::ControlManager(LogManager* log, StateManager* state, WindowManager* window)
+    : log_{log}, state_{state}, window_{window} {}
 
-
-ControlManager* ControlManager::GetInstance()
+void ControlManager::startUp(YAML::Node mapping)
 {
-    if ( singleton_ == nullptr )
-    {
-        singleton_ = new ControlManager();
-    }
-    return singleton_;
-}
-
-
-void ControlManager::startUp()
-{
-    LogManager::GetInstance()->log_message("Starting Control Manager.");
+    log_->log("Starting Control Manager.");
+    mapping_ = Controls{
+        SDL_GetKeyFromName(mapping["Inventory"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Walk_Polygon"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Item_Polygon"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Item_Vector"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Hots_pots"].as<std::string>().c_str()),
+        SDL_GetKeyFromName(mapping["Editor"].as<std::string>().c_str()),
+    };
+    log_->log("Control Manager started.");
 }
 
 
 void ControlManager::shutDown()
 {
-    LogManager::GetInstance()->log_message("Shutting down Control Manager.");
+    log_->log("Shutting down Control Manager.");
 }
 
 
-void ControlManager::handleEvents()
+void ControlManager::handle_window(SDL_Event& event)
 {
-    while ( SDL_PollEvent(&event) )
-    {
-        // Close Window
-        if ( event.type == SDL_QUIT)
-            WindowManager::GetInstance()->close();
-        if ( event.key.keysym.sym == SDLK_ESCAPE )
-            WindowManager::GetInstance()->close();
-        // Fullscreen
-        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_F11 )  // Should only catch one F11 event
-        {
-            WindowManager::GetInstance()->toggle_fullscreen();
-        }
-        // Mouse click
-        if ( event.type == SDL_MOUSEBUTTONUP )
-        {
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            bool right_click;
-            right_click = ( event.button.button == SDL_BUTTON_RIGHT );
-            // Pass mouse click along
-            RoomManager::GetInstance()->handle_click(x, y, right_click);
-        }
-        // Toggle Static texture
-        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_b )
-        {
-            RoomManager::GetInstance()->handle_keyboard("bitmap");
-        }
-        // Toggle polygon rendering
-        if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_p )
-        {
-            RoomManager::GetInstance()->handle_keyboard("polygon");
-        }
-    }
+         if ( event.type == SDL_QUIT || (event.key.keysym.sym == SDLK_ESCAPE && event.type == SDL_KEYUP) )
+         {
+            state_->next(ExitState::get());
+         } 
+    else if ( event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_F11 ) window_->toggle_fullscreen();
 }
+
+
+Controls ControlManager::mapping() { return mapping_; }

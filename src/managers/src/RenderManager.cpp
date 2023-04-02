@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "../../components/Sprite.hpp"
+
 
 SDL_Renderer* RenderManager::renderer_ = nullptr;
 
@@ -89,61 +91,119 @@ SDL_Texture* RenderManager::texture_from_surface(SDL_Surface* surface)
 /************************************************************************
     Render stuff.
 *************************************************************************/
-/*
-    Should be able to register various types of Textures, because I need to be able to handle render order.
-    e.g.
-        room background
-        room animation
-        items
-        player
-*/
-
 
 /*
-    Register a RenderableObject based on its z_index.
+    Register a Sprite to be rendered.
 */
-bool RenderManager::register_object(RenderableObject* r)
+bool RenderManager::submit(Sprite* sprite)
 {
-    if ( r->z_index() < MAX_LAYERS_ )
+    int z_index { sprite->z_index() };
+    if ( z_index >= MAX_LAYERS_ )
     {
-        render_objects_.at(r->z_index()).push(r);
-        return true;
+        log_->error("Z-index ", z_index, " out of scope (max ", MAX_LAYERS_, ")");
+        return false;
     }
-    return false;
-    // else
-    // {
-    //     LogManager::GetInstance()->log_error("Z-index out of scope. May index is ", MAX_LAYERS_,
-    //                                          ", was given ", r->z_index());
-    // }
+    render_queues_.at(z_index).push(MyType::Object(sprite));
+    return true; // TO DO: make this make sense!
+}
+/*
+    Register a Polygon to be rendered.
+*/
+bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
+{
+    surface_queue_.push(std::make_tuple(surface, dest_rect));
+    return true;
+}
+/*
+    Register a Polygon to be rendered.
+*/
+bool RenderManager::submit(Polygon* polygon)
+{
+    render_queues_.at(MAX_LAYERS_ - 1).push(MyType::Object(polygon));
+    return true;
+}
+/*
+    Register a Vector2D to be rendered.
+*/
+bool RenderManager::submit(Vector2D* vector2d)
+{
+    render_queues_.at(3).push(MyType::Object(vector2d));
+    return true;
 }
 
 
 /*
-    Render objects in order based on z-index of each object.
-    z-index: 0 - room's background
-             1 - room's ambient animations
-             2..(N-1) - various stuff
-             N - bitmaps
-            (N+1) - polygons
-    TO DO: The layering rules shouldn't be so strict. For example, we may want to show
-    parts of the background above player. This way we create a feeling of "depth".
-    Player object will move between various layers.
+    Render objects in order based on z-index.
+    z-index: 0        : Room's background           (base layer)
+             1        : Room's ambient animations
+             2..(N-3) : various stuff                               (for N = 5, as it is now, this layer is number 2)
+             N-2      : GUI                                         (for N = 5, as it is now, this layer is number 3)
+             N-1      : polygons                    (topmost layer) (for N = 5, as it is now, this layer is number 4)
+             Bitmaps are render over everything else.
 */
 void RenderManager::render()
 {
     SDL_RenderClear(renderer_);
-    RenderableObject* object {nullptr};
-    for ( std::array<std::queue<RenderableObject*>, MAX_LAYERS_>::size_type i = 0; i < render_objects_.size(); i++ )
-    {
-        while ( !render_objects_[i].empty() )
-        {
-            object = render_objects_[i].front();
-            render_objects_[i].pop();
-            object->render(renderer_);
-        }
-    }
+
+    render_sprite();                                    // Render submitted renderable sprites objects 
+    if ( !surface_queue_.empty() ) render_surface();    // Render bitmaps on top of everything.
+
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderPresent(renderer_);
+}
+
+/************************************************************************
+    Helper Render functions.
+*************************************************************************/
+
+/*
+    Render all sprites in all render_queues_.
+*/
+void RenderManager::render_sprite()
+{
+    for ( std::array<std::queue<Sprite*>, MAX_LAYERS_>::size_type i = 0; i < render_queues_.size(); i++ )
+    {
+        while ( !render_queues_[i].empty() )
+        {
+            MyType::Object object { render_queues_[i].front() };
+            object.render(renderer_);
+            render_queues_[i].pop();
+        }
+    }
+}
+
+
+/*
+    Render all bitmap surfaces from the surface_queue_.
+*/
+void RenderManager::render_surface()
+{
+    // Get window surface. We will blit all surfaces onto here.
+    SDL_Surface* window_surface { SDL_GetWindowSurface(window_) };
+    if ( window_surface == NULL )
+    {
+        log_->error("Cannot create window surface", SDL_GetError());
+        return;
+    }
+    // Clear the window's surface to all black.
+    SDL_LockSurface(window_surface);
+    SDL_memset(window_surface->pixels, 0, window_surface->h * window_surface->pitch);
+    SDL_UnlockSurface(window_surface);
+    // Then copy all submitted surfaces onto the screen
+    SDL_Surface* original_surface { nullptr };
+    SDL_Rect* dest_rect;
+    while ( !surface_queue_.empty() )
+    {
+        std::tuple<SDL_Surface*, SDL_Rect*> surface_info { surface_queue_.front() };
+        original_surface = std::get<0>(surface_info);
+        dest_rect = std::get<1>(surface_info);
+        SDL_Surface* converted_surface = SDL_ConvertSurface(original_surface, window_surface->format, 0);
+        SDL_BlitScaled(converted_surface, NULL, window_surface, dest_rect);
+        SDL_FreeSurface(converted_surface);
+        surface_queue_.pop();
+    }
+    // finally update the window surface with all the bitmaps blitted.
+    SDL_UpdateWindowSurface(window_);
 }
 
 
@@ -155,24 +215,35 @@ void RenderManager::render()
     Sets scale of the given texture so that is fills the whole screen height.
     Used for loading room textures.
 */
-void RenderManager::scale_full_h(Texture* texture)
+void RenderManager::scale_full_h(Sprite* sprite)
 {
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer_, &w, &h);
     // Scale.
-    float scale = static_cast<float>(h) / texture->h();  // Use static_cast to really get a float.
-    texture->scale(scale);
+    float scale = static_cast<float>(h) / sprite->h();  // Use static_cast to really get a float.
+    sprite->scale(scale);
 }
-// void RenderManager::scale_full_h(const std::unique_ptr<Texture>& texture)
-// {
-//     // Get screen dimensions.
-//     int w, h;
-//     SDL_GetRendererOutputSize(renderer_, &w, &h);
-//     // Scale.
-//     float scale = static_cast<float>(h) / texture->h();  // Use static_cast to really get a float.
-//     texture->scale(scale);
-// }
+
+void RenderManager::center_horizontally(Sprite* sprite)
+{
+    // Get screen dimensions.
+    int w, h;
+    SDL_GetRendererOutputSize(renderer_, &w, &h);
+    int sprite_w { sprite->w() };
+    int x = 0.5f * (w - sprite_w);
+    sprite->x(x);
+}
+
+void RenderManager::center_vertically(Sprite* sprite)
+{
+    // Get screen dimensions.
+    int w, h;
+    SDL_GetRendererOutputSize(renderer_, &w, &h);
+    int sprite_h { sprite->h() };
+    int y = 0.5f * (h - sprite_h);
+    sprite->y(y);
+}
 
 // Returns current screen width.
 int RenderManager::get_screen_width()

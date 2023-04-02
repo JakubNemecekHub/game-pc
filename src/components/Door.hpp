@@ -6,8 +6,11 @@
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>   // Uint32
 
+#include "GameObject.hpp"
 
-class Door {
+
+class Door : public GameObject
+{
 private:
     // Uint32                      id_;
     bool                        state_;
@@ -25,9 +28,14 @@ public:
     std::string target();
     bool        locked();
     void        unlock();
-    std::string get_observation();
-    std::string get_locked_observation();
+    std::string observation();
+    std::string locked_observation();
     bool        state();
     void        state(bool _state);
     std::string key_id();
+
+    void accept_click(Gameplay::GameplayState* handler, SDL_Event& event) override;
+    void accept_over(Gameplay::GameplayState* handler, SDL_Event& event) override;
+    void accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) override;
+
 };

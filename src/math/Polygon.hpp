@@ -2,8 +2,10 @@
 
 #include <vector>
 
-#include "Vector2D.hpp"
+#include <SDL2/SDL.h>
 
+#include "Vector2D.hpp"
+#include "Visual.hpp"
 
 class Polygon
 {
@@ -23,7 +25,7 @@ public:
 
     // Methods
 
-    unsigned int size();
+    unsigned int size() const;
     bool empty();
     void add_vertex(Vector2D vertex);
     void add_vertex(int x, int y);
@@ -33,4 +35,9 @@ public:
     bool point_in_polygon(int x, int y);
     void scale(float _scale);
     void move (int dx, int dy);
+
+    // Rendering methods
+    Visual visual;
+    void render(SDL_Renderer* renderer) const;
+    
 };

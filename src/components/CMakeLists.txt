@@ -8,12 +8,9 @@ project(
 
 add_library(
     ${PROJECT_NAME}
-    src/Animation.cpp
     src/Door.cpp
     src/HotSpot.cpp
     src/Item.cpp
-    src/RenderableObject.cpp
-    src/Texture.cpp
     src/Room.cpp
     src/Inventory.cpp
     src/Sprite.cpp

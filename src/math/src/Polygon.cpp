@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "../managers/RenderManager.hpp"
 #include "../Vector2D.hpp"
 
 
@@ -57,7 +58,7 @@ void Polygon::add_vertices(std::vector<std::vector<int>> vertices)
 
 
 // Return number of vertices.
-unsigned int Polygon::size()
+unsigned int Polygon::size() const
 {
     return static_cast<unsigned int>(vertices.size());
 }
@@ -129,4 +130,25 @@ void Polygon::move(int dx, int dy)
         vertex.x += dx;
         vertex.y += dy;
     }
+}
+ 
+/*
+    Render scaled and moved version of polygon.
+*/
+void Polygon::render(SDL_Renderer* renderer) const
+{
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+    size_t i, j;
+    int x1, y1, x2, y2;
+    j = this->size() - 1;
+    for ( i = 0; i < this->size(); i++ )
+    {
+        x1 = static_cast<int>(vertices[j].x * visual.scale + visual.dx);
+        y1 = static_cast<int>(vertices[j].y * visual.scale + visual.dy);
+        x2 = static_cast<int>(vertices[i].x * visual.scale + visual.dx);
+        y2 = static_cast<int>(vertices[i].y * visual.scale + visual.dy);
+        SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+        j = i;
+    }
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 }

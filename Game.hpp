@@ -12,33 +12,34 @@
 #include "src/managers/ItemManager.hpp"
 #include "src/managers/AssetManager.hpp"
 #include "src/managers/PlayerManager.hpp"
+#include "src/managers/ControlManager.hpp"
+#include "src/managers/StateManager.hpp"
 
 
-struct Controls
+class Managers
 {
-    SDL_Keycode KEY_INVENTORY;
-    SDL_Keycode KEY_POLYGON;
-    SDL_Keycode KEY_HOT_SPOTS;
+public:
+    LogManager       log;
+    WindowManager    window;
+    RenderManager    renderer;
+    AssetManager     assets;
+    TextManager      text;
+    ItemManager      items;
+    RoomManager      rooms;
+    PlayerManager    player;
+    ControlManager   control;
+    StateManager     state;
+
+    Managers();
 };
 
 
 class Game {
 private:
 
-    LogManager       m_LogManager;
-    WindowManager    m_WindowManager;
-    RenderManager    m_RenderManager;
-    AssetManager     m_AssetManager;
-    TextManager      m_TextManager;
-    ItemManager      m_ItemManager;
-    RoomManager      m_RoomManager;
-    PlayerManager    m_PlayerManager;
+    Managers managers;
 
     SDL_Event event_;
-    Controls m_Controls;
-
-    void handle_click_(int x, int y, bool right_click);
-    void handle_keyboard_(SDL_Keycode key);
 
 public:
 

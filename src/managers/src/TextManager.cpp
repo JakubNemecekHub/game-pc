@@ -4,7 +4,7 @@
 
 
 TextManager::TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini)
-    : log_{log}, renderer_{renderer}, text_timer_{0}
+    : log_{log}, renderer_{renderer}
 {
     font_file_ = ini["font"].as<std::string>();
     font_size_ = ini["size"].as<int>();
@@ -24,7 +24,6 @@ TextManager::TextManager(LogManager* log, RenderManager* renderer, YAML::Node in
 bool TextManager::startUp()
 {
     log_->log("Starting Text Manager.");
-
     // Initialize SDL_ttf library
     if ( TTF_Init() == -1 )
     {
@@ -40,6 +39,7 @@ bool TextManager::startUp()
             return false;
         }
     }
+    log_->log("Text Manager up and running.");
     return true;
 }
 
@@ -56,12 +56,8 @@ bool TextManager::ShutDown()
 }
 
 
-void TextManager::register_text(std::string text, int x, int y, COLOR color)
+SDL_Texture* TextManager::create_texture_(std::string text, COLOR color)
 {
-    if ( display_text_ )
-    {
-        display_text_.release();
-    }
     // Screen width used in wrapping text and moving it along the x axis
     int screen_width { renderer_->get_screen_width() };
     Color my_color { colors_.at(color) };
@@ -71,55 +67,124 @@ void TextManager::register_text(std::string text, int x, int y, COLOR color)
     if ( text_surface == NULL )
     {
         log_->error("SDL_ttf Error: ", TTF_GetError());
-        return;
+        return nullptr;
     }
     // Create SDL_Texture from surface
     SDL_Texture* text_texture = renderer_->texture_from_surface(text_surface);
+    // delete text_surface;
+    SDL_FreeSurface(text_surface);
     if ( text_texture == NULL )
     {
         log_->error("SDL Error: ", SDL_GetError());
-        return;
+        return nullptr;
     }
-    // Create Texture with SDL_Texture
-    display_text_ = std::make_unique<Texture>(text_texture, 1, 3);
-    display_text_->match_src_dimension();
+    return text_texture;
+}
+
+
+void TextManager::transform_(std::unique_ptr<Sprite>& sprite, int x, int y)
+{
+    sprite->match_dimensions();
     /*
         Set position
         Move text above mouse cursor.
         If end of the text texture would be rendered outside of the screen,
         move it along the x axis.
-        If the width of the whole text is greater then the screen width than
+        If the width of the whole text is greater then the screen width then
         we are...
     */
+    int screen_width { renderer_->get_screen_width() };
     int final_x, final_y;
-    final_x = screen_width - display_text_->src_rect().w;
+    final_x = screen_width - sprite->w();
     if ( final_x > x )
     {
         final_x = x;
     }
-    final_y = y - display_text_->src_rect().h;
-    display_text_->set_position(final_x, final_y);
-    renderer_->register_object(display_text_.get());
-    text_timer_ = 0;
+    final_y = y - sprite->h();
+    sprite->position(final_x, final_y);
+    renderer_->submit(sprite.get());
+}
+
+
+void TextManager::submit_player(std::string text, int x, int y, COLOR color)
+{
+    if ( std::get<0>(text_player_) )
+    {
+        std::get<0>(text_player_).release();
+    }
+    SDL_Texture* text_texture = create_texture_(text, color);
+    std::get<0>(text_player_) = std::make_unique<Sprite>(text_texture, 1, 3);
+    std::get<0>(text_player_)->depiction("text");
+    transform_(std::get<0>(text_player_), x, y);
+    std::get<1>(text_player_) = 0;
+}
+
+
+void TextManager::submit_label(std::string text, int x, int y, COLOR color)
+{
+    if ( text_label_ )
+    {
+        text_label_.release();
+    }
+    SDL_Texture* text_texture = create_texture_(text, color);
+    text_label_ = std::make_unique<Sprite>(text_texture, 1, 3);
+    text_label_->depiction("text");
+    transform_(text_label_, x, y);
+}
+
+
+void TextManager::submit_free(std::string text, int x, int y, COLOR color)
+{
+    SDL_Texture* text_texture = create_texture_(text, color);                   // Create Sprite from text
+    text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1, 3), 0);   // Insert new Sprite into list
+    std::unique_ptr<Sprite>& sprite { std::get<0>(text_free_.back()) };
+    sprite->depiction("text");
+    transform_(sprite, x, y);                                                   // Set Sprite's dimensions
 }
 
 
 void TextManager::update(int dt)
 {
-    if ( display_text_ )
+
+    // Player's text
+    if ( std::get<0>(text_player_) )
     {
-        if ( text_timer_ <= max_duration_ )
+        if ( std::get<1>(text_player_) <= max_duration_ )
         {
-            renderer_->register_object(display_text_.get());
-            text_timer_ += dt;
+            renderer_->submit(std::get<0>(text_player_).get());
+            std::get<1>(text_player_) += dt;
         }
         else
         {
-            display_text_ = nullptr;
-            text_timer_ = 0;
+            std::get<0>(text_player_).reset();
+            std::get<1>(text_player_) = 0;
         }
+    }
+
+    // Label
+    if ( text_label_ ) renderer_->submit(text_label_.get());
+
+    // Free text
+    text_free_.remove_if([&](const text_tuple& text){ return std::get<1>(text) > max_duration_; }); // Remove expired text
+    for ( auto& text : text_free_ )                                                                 // Update remaining text
+    {
+        renderer_->submit(std::get<0>(text).get());
+        std::get<1>(text) += dt; 
     }
 }
 
 
-void TextManager::clean() { display_text_.release(); }
+void TextManager::clean()
+{
+    std::get<0>(text_player_).reset();
+    std::get<1>(text_player_) = 0;
+    text_label_.reset();
+    text_free_.clear();
+}
+
+
+void TextManager::clean_player()
+{
+    std::get<0>(text_player_).reset();
+    std::get<1>(text_player_) = 0;
+}

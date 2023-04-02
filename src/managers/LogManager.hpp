@@ -6,6 +6,7 @@
 
 #include <yaml-cpp/yaml.h>
 
+
 class LogManager
 {
 private:
@@ -30,14 +31,14 @@ public:
     void log(Messages... messages)
     {
         std::cout << get_time_stamp() << " | ";
-        ((std::cout << std::forward<Messages>(messages)), ...);
+        ((std::cout << std::forward<Messages>(messages) << " "), ...);
         std::cout << std::endl;
     }
     template<typename... Messages>
     void error(Messages&&... messages)
     {
         std::cerr << get_time_stamp() << " | ";
-        ((std::cerr << std::forward<Messages>(messages)), ...);
+        ((std::cerr << std::forward<Messages>(messages) << " "), ...);
         std::cerr << std::endl;
     }
 };
