@@ -71,6 +71,8 @@ SDL_Texture* TextManager::create_texture_(std::string text, COLOR color)
     }
     // Create SDL_Texture from surface
     SDL_Texture* text_texture = renderer_->texture_from_surface(text_surface);
+    // delete text_surface;
+    SDL_FreeSurface(text_surface);
     if ( text_texture == NULL )
     {
         log_->error("SDL Error: ", SDL_GetError());
@@ -154,7 +156,7 @@ void TextManager::update(int dt)
         }
         else
         {
-            std::get<0>(text_player_).release();
+            std::get<0>(text_player_).reset();
             std::get<1>(text_player_) = 0;
         }
     }
@@ -174,15 +176,15 @@ void TextManager::update(int dt)
 
 void TextManager::clean()
 {
-    std::get<0>(text_player_).release();
+    std::get<0>(text_player_).reset();
     std::get<1>(text_player_) = 0;
-    text_label_.release();
+    text_label_.reset();
     text_free_.clear();
 }
 
 
 void TextManager::clean_player()
 {
-    std::get<0>(text_player_).release();
+    std::get<0>(text_player_).reset();
     std::get<1>(text_player_) = 0;
 }

@@ -30,13 +30,14 @@ public:
 class Depiction
 {
 public:
-    ~Depiction() {};
+    virtual ~Depiction() {};
     virtual int w() = 0;
     virtual int h() = 0;
 
     virtual void update(int dt) = 0;
     virtual void reset() = 0;
     virtual void render(SDL_Renderer* renderer, SDL_Rect destination) = 0; // This will need more info
+    virtual void destroy() = 0;
 };
 
 class Animation : public Depiction
@@ -56,6 +57,7 @@ public:
     void update(int dt) override;
     void reset() override;
     void render(SDL_Renderer* renderer, SDL_Rect destination) override;
+    void destroy() override;
 };
 
 class Texture : public Depiction
@@ -71,6 +73,7 @@ public:
     void update(int dt) override;
     void reset() override;
     void render(SDL_Renderer* renderer, SDL_Rect destination) override;
+    void destroy() override;
 };
 
 class Sprite 
@@ -91,6 +94,7 @@ public:
 
     Sprite(RenderManager* renderer);
     Sprite(SDL_Texture* texture, float scale, int z_index);
+    ~Sprite();
 
     void add_depiction(std::string id, Depiction* depiction);
 
@@ -129,5 +133,7 @@ public:
         float scale();
           int z_index();
     // void rotate(d) // Not yet
+
+    void destroy();
 
 };

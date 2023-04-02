@@ -62,6 +62,6 @@ void Game::update(int dt)
         current_sate->input(event_);            // State specific input
     }
     current_sate->update(dt);                   // 2) Update
-    managers.state.change(&managers);           // 3) Change state
-    current_sate->render();                     // 4) Render
+    current_sate->render();                     // 3) Render
+    managers.state.change(&managers);           // 4) Change state
 }

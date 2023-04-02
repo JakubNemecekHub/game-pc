@@ -49,6 +49,8 @@ void Animation::render(SDL_Renderer* renderer, SDL_Rect destination)
     SDL_RenderCopyEx(renderer, texture_, &src_rect, &destination, 0.0f, NULL, SDL_FLIP_NONE);
 }
 
+void Animation::destroy() {};
+
 
 /*****************************************************************************************************
  *  Texture
@@ -74,6 +76,7 @@ void Texture::render(SDL_Renderer* renderer, SDL_Rect destination)
     SDL_RenderCopyEx(renderer, texture_, &src_rect_, &destination, 0.0f, NULL, SDL_FLIP_NONE);
 }
 
+void Texture::destroy() { SDL_DestroyTexture(texture_); }
 
 /*****************************************************************************************************
  *  Sprite
@@ -90,6 +93,8 @@ Sprite::Sprite(SDL_Texture* texture, float scale, int z_index)
     depictions_.insert(std::make_pair("text", new Texture(texture)));
 }
 
+
+Sprite::~Sprite() { current_depiction_->destroy(); }
 
 void Sprite::add_depiction(std::string id, Depiction* depiction)
 {
@@ -276,3 +281,5 @@ int Sprite::h() { return dest_rect_.h; }
 float Sprite::scale() { return scale_; }
 // Get the z-index
 int Sprite::z_index() { return z_index_; }
+// Destroy pointers
+void Sprite::destroy() { current_depiction_->destroy(); }
