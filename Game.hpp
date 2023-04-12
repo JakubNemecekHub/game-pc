@@ -44,6 +44,7 @@ private:
 public:
 
     Game();
+    ~Game();
     bool running();
     void update(int dt);
 

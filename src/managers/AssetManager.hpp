@@ -43,7 +43,6 @@ public:
 
     AssetManager() {};
     AssetManager(LogManager* log);
-    // AssetManager& operator=(const AssetManager& other) { return AssetManager(); }
 
     bool startUp(RenderManager* renderer);
     bool shutDown();

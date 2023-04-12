@@ -114,26 +114,6 @@ bool AssetManager::startUp(RenderManager* renderer)
             }
             sprites_.at(sprite_id).depiction(sprite["textures"][0]["id"].as<std::string>());
         }
-
-        // for (auto& sprite : data)
-        // {
-        //     std::string sprite_id { sprite["id"].as<std::string>() };
-        //     sprites_.emplace(std::piecewise_construct,
-        //         std::forward_as_tuple(sprite_id),
-        //         std::forward_as_tuple(renderer));
-        //     for ( auto& texture : sprite["textures"] ) 
-        //     {
-        //         std::string texture_id { texture["id"].as<std::string>() };
-        //         bool loop { true };
-        //         if (YAML::Node loop_flag = texture["loop"])
-        //         {
-        //             loop = loop_flag.as<bool>();
-        //         }
-        //         sprites_.at(sprite_id).add_animation(texture_id, this->texture(texture_id), this->frames(texture_id), loop);
-        //     }
-        //     // Set up the values of src_rect_, dest_rect_ and current_animation_
-        //     sprites_.at(sprite_id).animation(sprite["textures"][0]["id"].as<std::string>());
-        // }
         log_->log("Created Sprites", entry.path().string());
         sprites_paths.pop();
     }
@@ -171,4 +151,12 @@ std::queue<fs::directory_entry> AssetManager::items_meta()
 std::queue<fs::directory_entry> AssetManager::rooms_meta()
 {
     return rooms_meta_;
+}
+
+
+bool AssetManager::shutDown()
+{
+    for ( auto& texture : textures_ ) SDL_DestroyTexture(texture.second);
+    for ( auto& bitmap : bitmaps_ )   SDL_FreeSurface(bitmap.second);
+    return true;
 }

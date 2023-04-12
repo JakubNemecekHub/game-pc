@@ -45,13 +45,23 @@ Managers::Managers()
 
     log.log("All Managers started.");
 }
+
+
 Game::Game()
 {
     managers.log.log("Starting at default Intro State.");
     managers.state.start(IntroState::get(), &managers);
 }
 
+
+Game::~Game()
+{
+    managers.assets.shutDown();
+}
+
+
 bool Game::running() { return managers.window.running; }
+
 
 void Game::update(int dt)
 {
