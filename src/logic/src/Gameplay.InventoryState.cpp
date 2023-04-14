@@ -77,3 +77,6 @@ void Gameplay::Inventory::visit_over(HotSpot* hot_spot, SDL_Event& event) {}
 void Gameplay::Inventory::visit_drag(Item* item, SDL_Event& event) {}
 void Gameplay::Inventory::visit_drag(Door* door, SDL_Event& event) {}
 void Gameplay::Inventory::visit_drag(HotSpot* hot_spot, SDL_Event& event) {}
+void Gameplay::Inventory::visit_click(Ambient* ambient, SDL_Event& event) {}
+void Gameplay::Inventory::visit_over(Ambient* ambient, SDL_Event& event) {}
+void Gameplay::Inventory::visit_drag(Ambient* ambient, SDL_Event& event) {}

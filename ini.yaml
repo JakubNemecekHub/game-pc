@@ -13,7 +13,7 @@ renderer:
   SDL_RENDERER_PRESENTVSYNC: true
   SDL_RENDERER_TARGETTEXTURE: false
 text:
-  font: D:/Prog/cpp/game_engine_architecture/res/fonts/Secret of Monkey Island.ttf
+  font: D:/Prog/cpp/game_engine_architecture/res/fonts/Retro Gaming.ttf
   size: 24
   max_duration: 1250
   colors:

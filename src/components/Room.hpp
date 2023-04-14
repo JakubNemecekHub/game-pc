@@ -11,6 +11,7 @@
 #include "Item.hpp"
 #include "Door.hpp"
 #include "HotSpot.hpp"
+#include "Ambient.hpp"
 #include "../math/Polygon.hpp"
 #include "../managers/RenderManager.hpp"
 #include "../managers/ItemManager.hpp"
@@ -21,7 +22,7 @@ class RoomAnimations
 {
 private:
 
-    std::vector<Sprite*> animations_;
+    std::vector<Ambient> animations_;
 
 public:
 
@@ -30,6 +31,8 @@ public:
 
     void load(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt);
+
+    Ambient* get_animation(int x, int y);
 
 };
 
@@ -83,5 +86,7 @@ public:
     inline void toggle_walk_area()      { visible_walk_area_ = !visible_walk_area_;           }
     inline void toggle_item_click_map() { visible_item_click_map_ = !visible_item_click_map_; }
     inline void toggle_item_vector()    { visible_item_vector_ = !visible_item_vector_; }
+
+    GameObject* get_any_object(int x, int y);
 
 };

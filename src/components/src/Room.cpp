@@ -12,17 +12,18 @@
 using animation_counter = std::vector<Sprite*>::size_type;
 void RoomAnimations::load(YAML::Node data, AssetManager* assets)
 {
-    animations_.resize(data.size()); // Set the size of the final animations vector
-    for ( animation_counter i = 0; i < animations_.size(); i++ )
+    for ( animation_counter i = 0; i < data.size(); i++ )
     {
-        animations_.at(i) = assets->sprite(data[i]["id"].as<std::string>());
-        animations_.at(i)->z_index(1);
-        animations_.at(i)->scale(data[i]["scale"].as<float>());
+        std::string id { data[i]["id"].as<std::string>() }; // Id both of the Ambient object and its Sprite.
+        bool state { data[i]["state"].as<bool>() };
+        animations_.emplace_back(id, assets->sprite(id), state);
+        animations_.at(i).sprite()->z_index(1);
+        animations_.at(i).sprite()->scale(data[i]["scale"].as<float>());
         int x { data[i]["position"][0].as<int>() };
         int y { data[i]["position"][1].as<int>() };
-        animations_.at(i)->position(x, y);
+        animations_.at(i).sprite()->position(x, y);
         // Reset animation
-        animations_.at(i)->reset();
+        animations_.at(i).sprite()->reset();
     }
 }
 
@@ -34,8 +35,21 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 {
    for ( auto &animation : animations_ )
    {
-       animation->update(renderer, dt);
+       if ( animation.state() ) animation.sprite()->update(renderer, dt);
    }
+}
+
+
+Ambient* RoomAnimations::get_animation(int x, int y)
+{
+    for ( auto& animation : animations_ )
+    {
+        if ( animation.point_in(x, y) )
+        {
+            return &animation;
+        }
+    }
+    return nullptr;
 }
 
 
@@ -161,6 +175,7 @@ void Room::update(RenderManager* renderer, int dt)
     update_items(renderer, dt);
 }
 
+
 /*
     Update each ambient animation and register it to the renderer
 */
@@ -221,6 +236,7 @@ Uint32 Room::get_mapped_object_(int x, int y)
     }
 }
 
+
 GameObject* Room::get_object(int x, int y)
 {
 
@@ -245,6 +261,16 @@ GameObject* Room::get_object(int x, int y)
         return &hot_spots_.at(id);
     }
     return nullptr;
+}
+
+
+GameObject* Room::get_any_object(int x, int y)
+{
+    GameObject* result { animations_.get_animation(x, y) };
+    if ( result ) return result;
+    result = get_object(x, y);
+    if ( !result ) return nullptr;
+    return result;
 }
 
 

@@ -48,7 +48,7 @@ void Gameplay::Editor::input_keyboard_(SDL_Event& event)
 void Gameplay::Editor::input_mouse_(SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
-    GameObject* object { managers_->rooms.get_object(x, y) };   // Get object from Room Manager.
+    GameObject* object { managers_->rooms.get_any_object(x, y) };   // Get object from Room Manager.
     switch (event.type)
     {
     case SDL_MOUSEMOTION:
@@ -58,7 +58,10 @@ void Gameplay::Editor::input_mouse_(SDL_Event& event)
         }
         else
         {
-            if ( object) object->accept_over(this, event);
+            if ( object)
+            {
+                object->accept_over(this, event);
+            }
             else managers_->text.clean_player();
         }
         break;
@@ -130,13 +133,21 @@ void Gameplay::Editor::visit_click(HotSpot* hot_spot, SDL_Event& event)
     
 }
 
+
+void Gameplay::Editor::visit_click(Ambient* ambient, SDL_Event& event)
+{
+
+}
+
+
 /***********************************************************************************************************************************************************************
  * Visit Mouseover
 ************************************************************************************************************************************************************************/
 void Gameplay::Editor::visit_over(Item* item, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
-    managers_->text.submit_player(item->id(), x, y, COLOR::RED);
+    std::string message { "ITEM: " + item->id() };
+    managers_->text.submit_player(message, x, y, COLOR::RED);
 }
 
 
@@ -153,14 +164,30 @@ void Gameplay::Editor::visit_over(HotSpot* hot_spot, SDL_Event& event)
 }
 
 
+void Gameplay::Editor::visit_over(Ambient* ambient, SDL_Event& event)
+{
+    auto[x, y] = managers_->control.mouse_position(event);
+    managers_->text.submit_player(ambient->id(), x, y, COLOR::RED);
+}
+
+
 /***********************************************************************************************************************************************************************
  * Visit Drag
 ************************************************************************************************************************************************************************/
 void Gameplay::Editor::visit_drag(Item* item, SDL_Event& event)
 {
+    auto[x, y] = managers_->control.mouse_position(event);
     int dx = event.motion.xrel;
     int dy = event.motion.yrel;
+
     item->move(dx, dy);
+
+    std::string message { "ITEM: " + item->id() };
+    int item_x { item->sprite()->x() };
+    int item_y { item->sprite()->y() };
+    message += " " + std::to_string(item_x) + " " + std::to_string(item_y);
+    managers_->text.submit_player(message, x, y, COLOR::RED);
+
 }
 
 
@@ -174,4 +201,10 @@ void Gameplay::Editor::visit_drag(Door* door, SDL_Event& event)
 void Gameplay::Editor::visit_drag(HotSpot* hot_spot, SDL_Event& event)
 {
     
+}
+
+
+void Gameplay::Editor::visit_drag(Ambient* ambient, SDL_Event& event)
+{
+
 }

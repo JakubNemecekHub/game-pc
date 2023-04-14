@@ -159,3 +159,7 @@ void Gameplay::Normal::visit_over(HotSpot* hot_spot, SDL_Event& event) {}
 void Gameplay::Normal::visit_drag(Item* item, SDL_Event& event) {}
 void Gameplay::Normal::visit_drag(Door* door, SDL_Event& event) {}
 void Gameplay::Normal::visit_drag(HotSpot* hot_spot, SDL_Event& event) {}
+
+void Gameplay::Normal::visit_click(Ambient* ambient, SDL_Event& event) {}
+void Gameplay::Normal::visit_over(Ambient* ambient, SDL_Event& event) {}
+void Gameplay::Normal::visit_drag(Ambient* ambient, SDL_Event& event) {}
