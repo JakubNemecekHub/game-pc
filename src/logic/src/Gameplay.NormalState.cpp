@@ -89,9 +89,9 @@ void Gameplay::Normal::visit_click(Item* item, SDL_Event& event)
     {
         if ( managers_->player.inventory.has_space() )
         {
-            managers_->player.inventory.add(item);
-            managers_->rooms.remove_item(item->id());
+            managers_->player.inventory.add(item->id());
             managers_->text.submit_player(item->pick_observation(), x, y, COLOR::PURPLE);
+            managers_->rooms.remove_item(item->id());
         }
         else
         {

@@ -15,11 +15,12 @@
 struct Controls
 {
     SDL_Keycode KEY_INVENTORY;
-    SDL_Keycode KEY_WALK_POLYGON;
-    SDL_Keycode KEY_ITEM_POLYGON;
-    SDL_Keycode KEY_ITEM_VECTOR;
-    SDL_Keycode KEY_HOT_SPOTS;
     SDL_Keycode KEY_EDITOR;
+    SDL_Keycode KEY_EDITOR_ITEMS;
+    SDL_Keycode KEY_EDITOR_HOT_SPOTS;
+    SDL_Keycode KEY_EDITOR_DOORS;
+    SDL_Keycode KEY_EDITOR_WALK_POLYGON;
+    SDL_Keycode KEY_EDITOR_BITMAP;
 };
 
 

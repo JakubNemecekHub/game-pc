@@ -5,6 +5,15 @@
 
 class GameObject;
 
+enum EDITOR_TARGET
+{
+    EMPTY,
+    ITEM,
+    HOT_SPOT,
+    DOOR,
+    AMBIENT
+};
+
 
 namespace Gameplay
 {
@@ -23,8 +32,9 @@ private:
     void input_keyboard_(SDL_Event& event);
     void input_mouse_(SDL_Event& event);
 
-    bool mouse_down_;
-    GameObject* selection_;
+    bool          mouse_down_;
+    EDITOR_TARGET target_ { EDITOR_TARGET::EMPTY };
+    GameObject*   selection_;
 
 public:
     static Editor* get();

@@ -94,17 +94,17 @@ void RoomManager::handle_keyboard(ACTION_ROOM action)
 {
     switch ( action )
     {
-    case ACTION_ROOM::BITMAP:
+    case ACTION_ROOM::EDITOR_BITMAP:
         active_room_->toggle_click_map();
         break;
-    case ACTION_ROOM::WALK_POLYGON:
+    case ACTION_ROOM::EDITOR_WALK_POLYGON:
         active_room_->toggle_walk_area();
         break;
-    case ACTION_ROOM::ITEM_POLYGON:
-        active_room_->toggle_item_click_map();
+    case ACTION_ROOM::EDITOR_ITEMS:
+        active_room_->toggle_item_debug();
         break;
-    case ACTION_ROOM::ITEM_VECTOR:
-        active_room_->toggle_item_vector();
+    case ACTION_ROOM::EDITOR_HOT_SPOTS:
+        active_room_->toggle_hot_spot_debug();
         break;
     default:
         break;

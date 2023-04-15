@@ -23,8 +23,9 @@ text:
     - [198, 40, 40]   # RED
 control:
   Inventory: i
-  Walk_Polygon: p
-  Item_Polygon: t
-  Item_Vector: v
-  Hots_pots: b
   Editor: e
+  Editor_Items: i 
+  Editor_Hot_Spots: h
+  Editor_Doors: d
+  Editor_Walk_Polygon: p
+  Editor_Bitmap: b

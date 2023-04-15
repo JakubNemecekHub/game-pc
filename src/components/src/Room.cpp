@@ -35,7 +35,7 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 {
    for ( auto &animation : animations_ )
    {
-       if ( animation.state() ) animation.sprite()->update(renderer, dt);
+       if ( animation.state() ) animation.update(renderer, dt);
    }
 }
 
@@ -44,7 +44,7 @@ Ambient* RoomAnimations::get_animation(int x, int y)
 {
     for ( auto& animation : animations_ )
     {
-        if ( animation.point_in(x, y) )
+        if ( animation.clicked(x, y) )
         {
             return &animation;
         }
@@ -71,20 +71,53 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     walk_area_.visual.dy = sprite_->y();
     // Load room click map
     click_map_ = assets->bitmap(id);
+
     // Load HotSpots
     for ( auto& hot_spot : data["hot_spots"] )
     {
-        hot_spots_.emplace(std::piecewise_construct,
-                           std::forward_as_tuple(hot_spot["id"].as<Uint32>()),
-                           std::forward_as_tuple(hot_spot));
+        std::string id { hot_spot["id"].as<std::string>() };
+        // Two types of HotSpot
+        if ( hot_spot["sprite"] )   // Create SpriteHotSpot
+        {
+            objects_["hot_spots"].emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(id),
+                std::forward_as_tuple(std::make_shared<SpriteHotSpot>(hot_spot, assets))
+            );
+        }
+        else                        // Create BitmapHotSpot
+        {
+            objects_["hot_spots"].emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(id),
+                std::forward_as_tuple(std::make_shared<BitmapHotSpot>(hot_spot))
+            );
+        }
     }
+
     // Load Doors
     for ( auto& door : data["doors"] )
     {
-        doors_.emplace(std::piecewise_construct,
-                       std::forward_as_tuple(door["id"].as<Uint32>()),
-                       std::forward_as_tuple(door));
+        std::string id { door["id"].as<std::string>() };
+        // Two types of Doors
+        if ( door["sprite"] )   // Create SpriteDoor
+        {
+            objects_["doors"].emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(id),
+                std::forward_as_tuple(std::make_shared<SpriteDoor>(door, assets))
+            );
+        }
+        else                        // Create BitmapDoor
+        {
+            objects_["doors"].emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(id),
+                std::forward_as_tuple(std::make_shared<BitmapDoor>(door))
+            );
+        }
     }
+
     // Items
     for ( auto& item_data : data["items"] )
     {
@@ -108,7 +141,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
 
         item->state(item_data["state"].as<bool>());
         item->lock(true);
-        items_.insert(std::make_pair(id, item));
+        objects_["items"].insert(std::make_pair(id, std::make_shared<Item>(*item)));
     }
     // load room ambient animations
     animations_.load(data["animations"], assets);
@@ -145,46 +178,32 @@ void Room::update(RenderManager* renderer, int dt)
 {
     // Register background
     renderer->submit(sprite_);
-    // Register visible items
-    for ( auto& item : items_ )
+    for ( auto &object_map : objects_ )
     {
-        if ( item.second->state() )
+        for (auto& object : object_map.second )
         {
-            renderer->submit(item.second->sprite());
+            if ( object.second->state() ) object.second->update(renderer, dt);
         }
     }
+    animations_.update(renderer, dt);
     // START OF DEBUG
     if ( visible_click_map_ ) renderer->submit(click_map_, sprite_->dest_rect());   // Register Click map if should be visible
     if ( visible_walk_area_ ) renderer->submit(&walk_area_);                        // Render Walk area if it should be visible
-    if ( visible_item_click_map_ )                                                  // Render all items' click polygons if they should be visible
+    if ( visible_item_debug_ )
     {
-        for ( auto& item : items_ )
+        for ( auto& item : objects_["items"] )
         {
-            renderer->submit(item.second->click_area());
+            item.second->show_attributes();
         }
     }
-    if ( visible_item_vector_ )
+    if ( visible_hot_spot_debug_ )
     {
-        for ( auto& item : items_ )
+        for ( auto& hot_spot : objects_["hot_spots"] )
         {
-            renderer->submit(item.second->sprite()->position());
+            hot_spot.second->show_attributes();
         }
     }
     // END OF DEBUG
-    animations_.update(renderer, dt);
-    update_items(renderer, dt);
-}
-
-
-/*
-    Update each ambient animation and register it to the renderer
-*/
-void Room::update_items(RenderManager* renderer, int dt)
-{
-   for ( auto &item : items_ )
-   {
-       item.second->update(renderer, dt);
-   }
 }
 
 
@@ -201,7 +220,7 @@ void Room::update_items(RenderManager* renderer, int dt)
     8bits = 2 ^ 8 = 256 colours, this should be enough
 
 */
-Uint32 Room::get_mapped_object_(int x, int y)
+Uint32 Room::get_mapped_object_id_(int x, int y)
 {
     auto [room_x, room_y] = relative_coordinates(x, y);
     int bpp = click_map_->format->BytesPerPixel; // bytes per pixel, depends on loaded image
@@ -242,25 +261,20 @@ GameObject* Room::get_object(int x, int y)
 
     // Order: Item -> Door -> Hot Spot
 
-    // Look for items.
-    for ( auto& item : items_ )
-    {
-        if ( item.second->clicked(x, y) && item.second->state() )
-        {
-            return item.second;
-        }
-    }
-    // Look for objects on click map.
-    Uint32 id { get_mapped_object_(x, y) };
-    if ( doors_.find(id) != doors_.end() )
-    {
-        return &doors_.at(id);
-    }
-    if ( hot_spots_.find(id) != hot_spots_.end() )
-    {
-        return &hot_spots_.at(id);
-    }
+    for ( auto& item : objects_["items"] )
+        if ( item.second->clicked(x, y) && item.second->state() ) return item.second.get();
+    for ( auto& door : objects_["doors"] )
+        if ( door.second->clicked(x, y) && door.second->state() ) return door.second.get();
+    for ( auto& hot_spot : objects_["hot_spots"] )
+        if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();
+    std::string id { std::to_string(get_mapped_object_id_(x, y)) };
+    if ( objects_["doors"].find(id) != objects_["doors"].end() )
+        return objects_["doors"].at(id).get();
+    if ( objects_["hot_spots"].find(id) != objects_["hot_spots"].end() )
+        return objects_["hot_spots"].at(id).get();
+
     return nullptr;
+
 }
 
 
@@ -276,7 +290,7 @@ GameObject* Room::get_any_object(int x, int y)
 
 void Room::remove_item(std::string id)
 {
-    items_.erase(id);
+    objects_.erase(id);
 }
 
 // void Room::item_activate(Uint32 id)
@@ -288,5 +302,4 @@ void Room::remove_item(std::string id)
 // {
 //     items.at(id).set_state(false);
 // }
-
 

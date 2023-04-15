@@ -41,7 +41,7 @@ Managers::Managers()
     items.startUp(&assets);
     rooms.startUp(&items, &assets);
     control.startUp(ini["control"]);
-    player.startUp(&assets);
+    player.startUp(&assets, &items);
 
     log.log("All Managers started.");
 }

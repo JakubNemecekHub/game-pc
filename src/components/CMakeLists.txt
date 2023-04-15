@@ -8,6 +8,7 @@ project(
 
 add_library(
     ${PROJECT_NAME}
+    src/GameObject.cpp
     src/Door.cpp
     src/HotSpot.cpp
     src/Item.cpp

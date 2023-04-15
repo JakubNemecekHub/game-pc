@@ -16,8 +16,6 @@ Gameplay::Editor* Gameplay::Editor::get() { return &self_; }
 
 bool Gameplay::Editor::enter(Managers* managers)
 {
-    // Load Room, items and such managers.
-    // Right now, they are probably ready.
     managers_ = managers;
     managers_->text.submit_label("Editor", 20, 30, COLOR::RED);
     return true;
@@ -37,11 +35,39 @@ void Gameplay::Editor::input_keyboard_(SDL_Event& event)
 
     const Controls mapping { managers_->control.mapping() };  // Mapping isn't constant, so we cannot use switch statement :( 
 
-         if ( kkey == mapping.KEY_EDITOR ) managers_->state.next(Gameplay::Normal::get());                      // Return to normal state
-    else if ( kkey == mapping.KEY_HOT_SPOTS ) managers_->rooms.handle_keyboard(ACTION_ROOM::BITMAP);            // Show click map
-    else if ( kkey == mapping.KEY_WALK_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::WALK_POLYGON);   // Toggle walk area's polygon rendering
-    else if ( kkey == mapping.KEY_ITEM_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_POLYGON);   // Toggle items' click area's polygon rendering
-    else if ( kkey == mapping.KEY_ITEM_VECTOR ) managers_->rooms.handle_keyboard(ACTION_ROOM::ITEM_VECTOR);     // Toggle items' position vector rendering
+         if ( kkey == mapping.KEY_EDITOR              ) managers_->state.next(Gameplay::Normal::get()); // Return to normal state
+    else if ( kkey == mapping.KEY_EDITOR_ITEMS )
+    {
+        managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_ITEMS);    // Toggle items' position vector and click polygon rendering
+        switch ( target_ )
+        {
+        case EDITOR_TARGET::ITEM:
+            target_ = EDITOR_TARGET::EMPTY;
+            managers_->text.submit_label("Editor", 20, 30, COLOR::RED);
+            break;
+        default:
+            target_ = EDITOR_TARGET::ITEM;
+            managers_->text.submit_label("Editor: Item", 20, 30, COLOR::RED);
+            break;
+        }
+    }
+    else if ( kkey == mapping.KEY_EDITOR_HOT_SPOTS )
+    {
+        managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_HOT_SPOTS);    // Toggle hot spots' position vector and click polygon rendering
+        switch ( target_ )
+        {
+        case EDITOR_TARGET::HOT_SPOT:
+            target_ = EDITOR_TARGET::EMPTY;
+            managers_->text.submit_label("Editor", 20, 30, COLOR::RED);
+            break;
+        default:
+            target_ = EDITOR_TARGET::HOT_SPOT;
+            managers_->text.submit_label("Editor: Hot Spot", 20, 30, COLOR::RED);
+            break;
+        }
+    }
+    else if ( kkey == mapping.KEY_EDITOR_WALK_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_WALK_POLYGON); // Toggle walk area's polygon rendering
+    else if ( kkey == mapping.KEY_EDITOR_BITMAP       ) managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_BITMAP);       // Show click map
 }
 
 

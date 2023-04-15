@@ -7,21 +7,24 @@
 #include <SDL2/SDL.h>   // Uint32
 
 #include "GameObject.hpp"
+#include "Sprite.hpp"
+#include "../math/Polygon.hpp"
+#include "../managers/AssetManager.hpp"
 
 
 class Door : public GameObject
 {
-private:
-    // Uint32                      id_;
+protected:
+
     bool                        state_;
     bool                        locked_;
     std::string                 target_;
     std::vector<std::string>    observations_;
     std::vector<std::string>    locked_observations_;
     std::string                 key_id_;
+
 public:
 
-    // Door();
     Door(YAML::Node data);
     ~Door() {};
 
@@ -30,12 +33,36 @@ public:
     void        unlock();
     std::string observation();
     std::string locked_observation();
-    bool        state();
-    void        state(bool _state);
     std::string key_id();
 
     void accept_click(Gameplay::GameplayState* handler, SDL_Event& event) override;
     void accept_over(Gameplay::GameplayState* handler, SDL_Event& event) override;
     void accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) override;
+
+};
+
+
+class BitmapDoor : public Door
+{
+public:
+
+    BitmapDoor(YAML::Node data);
+    void update(RenderManager* renderer, int dt) override;
+    bool clicked(int x, int y) override;
+
+};
+
+
+class SpriteDoor : public Door
+{
+
+    Sprite* sprite_;
+    Polygon click_area_;
+
+public:
+
+    SpriteDoor(YAML::Node data, AssetManager* assets);
+    void update(RenderManager* renderer, int dt) override;
+    bool clicked(int x, int y) override;
 
 };

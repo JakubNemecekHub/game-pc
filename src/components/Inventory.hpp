@@ -5,6 +5,7 @@
 
 #include "../managers/LogManager.hpp"
 #include "../managers/AssetManager.hpp"
+#include "../managers/ItemManager.hpp"
 #include "Item.hpp"
 #include "Sprite.hpp"
 
@@ -18,6 +19,8 @@ class Inventory
 {
 private:
 
+    ItemManager* item_assets_;
+
     std::array<Item*, INVENTORY_SIZE> items_ { nullptr };
     int count_;
 
@@ -27,6 +30,7 @@ private:
 public:
 
     Inventory();
+    void startUp(ItemManager* items);
 
     // GUI set up
     void ini_gui(AssetManager* assets, RenderManager* renderer_);
@@ -37,7 +41,7 @@ public:
     void update(RenderManager* renderer, int dt);
 
      bool has_space();
-     bool add(Item* item);
+     bool add(std::string id);
      bool has_item(std::string id);
     Item* get(std::string id);
      bool remove(std::string id);

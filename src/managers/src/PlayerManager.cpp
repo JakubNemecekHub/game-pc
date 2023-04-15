@@ -39,11 +39,12 @@ PlayerManager::PlayerManager(LogManager* log)
     : log_{log} {}
 
 
-bool PlayerManager::startUp(AssetManager* assets)
+bool PlayerManager::startUp(AssetManager* assets, ItemManager* items)
 {
     log_->log("Starting Player Manager.");
     // Create player
     player = Player(assets);
+    inventory.startUp(items);
     // Initialize inventor's GUI
     inventory.ini_gui(assets, renderer_);
     log_->log("Player Manager started.");

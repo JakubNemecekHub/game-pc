@@ -43,29 +43,31 @@ private:
 
     // Fields
 
-    Sprite*                                     sprite_;        // Background texture
-    Polygon                                     walk_area_;     // A polygon representing the walk area
-    RoomAnimations                              animations_;    // Manages ambient animations
-    SDL_Surface*                                click_map_;     // A bitmap of hot-spots.
+    Sprite*        sprite_;        // Background texture.
+    Polygon        walk_area_;     // A polygon representing the walk area.
+    RoomAnimations animations_;    // Manages ambient animations.
+    SDL_Surface*   click_map_;     // A bitmap of hot-spots.
 
-    std::unordered_map<Uint32, HotSpot>         hot_spots_;
-    std::unordered_map<Uint32, Door>            doors_;
-    std::unordered_map<std::string, Item*>      items_;         // After clicking it is necessary to check all items, so vector would be better
-                                                                // but vector seems to bring some problem with copy constructor.
+    /*
+        A map of maps of specific types of GameObjects. Should be:
+        - items
+        - hot_spots
+        - doors
+        - other -> just in case
+    */
+    std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<GameObject>>> objects_;
 
     // Debug
 
-    bool visible_click_map_ { false };
-    bool visible_walk_area_ { false };
-    bool visible_item_click_map_ { false };
-    bool visible_item_vector_ { false };
+    bool visible_click_map_  { false };
+    bool visible_walk_area_  { false };
+    bool visible_item_debug_      { false };
+    bool visible_hot_spot_debug_      { false };
 
     // Methods
 
-    void update_items(RenderManager* renderer, int dt);
-
     auto relative_coordinates(int x, int y);
-    Uint32 get_mapped_object_(int x, int y);
+    Uint32 get_mapped_object_id_(int x, int y);
 
 public:
 
@@ -80,12 +82,12 @@ public:
     GameObject* get_object(int x, int y);
            void remove_item(std::string id);
 
-    // Debug
+    // DEBUG
 
-    inline void toggle_click_map()      { visible_click_map_ = !visible_click_map_;           }
-    inline void toggle_walk_area()      { visible_walk_area_ = !visible_walk_area_;           }
-    inline void toggle_item_click_map() { visible_item_click_map_ = !visible_item_click_map_; }
-    inline void toggle_item_vector()    { visible_item_vector_ = !visible_item_vector_; }
+    inline void toggle_click_map()      { visible_click_map_ = !visible_click_map_; }
+    inline void toggle_walk_area()      { visible_walk_area_ = !visible_walk_area_; }
+    inline void toggle_item_debug()     { visible_item_debug_ = !visible_item_debug_; visible_hot_spot_debug_ = false; }
+    inline void toggle_hot_spot_debug() { visible_hot_spot_debug_ = !visible_hot_spot_debug_; visible_item_debug_ = false; }
 
     GameObject* get_any_object(int x, int y);
 

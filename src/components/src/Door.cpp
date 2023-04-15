@@ -2,6 +2,8 @@
 
 #include <stdlib.h> // rand
 
+#include "../../managers/AssetManager.hpp"
+#include "../../managers/RenderManager.hpp"
 #include "../logic/States.hpp"
 
 
@@ -9,8 +11,8 @@
 
 
 Door::Door(YAML::Node data)
+    : GameObject{data["id"].as<std::string>(), data["state"].as<bool>()}
 {
-    state_ = data["state"].as<bool>();
     locked_ = data["locked"].as<bool>();
     target_ = data["target"].as<std::string>();
     observations_ = data["observations"].as<std::vector<std::string>>();
@@ -36,12 +38,53 @@ std::string Door::locked_observation()
 }
 
 
-bool Door::state() { return state_; }
-void Door::state(bool new_state) { state_ = new_state; }
-
-
 std::string Door::key_id() { return key_id_; }
 
 void Door::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
 void Door::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
 void Door::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+
+
+/********************************************************************************
+ * Bitmap Door
+********************************************************************************/
+
+BitmapDoor::BitmapDoor(YAML::Node data)
+    : Door{data} {}
+
+
+void BitmapDoor::update(RenderManager* renderer, int dt) {}
+
+
+bool BitmapDoor::clicked(int x, int y) { return false; }
+
+
+/********************************************************************************
+ * Sprite Door
+********************************************************************************/
+
+SpriteDoor::SpriteDoor(YAML::Node data, AssetManager* assets)
+    : Door{data}
+{
+    sprite_ = assets->sprite(data["sprite"].as<std::string>());
+    std::vector<int> position { data["position"].as<std::vector<int>>() };
+    // scale item by its scale and also by the Room's scale.
+    float hot_spot_scale { data["scale"].as<float>() };
+    float room_scale { sprite_->scale() };
+    sprite_->match_dimensions();
+    sprite_->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
+    sprite_->scale(room_scale * hot_spot_scale);
+    click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<int>>>());
+}
+
+
+void SpriteDoor::update(RenderManager* renderer, int dt)
+{
+    sprite_->update(renderer, dt);
+}
+
+
+bool SpriteDoor::clicked(int x, int y)
+{
+    return click_area_.point_in_polygon(x, y) && state_;
+}

@@ -5,6 +5,7 @@
 #include "LogManager.hpp"
 #include "AssetManager.hpp"
 #include "RenderManager.hpp"
+#include "ItemManager.hpp"
 #include "../components/Inventory.hpp"
 #include "../math/Vector2D.hpp"
 
@@ -55,7 +56,7 @@ public:
     PlayerManager() {};
     PlayerManager(LogManager* log);
 
-    bool startUp(AssetManager* assets);
+    bool startUp(AssetManager* assets, ItemManager* items);
     bool shutDown();
     void update(RenderManager* renderer, int dt);
 

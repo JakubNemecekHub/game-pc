@@ -3,6 +3,11 @@
 
 Inventory::Inventory() : count_{0}, visible_{false} {}
 
+void Inventory::startUp(ItemManager* items)
+{
+    item_assets_ = items;
+}
+
 
 void Inventory::ini_gui(AssetManager* assets, RenderManager* renderer_)
 {
@@ -30,13 +35,13 @@ bool Inventory::has_space() {
 }
 
 
-bool Inventory::add(Item* item)
+bool Inventory::add(std::string id)
 {
     for ( auto& space : items_ )
     {
         if ( space == nullptr )
         {
-            space = item;
+            space = item_assets_->get(id);
             count_++;
             return true;
         }
