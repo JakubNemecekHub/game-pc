@@ -74,7 +74,20 @@ void Gameplay::Editor::input_keyboard_(SDL_Event& event)
 void Gameplay::Editor::input_mouse_(SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
-    GameObject* object { managers_->rooms.get_any_object(x, y) };   // Get object from Room Manager.
+
+    GameObject* object { nullptr };
+    switch ( target_ )
+    {
+    case EDITOR_TARGET::ITEM:
+        object = managers_->rooms.get_item(x, y);
+        break;
+    case EDITOR_TARGET::HOT_SPOT:
+        object = managers_->rooms.get_hot_spot(x, y);
+        break;
+    default:
+        return;
+        break;
+    }
     switch (event.type)
     {
     case SDL_MOUSEMOTION:
@@ -186,7 +199,9 @@ void Gameplay::Editor::visit_over(Door* door, SDL_Event& event)
 
 void Gameplay::Editor::visit_over(HotSpot* hot_spot, SDL_Event& event)
 {
-    
+    auto[x, y] = managers_->control.mouse_position(event);
+    std::string message { "HOT SPOT: " + hot_spot->id() };
+    managers_->text.submit_player(message, x, y, COLOR::RED);
 }
 
 

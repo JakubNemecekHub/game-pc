@@ -278,13 +278,19 @@ GameObject* Room::get_object(int x, int y)
 }
 
 
-GameObject* Room::get_any_object(int x, int y)
+GameObject* Room::get_item(int x, int y)
 {
-    GameObject* result { animations_.get_animation(x, y) };
-    if ( result ) return result;
-    result = get_object(x, y);
-    if ( !result ) return nullptr;
-    return result;
+    for ( auto& item : objects_["items"] )
+        if ( item.second->clicked(x, y) && item.second->state() ) return item.second.get();
+    return nullptr;
+}
+
+
+GameObject* Room::get_hot_spot(int x, int y)
+{
+    for ( auto& hot_spot : objects_["hot_spots"] )
+        if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();
+    return nullptr;
 }
 
 

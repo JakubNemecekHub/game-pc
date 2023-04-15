@@ -89,6 +89,7 @@ public:
     inline void toggle_item_debug()     { visible_item_debug_ = !visible_item_debug_; visible_hot_spot_debug_ = false; }
     inline void toggle_hot_spot_debug() { visible_hot_spot_debug_ = !visible_hot_spot_debug_; visible_item_debug_ = false; }
 
-    GameObject* get_any_object(int x, int y);
+    GameObject* get_item(int x, int y);
+    GameObject* get_hot_spot(int x, int y);
 
 };
