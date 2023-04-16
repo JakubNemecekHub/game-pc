@@ -14,7 +14,7 @@
 #include "../math/Polygon.hpp"
 
 
-class Item : public GameObject, public Serial, public std::enable_shared_from_this<Item>
+class Item : public GameObject, public Serial
 {
 private:
 
@@ -27,7 +27,6 @@ private:
 public:
 
     Item(YAML::Node data, AssetManager* assets);
-    std::shared_ptr<Item> Get() { return shared_from_this(); }
 
     void update(RenderManager* renderer, int dt);
 
