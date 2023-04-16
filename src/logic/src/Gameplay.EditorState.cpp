@@ -68,6 +68,8 @@ void Gameplay::Editor::input_keyboard_(SDL_Event& event)
     }
     else if ( kkey == mapping.KEY_EDITOR_WALK_POLYGON ) managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_WALK_POLYGON); // Toggle walk area's polygon rendering
     else if ( kkey == mapping.KEY_EDITOR_BITMAP       ) managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_BITMAP);       // Show click map
+    else if ( kkey == SDLK_F5 ) managers_->items.save(&managers_->serial);
+    else if ( kkey == SDLK_F6 ) managers_->items.load(&managers_->serial);
 }
 
 

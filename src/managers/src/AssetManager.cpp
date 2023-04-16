@@ -7,6 +7,7 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include "../SerializationManager.hpp"
 #include "../utils/Files.hpp"
 
 namespace fs = std::filesystem;
@@ -85,7 +86,7 @@ bool AssetManager::startUp(RenderManager* renderer)
             std::string sprite_id { sprite["id"].as<std::string>() };
             sprites_.emplace(std::piecewise_construct,
                 std::forward_as_tuple(sprite_id),
-                std::forward_as_tuple(renderer));
+                std::forward_as_tuple(sprite_id, renderer));
             for ( auto& depiction : sprite["textures"] ) 
             {
                 std::string depiction_id { depiction["id"].as<std::string>() };
@@ -159,4 +160,54 @@ bool AssetManager::shutDown()
     for ( auto& texture : textures_ ) SDL_DestroyTexture(texture.second);
     for ( auto& bitmap : bitmaps_ )   SDL_FreeSurface(bitmap.second);
     return true;
+}
+
+
+// Serialization
+    
+void AssetManager::save(SerializationManager* io)
+{
+
+    if ( !io->open_out() ) return;
+
+    io->write( sprites_.size() );
+    for ( auto& sprite : sprites_ )
+    {
+        sprite.second.write(io);
+    }
+
+    io->close_out();
+
+}
+
+
+void AssetManager::load(SerializationManager* io)
+{
+
+    // id    x   y scale  z current_depiction
+    // attic 160 0 0.9375 0 attic
+
+    if ( !io->open_in() ) return;
+
+    int size; io->read(size);
+    for ( int i = 0; i < size; i++ )
+    {
+        // read in the data
+        std::string id; io->read(id); log_->log(id);
+        int x; io->read(x);
+        int y; io->read(y);
+        float scale; io->read(scale);
+        int z_index; io->read(z_index);
+        std::string depiction; io->read(depiction);
+        // set the sprite
+        Sprite* sprite { &sprites_.at(id) };
+        sprite->x(x);
+        sprite->y(y);
+        sprite->scale(scale);
+        sprite->z_index(z_index);
+        sprite->depiction(depiction);
+    }
+
+    io->close_in();
+
 }

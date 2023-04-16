@@ -76,3 +76,12 @@ void Item::move (int dx, int dy)
 void Item::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
 void Item::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
 void Item::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+
+
+/********* Serialization *********/
+
+void Item::write(SerializationManager* io)
+{
+    io->write(lock_);
+    sprite_->write(io);
+}

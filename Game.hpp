@@ -14,6 +14,7 @@
 #include "src/managers/PlayerManager.hpp"
 #include "src/managers/ControlManager.hpp"
 #include "src/managers/StateManager.hpp"
+#include "src/managers/SerializationManager.hpp"
 
 
 class Managers
@@ -29,6 +30,7 @@ public:
     PlayerManager    player;
     ControlManager   control;
     StateManager     state;
+    SerializationManager serial;
 
     Managers();
 };

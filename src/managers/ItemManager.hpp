@@ -3,10 +3,11 @@
 #include <map>
 #include <string>
 
-#include "LogManager.hpp"
-#include "AssetManager.hpp"
-#include "../components/Item.hpp"
 
+class LogManager;
+class AssetManager;
+class SerializationManager;
+class Item;
 
 class ItemManager
 {
@@ -25,5 +26,10 @@ public:
     bool shutDown();
 
     Item* get(std::string id);
+
+    // Serialization
+    
+    void save(SerializationManager* io);
+    void load(SerializationManager* io);
 
 };

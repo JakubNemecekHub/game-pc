@@ -1,5 +1,7 @@
 #include "../Sprite.hpp"
 
+#include "../../managers/SerializationManager.hpp"
+
 
 /*****************************************************************************************************
  *  Animation
@@ -82,8 +84,8 @@ void Texture::destroy() { SDL_DestroyTexture(texture_); }
  *  Sprite
 *****************************************************************************************************/
 
-Sprite::Sprite(RenderManager* renderer)
-    : renderer_{renderer}, position_{0, 0}, scale_{1}, dest_rect_{0, 0, 0, 0},
+Sprite::Sprite(std::string id, RenderManager* renderer)
+    : id_{id}, renderer_{renderer}, position_{0, 0}, scale_{1}, dest_rect_{0, 0, 0, 0},
       z_index_{0} {}
 
 // To create a Sprite for Text in TextManager
@@ -94,8 +96,6 @@ Sprite::Sprite(SDL_Texture* texture, float scale, int z_index)
 }
 
 
-Sprite::~Sprite() { current_depiction_->destroy(); }
-
 void Sprite::add_depiction(std::string id, Depiction* depiction)
 {
     depictions_.insert(std::make_pair(id, depiction));
@@ -104,6 +104,8 @@ void Sprite::add_depiction(std::string id, Depiction* depiction)
 
 void Sprite::depiction(std::string id)
 {
+    // TO DO:: check if depiction exists.
+    current_depiction_id_ = id;
     current_depiction_ = depictions_.at(id);
     current_depiction_->reset();    // last_updated_ and current_frame_ to 0
     dest_rect_.w = current_depiction_->w() * scale_;
@@ -265,6 +267,8 @@ void Sprite::center_vertically()
 }
 
 
+// Get sprite's id
+std::string Sprite::id() { return id_; }
 // Get source rectangle.
 SDL_Rect* Sprite::dest_rect() { return &dest_rect_; }
 // Get position
@@ -283,3 +287,16 @@ float Sprite::scale() { return scale_; }
 int Sprite::z_index() { return z_index_; }
 // Destroy pointers
 void Sprite::destroy() { current_depiction_->destroy(); }
+
+
+/********* Serialization *********/
+
+void Sprite::write(SerializationManager* io)
+{
+    io->write(id_);
+    io->write(position_.x);
+    io->write(position_.y);
+    io->write(scale_);
+    io->write(z_index_);
+    io->write(current_depiction_id_);
+}

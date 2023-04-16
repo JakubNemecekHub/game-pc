@@ -19,6 +19,7 @@ add_library(
     src/PlayerManager.cpp
     src/ControlManager.cpp
     src/StateManager.cpp
+    src/SerializationManager.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

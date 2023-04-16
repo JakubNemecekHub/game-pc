@@ -33,6 +33,7 @@ Managers::Managers()
     rooms = RoomManager(&log);
     player = PlayerManager(&log);
     control = ControlManager(&log, &state, &window);
+    serial = SerializationManager(&log, &assets);
 
     window.startUp();
     renderer.startUp(window.window());
@@ -42,6 +43,7 @@ Managers::Managers()
     rooms.startUp(&items, &assets);
     control.startUp(ini["control"]);
     player.startUp(&assets, &items);
+    serial.startUp();
 
     log.log("All Managers started.");
 }

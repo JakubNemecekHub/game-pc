@@ -141,7 +141,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
 
         item->state(item_data["state"].as<bool>());
         item->lock(true);
-        objects_["items"].insert(std::make_pair(id, std::make_shared<Item>(*item)));
+        items_.insert(std::make_pair(id, item));
     }
     // load room ambient animations
     animations_.load(data["animations"], assets);
@@ -178,7 +178,11 @@ void Room::update(RenderManager* renderer, int dt)
 {
     // Register background
     renderer->submit(sprite_);
-    for ( auto &object_map : objects_ )
+    for ( auto& item : items_ )
+    {
+        if ( item.second->state() ) item.second->update(renderer, dt);
+    }
+    for ( auto& object_map : objects_ )
     {
         for (auto& object : object_map.second )
         {
@@ -191,7 +195,7 @@ void Room::update(RenderManager* renderer, int dt)
     if ( visible_walk_area_ ) renderer->submit(&walk_area_);                        // Render Walk area if it should be visible
     if ( visible_item_debug_ )
     {
-        for ( auto& item : objects_["items"] )
+        for ( auto& item : items_ )
         {
             item.second->show_attributes();
         }
@@ -261,8 +265,8 @@ GameObject* Room::get_object(int x, int y)
 
     // Order: Item -> Door -> Hot Spot
 
-    for ( auto& item : objects_["items"] )
-        if ( item.second->clicked(x, y) && item.second->state() ) return item.second.get();
+    for ( auto& item : items_ )
+        if ( item.second->clicked(x, y) && item.second->state() ) return item.second;
     for ( auto& door : objects_["doors"] )
         if ( door.second->clicked(x, y) && door.second->state() ) return door.second.get();
     for ( auto& hot_spot : objects_["hot_spots"] )
@@ -280,8 +284,8 @@ GameObject* Room::get_object(int x, int y)
 
 GameObject* Room::get_item(int x, int y)
 {
-    for ( auto& item : objects_["items"] )
-        if ( item.second->clicked(x, y) && item.second->state() ) return item.second.get();
+    for ( auto& item : items_ )
+        if ( item.second->clicked(x, y) && item.second->state() ) return item.second;
     return nullptr;
 }
 
@@ -296,7 +300,7 @@ GameObject* Room::get_hot_spot(int x, int y)
 
 void Room::remove_item(std::string id)
 {
-    objects_.erase(id);
+    if ( !items_.erase(id) ) objects_.erase(id);
 }
 
 // void Room::item_activate(Uint32 id)

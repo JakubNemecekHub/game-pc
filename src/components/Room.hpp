@@ -49,12 +49,13 @@ private:
     SDL_Surface*   click_map_;     // A bitmap of hot-spots.
 
     /*
-        A map of maps of specific types of GameObjects. Should be:
-        - items
+        Raw pointers to Items( Store and managed by ItemManager) are in separate map.
+        Other GameObjects are in a map of maps of specific types of GameObjects. Should be:
         - hot_spots
         - doors
         - other -> just in case
     */
+    std::unordered_map<std::string, Item*> items_;
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<GameObject>>> objects_;
 
     // Debug

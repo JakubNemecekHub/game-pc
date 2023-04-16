@@ -6,11 +6,13 @@
 #include <SDL2/SDL.h>
 #include <yaml-cpp/yaml.h>
 
+#include "Serial.hpp"
 #include "../managers/RenderManager.hpp"
 #include "../math/Vector2D.hpp"
 
-#define STATIC_ID "static"
+
 class RenderManager;
+class SerializationManager;
 
 class Frame
 {
@@ -76,25 +78,26 @@ public:
     void destroy() override;
 };
 
-class Sprite 
+class Sprite : public Serial
 {
 private:
 
     RenderManager* renderer_; // The renderer that created the Sprite
 
-    Vector2D position_;
-    float    scale_;
-    SDL_Rect dest_rect_;
-    int      z_index_;
+    std::string id_;
+    Vector2D    position_;
+    float       scale_;
+    SDL_Rect    dest_rect_;
+    int         z_index_;
     
     std::unordered_map<std::string, Depiction*> depictions_;
+    std::string current_depiction_id_;
     Depiction* current_depiction_;
 
 public:
 
-    Sprite(RenderManager* renderer);
+    Sprite(std::string id, RenderManager* renderer);
     Sprite(SDL_Texture* texture, float scale, int z_index);
-    ~Sprite();
 
     void add_depiction(std::string id, Depiction* depiction);
 
@@ -123,17 +126,22 @@ public:
 
     // Getters
 
-    SDL_Rect* src_rect();
-    SDL_Rect* dest_rect();
-    Vector2D* position();
-          int x();
-          int y();
-          int w();
-          int h();
-        float scale();
-          int z_index();
+    std::string id();
+      SDL_Rect* src_rect();
+      SDL_Rect* dest_rect();
+      Vector2D* position();
+            int x();
+            int y();
+            int w();
+            int h();
+          float scale();
+            int z_index();
     // void rotate(d) // Not yet
 
     void destroy();
+
+    // Serialization
+
+    void write(SerializationManager* io) override;
 
 };
