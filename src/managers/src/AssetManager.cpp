@@ -16,6 +16,55 @@ namespace fs = std::filesystem;
 AssetManager::AssetManager(LogManager* log)
     : log_{log} {}
 
+
+// Loading methods
+
+// Load png files into the textures_ map.
+void AssetManager::load_png_(std::queue<fs::directory_entry>& paths, RenderManager* renderer)
+{
+    while ( !paths.empty() )
+    {
+        fs::directory_entry entry { paths.front() };
+        std::string id { base_name(entry) };
+        textures_.insert(std::make_pair(id, renderer->load_sdl_texture(entry.path().string())));
+        log_->log("Loaded texture ", entry.path().string());
+        paths.pop();
+    }
+}
+
+
+// Load bmp files into the bitmaps_ map.
+void AssetManager::load_bmp_(std::queue<fs::directory_entry>& paths, RenderManager* renderer)
+{
+    while ( !paths.empty() )
+    {
+        fs::directory_entry entry { paths.front() };
+        std::string id { base_name(entry) };
+        bitmaps_.insert(std::make_pair(id, renderer->load_bitmap(entry.path().string())));
+        log_->log("Loaded bitmap ", entry.path().string());
+        paths.pop();
+    }
+}
+
+
+// Load frames from yaml files into the frames_ map.
+void AssetManager::load_frames_(std::queue<fs::directory_entry>& paths)
+{
+    while ( !paths.empty() )
+    {
+        fs::directory_entry entry { paths.front() };
+        std::string id { base_name(entry) };
+        YAML::Node data = YAML::LoadFile(entry.path().string());
+        std::vector<std::vector<int>> frames_meta { data["frames"].as<std::vector<std::vector<int>>>() };
+        std::vector<Frame> frames;
+        for ( auto& frame_meta : frames_meta ) frames.emplace_back(frame_meta);
+        frames_.insert(std::make_pair(id, frames));
+        log_->log("Loaded frames ", entry.path().string());
+        paths.pop();
+    }
+}
+
+
 bool AssetManager::startUp(RenderManager* renderer)
 {
     log_->log("Starting Asset Manager.");
@@ -45,36 +94,9 @@ bool AssetManager::startUp(RenderManager* renderer)
             items_meta_ queue will be handled by ItemManager.
             rooms_meta_ queue will be handled by RoomManager.
     */
-    while ( !png_paths.empty() )
-    {
-        fs::directory_entry entry { png_paths.front() };
-        std::string id { base_name(entry) };
-        textures_.insert(std::make_pair(id, renderer->load_sdl_texture(entry.path().string())));
-        log_->log("Loaded texture ", entry.path().string());
-        png_paths.pop();
-    }
-
-    while ( !bmp_paths.empty() )
-    {
-        fs::directory_entry entry { bmp_paths.front() };
-        std::string id { base_name(entry) };
-        bitmaps_.insert(std::make_pair(id, renderer->load_bitmap(entry.path().string())));
-        log_->log("Loaded bitmap ", entry.path().string());
-        bmp_paths.pop();
-    }
-
-    while ( !frames_paths.empty() )
-    {
-        fs::directory_entry entry { frames_paths.front() };
-        std::string id { base_name(entry) };
-        YAML::Node data = YAML::LoadFile(entry.path().string());
-        std::vector<std::vector<int>> frames_meta { data["frames"].as<std::vector<std::vector<int>>>() };
-        std::vector<Frame> frames;
-        for ( auto& frame_meta : frames_meta ) frames.emplace_back(frame_meta);
-        frames_.insert(std::make_pair(id, frames));
-        log_->log("Loaded frames ", entry.path().string());
-        frames_paths.pop();
-    }
+    load_png_(png_paths, renderer);
+    load_bmp_(bmp_paths, renderer);
+    load_frames_(frames_paths);
 
     while ( !sprites_paths.empty() )
     {

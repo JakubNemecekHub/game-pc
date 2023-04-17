@@ -39,6 +39,12 @@ private:
 
     std::map<std::string, Sprite> sprites_;
 
+    // Loading methods
+
+    void load_png_(std::queue<fs::directory_entry>& paths, RenderManager* renderer);
+    void load_bmp_(std::queue<fs::directory_entry>& paths, RenderManager* renderer);
+    void load_frames_(std::queue<fs::directory_entry>& paths);
+
     // Private getters
 
     SDL_Texture* texture(std::string id);
