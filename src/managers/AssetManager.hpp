@@ -20,6 +20,7 @@ class AssetManager
 private:
 
     LogManager* log_;
+    RenderManager* renderer_;
     fs::path path_ { "D:/Prog/game_project/game/res" };
 
     // Level 0
@@ -32,23 +33,15 @@ private:
 
     // Level 1
 
-    std::map<std::string, Animation> animations_;
-    std::map<std::string, Texture>   my_textures_;
-
-    // Level 2
-
     std::map<std::string, Sprite> sprites_;
 
     // Loading methods
 
-    void load_png_(std::queue<fs::directory_entry>& paths, RenderManager* renderer);
-    void load_bmp_(std::queue<fs::directory_entry>& paths, RenderManager* renderer);
+    void load_png_(std::queue<fs::directory_entry>& paths);
+    void load_bmp_(std::queue<fs::directory_entry>& paths);
     void load_frames_(std::queue<fs::directory_entry>& paths);
-
-    // Private getters
-
-    SDL_Texture* texture(std::string id);
-    std::vector<Frame>* frames(std::string id);
+    void load_sprites_(std::queue<fs::directory_entry>& paths);
+    void create_sprite_(YAML::Node sprite_data);
 
 public:
 
@@ -60,8 +53,10 @@ public:
 
     // Public getters
 
+    SDL_Texture* texture(std::string id);
     Sprite* sprite(std::string id);
     SDL_Surface* bitmap(std::string id);
+    std::vector<Frame>* frames(std::string id);
     std::queue<fs::directory_entry> items_meta();
     std::queue<fs::directory_entry> rooms_meta();
 

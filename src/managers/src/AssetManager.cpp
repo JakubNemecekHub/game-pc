@@ -20,13 +20,13 @@ AssetManager::AssetManager(LogManager* log)
 // Loading methods
 
 // Load png files into the textures_ map.
-void AssetManager::load_png_(std::queue<fs::directory_entry>& paths, RenderManager* renderer)
+void AssetManager::load_png_(std::queue<fs::directory_entry>& paths)
 {
     while ( !paths.empty() )
     {
         fs::directory_entry entry { paths.front() };
         std::string id { base_name(entry) };
-        textures_.insert(std::make_pair(id, renderer->load_sdl_texture(entry.path().string())));
+        textures_.insert(std::make_pair(id, renderer_->load_sdl_texture(entry.path().string())));
         log_->log("Loaded texture ", entry.path().string());
         paths.pop();
     }
@@ -34,13 +34,13 @@ void AssetManager::load_png_(std::queue<fs::directory_entry>& paths, RenderManag
 
 
 // Load bmp files into the bitmaps_ map.
-void AssetManager::load_bmp_(std::queue<fs::directory_entry>& paths, RenderManager* renderer)
+void AssetManager::load_bmp_(std::queue<fs::directory_entry>& paths)
 {
     while ( !paths.empty() )
     {
         fs::directory_entry entry { paths.front() };
         std::string id { base_name(entry) };
-        bitmaps_.insert(std::make_pair(id, renderer->load_bitmap(entry.path().string())));
+        bitmaps_.insert(std::make_pair(id, renderer_->load_bitmap(entry.path().string())));
         log_->log("Loaded bitmap ", entry.path().string());
         paths.pop();
     }
@@ -65,9 +65,56 @@ void AssetManager::load_frames_(std::queue<fs::directory_entry>& paths)
 }
 
 
+// Create and place one sprite into the sprites_ map.
+void AssetManager::create_sprite_(YAML::Node sprite_data)
+{
+    std::string sprite_id { sprite_data["id"].as<std::string>() };
+    sprites_.emplace(std::piecewise_construct,
+        std::forward_as_tuple(sprite_id),
+        std::forward_as_tuple(sprite_id, renderer_));
+    Sprite* sprite { &sprites_.at(sprite_id) };
+    for ( auto& depiction : sprite_data["textures"] ) 
+    {
+        std::string depiction_id { depiction["id"].as<std::string>() };
+        if ( !frames(depiction_id) )
+        {
+            sprite->add_depiction(depiction_id, this);
+        }
+        else
+        {
+            // Create Animation
+            bool loop { true };
+            if (YAML::Node loop_flag = depiction["loop"])
+            {
+                loop = loop_flag.as<bool>();
+            }
+            sprite->add_depiction(depiction_id, loop, this);
+        }
+    }
+    // Set current depiction
+    sprites_.at(sprite_id).depiction(sprite_data["textures"][0]["id"].as<std::string>());
+}
+
+
+// Load sprites defined in yaml files into the sprites_ map.
+void AssetManager::load_sprites_(std::queue<fs::directory_entry>& paths)
+{
+    while ( !paths.empty() )
+    {
+        fs::directory_entry entry { paths.front() };
+        std::string id { base_name(entry) };
+        YAML::Node data = YAML::LoadFile(entry.path().string());
+        for (auto& sprite_data : data) create_sprite_(sprite_data);
+        log_->log("Created Sprites", entry.path().string());
+        paths.pop();
+    }
+}
+
+
 bool AssetManager::startUp(RenderManager* renderer)
 {
     log_->log("Starting Asset Manager.");
+    renderer_ = renderer;
 
     // Loop all the files in "res" folder and sort their paths into their respective stacks.
     
@@ -94,53 +141,11 @@ bool AssetManager::startUp(RenderManager* renderer)
             items_meta_ queue will be handled by ItemManager.
             rooms_meta_ queue will be handled by RoomManager.
     */
-    load_png_(png_paths, renderer);
-    load_bmp_(bmp_paths, renderer);
+    load_png_(png_paths);
+    load_bmp_(bmp_paths);
     load_frames_(frames_paths);
-
-    while ( !sprites_paths.empty() )
-    {
-        fs::directory_entry entry { sprites_paths.front() };
-        std::string id { base_name(entry) };
-        YAML::Node data = YAML::LoadFile(entry.path().string());
-        for (auto& sprite : data)
-        {
-            std::string sprite_id { sprite["id"].as<std::string>() };
-            sprites_.emplace(std::piecewise_construct,
-                std::forward_as_tuple(sprite_id),
-                std::forward_as_tuple(sprite_id, renderer));
-            for ( auto& depiction : sprite["textures"] ) 
-            {
-                std::string depiction_id { depiction["id"].as<std::string>() };
-                if ( !frames(depiction_id) )
-                {
-                    // Create Texture
-                    my_textures_.emplace(std::piecewise_construct,
-                        std::forward_as_tuple(depiction_id),
-                        std::forward_as_tuple(texture(depiction_id)));
-                    sprites_.at(sprite_id).add_depiction(depiction_id, &my_textures_.at(depiction_id));
-                }
-                else
-                {
-                    // Create Animation
-                    bool loop { true };
-                    if (YAML::Node loop_flag = depiction["loop"])
-                    {
-                        loop = loop_flag.as<bool>();
-                    }
-                    animations_.emplace(std::piecewise_construct,
-                        std::forward_as_tuple(depiction_id),
-                        std::forward_as_tuple(texture(depiction_id), frames(depiction_id), loop));
-                    sprites_.at(sprite_id).add_depiction(depiction_id, &animations_.at(depiction_id));
-                }
-                // Set current depiction
-            }
-            sprites_.at(sprite_id).depiction(sprite["textures"][0]["id"].as<std::string>());
-        }
-        log_->log("Created Sprites", entry.path().string());
-        sprites_paths.pop();
-    }
-
+    load_sprites_(sprites_paths);
+    
     log_->log("Assets Loaded.");
     return true;
 }

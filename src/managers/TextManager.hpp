@@ -12,11 +12,11 @@
 
 #include "LogManager.hpp"
 #include "RenderManager.hpp"
-#include "../components/Sprite.hpp"
 
 
 typedef std::tuple<std::unique_ptr<Sprite>, int> text_tuple;
 
+class Sprite;
 
 enum COLOR { BEIGE, PURPLE, GREEN, RED };
 
@@ -41,10 +41,9 @@ class TextManager
 {
 private:
 
-    
-
     RenderManager*          renderer_;
     LogManager*             log_;
+    
     std::string             font_file_;
     int                     font_size_;
     TTF_Font*               font_;              // .ttf font to use to display text
@@ -54,10 +53,10 @@ private:
     std::list<text_tuple>   text_free_;
     std::unordered_map<int, Color>  colors_;
 
-    SDL_Texture* create_texture_(std::string text, COLOR color);
-    void transform_(std::unique_ptr<Sprite>& sprite, int x, int y);
 
 public:
+    SDL_Texture* create_texture_(std::string text, COLOR color);
+    void transform_(std::unique_ptr<Sprite>& sprite, int x, int y);
 
     TextManager() {};
     TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini);
@@ -66,6 +65,9 @@ public:
     bool ShutDown();
 
     void update(int dt);
+    
+    // std::unique_ptr<Sprite> create_sprite(std::string text, COLOR color=BEIGE);
+    Sprite* create_sprite(std::string text, COLOR color=BEIGE);
 
     void submit_player(std::string text, int x, int y, COLOR color=BEIGE);
     void submit_label(std::string text, int x, int y, COLOR color=BEIGE);

@@ -10,6 +10,7 @@ project(
 add_library(
     ${PROJECT_NAME}
     src/IntroState.cpp
+    src/MenuState.cpp
     src/ExitState.cpp
     src/Gameplay.NormalState.cpp
     src/Gameplay.InventoryState.cpp

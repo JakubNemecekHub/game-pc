@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../../components/Sprite.hpp"
+
 
 TextManager::TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini)
     : log_{log}, renderer_{renderer}
@@ -103,6 +105,15 @@ void TextManager::transform_(std::unique_ptr<Sprite>& sprite, int x, int y)
     final_y = y - sprite->h();
     sprite->position(final_x, final_y);
     renderer_->submit(sprite.get());
+}
+
+
+// std::unique_ptr<Sprite> TextManager::create_sprite(std::string text, COLOR color)
+Sprite* TextManager::create_sprite(std::string text, COLOR color)
+{
+    SDL_Texture* text_texture = create_texture_(text, color);
+    // return std::make_unique<Sprite>(text_texture, 1, 3);
+    return new Sprite(text_texture, 1, 3);
 }
 
 

@@ -35,7 +35,7 @@ void Gameplay::Editor::input_keyboard_(SDL_Event& event)
 
     const Controls mapping { managers_->control.mapping() };  // Mapping isn't constant, so we cannot use switch statement :( 
 
-         if ( kkey == mapping.KEY_EDITOR              ) managers_->state.next(Gameplay::Normal::get()); // Return to normal state
+         if ( kkey == mapping.KEY_EDITOR ) managers_->state.next(Gameplay::Normal::get()); // Return to normal state
     else if ( kkey == mapping.KEY_EDITOR_ITEMS )
     {
         managers_->rooms.handle_keyboard(ACTION_ROOM::EDITOR_ITEMS);    // Toggle items' position vector and click polygon rendering

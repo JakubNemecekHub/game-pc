@@ -1,6 +1,8 @@
 #include "../Sprite.hpp"
 
 #include "../../managers/SerializationManager.hpp"
+#include "../../managers/AssetManager.hpp"
+#include "../../managers/RenderManager.hpp"
 
 
 /*****************************************************************************************************
@@ -8,9 +10,12 @@
 *****************************************************************************************************/
 
 
-Animation::Animation(SDL_Texture* texture, std::vector<Frame>* frames, bool loop)
-    : texture_{texture}, frames_{frames}, flag_loop_{loop},
-      flag_finished_{false}, current_frame_{0}, last_updated_{0} {}
+Animation::Animation(std::string id, bool loop, AssetManager* assets)
+    : flag_loop_{loop}, flag_finished_{false}, current_frame_{0}, last_updated_{0}
+{
+    texture_ = assets->texture(id);
+    frames_ = assets->frames(id);
+}
 
 
 int Animation::w() { return (*frames_).at(current_frame_).src_rect_.w; }
@@ -58,13 +63,19 @@ void Animation::destroy() {};
  *  Texture
 *****************************************************************************************************/
 
-
 Texture::Texture(SDL_Texture* texture)
     : texture_{texture}
 {
     src_rect_.x = 0;
     src_rect_.y = 0;
     SDL_QueryTexture(texture, NULL, NULL, &src_rect_.w, &src_rect_.h);
+}
+Texture::Texture(std::string id, AssetManager* assets)
+{
+    texture_ = assets->texture(id);
+    src_rect_.x = 0;
+    src_rect_.y = 0;
+    SDL_QueryTexture(texture_, NULL, NULL, &src_rect_.w, &src_rect_.h);
 }
 
 int Texture::w() { return src_rect_.w; }
@@ -96,9 +107,20 @@ Sprite::Sprite(SDL_Texture* texture, float scale, int z_index)
 }
 
 
-void Sprite::add_depiction(std::string id, Depiction* depiction)
+void Sprite::add_depiction(std::string id, AssetManager* assets)
 {
-    depictions_.insert(std::make_pair(id, depiction));
+    depictions_.emplace(std::piecewise_construct,
+        std::forward_as_tuple(id),
+        std::forward_as_tuple(std::make_unique<Texture>(id, assets))
+    );
+}
+
+void Sprite::add_depiction(std::string id, bool loop, AssetManager* assets)
+{
+    depictions_.emplace(std::piecewise_construct,
+        std::forward_as_tuple(id),
+        std::forward_as_tuple(std::make_unique<Animation>(id, loop, assets))
+    );
 }
 
 
@@ -106,7 +128,7 @@ void Sprite::depiction(std::string id)
 {
     // TO DO:: check if depiction exists.
     current_depiction_id_ = id;
-    current_depiction_ = depictions_.at(id);
+    current_depiction_ = depictions_.at(id).get();
     current_depiction_->reset();    // last_updated_ and current_frame_ to 0
     dest_rect_.w = current_depiction_->w() * scale_;
     dest_rect_.h = current_depiction_->h() * scale_;
@@ -266,25 +288,6 @@ void Sprite::center_vertically()
     renderer_->center_vertically(this);
 }
 
-
-// Get sprite's id
-std::string Sprite::id() { return id_; }
-// Get source rectangle.
-SDL_Rect* Sprite::dest_rect() { return &dest_rect_; }
-// Get position
-Vector2D* Sprite::position() { return &position_; }
-// Get x position
-int Sprite::x() { return dest_rect_.x; }
-//Get y position
-int Sprite::y() { return dest_rect_.y; }
-// Get the Width
-int Sprite::w() { return dest_rect_.w; }
-// Get the Height
-int Sprite::h() { return dest_rect_.h; }
-// Get scale
-float Sprite::scale() { return scale_; }
-// Get the z-index
-int Sprite::z_index() { return z_index_; }
 // Destroy pointers
 void Sprite::destroy() { current_depiction_->destroy(); }
 

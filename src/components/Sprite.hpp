@@ -2,16 +2,17 @@
 
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 #include <SDL2/SDL.h>
 #include <yaml-cpp/yaml.h>
 
 #include "Serial.hpp"
-#include "../managers/RenderManager.hpp"
 #include "../math/Vector2D.hpp"
 
 
 class RenderManager;
+class AssetManager;
 class SerializationManager;
 
 class Frame
@@ -32,6 +33,7 @@ public:
 class Depiction
 {
 public:
+
     virtual ~Depiction() {};
     virtual int w() = 0;
     virtual int h() = 0;
@@ -40,19 +42,23 @@ public:
     virtual void reset() = 0;
     virtual void render(SDL_Renderer* renderer, SDL_Rect destination) = 0; // This will need more info
     virtual void destroy() = 0;
+    
 };
 
 class Animation : public Depiction
 {
 private:
+
     SDL_Texture* texture_;
     std::vector<Frame>* frames_;
     bool flag_loop_;
     bool flag_finished_;
     int current_frame_;
     int last_updated_;
+
 public:
-    Animation(SDL_Texture* texture, std::vector<Frame>* frames, bool loop);
+
+    Animation(std::string id, bool loop, AssetManager* assets);
     int w() override; 
     int h() override; 
 
@@ -60,15 +66,20 @@ public:
     void reset() override;
     void render(SDL_Renderer* renderer, SDL_Rect destination) override;
     void destroy() override;
+
 };
 
 class Texture : public Depiction
 {
 private:
+
     SDL_Texture* texture_;
     SDL_Rect src_rect_;
+
 public:
+
     Texture(SDL_Texture* texture);
+    Texture(std::string id, AssetManager* assets);
     int w() override; 
     int h() override; 
 
@@ -76,6 +87,7 @@ public:
     void reset() override;
     void render(SDL_Renderer* renderer, SDL_Rect destination) override;
     void destroy() override;
+
 };
 
 class Sprite : public Serial
@@ -90,7 +102,7 @@ private:
     SDL_Rect    dest_rect_;
     int         z_index_;
     
-    std::unordered_map<std::string, Depiction*> depictions_;
+    std::unordered_map<std::string, std::unique_ptr<Depiction>> depictions_;
     std::string current_depiction_id_;
     Depiction* current_depiction_;
 
@@ -99,7 +111,8 @@ public:
     Sprite(std::string id, RenderManager* renderer);
     Sprite(SDL_Texture* texture, float scale, int z_index);
 
-    void add_depiction(std::string id, Depiction* depiction);
+    void add_depiction(std::string id, AssetManager* assets);               // Add Texture depiction
+    void add_depiction(std::string id, bool loop, AssetManager* assets);    // Add Animation depiction
 
     void update(RenderManager* renderer, int dt);
     void render(SDL_Renderer* renderer);
@@ -126,16 +139,15 @@ public:
 
     // Getters
 
-    std::string id();
-      SDL_Rect* src_rect();
-      SDL_Rect* dest_rect();
-      Vector2D* position();
-            int x();
-            int y();
-            int w();
-            int h();
-          float scale();
-            int z_index();
+    inline std::string id()        { return id_;          }
+    inline   SDL_Rect* dest_rect() { return &dest_rect_;  }
+    inline   Vector2D* position()  { return &position_;   }
+    inline         int x()         { return dest_rect_.x; }
+    inline         int y()         { return dest_rect_.y; }
+    inline         int w()         { return dest_rect_.w; }
+    inline         int h()         { return dest_rect_.h; }
+    inline       float scale()     { return scale_;       }
+    inline         int z_index()   { return z_index_;     }
     // void rotate(d) // Not yet
 
     void destroy();
