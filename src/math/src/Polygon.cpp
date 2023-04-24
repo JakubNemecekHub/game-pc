@@ -48,7 +48,7 @@ void Polygon::add_vertices(std::vector<Vector2D> vertices)
 {
     this->vertices.insert(this->vertices.end(), vertices.begin(), vertices.end());
 }
-void Polygon::add_vertices(std::vector<std::vector<int>> vertices)
+void Polygon::add_vertices(std::vector<std::vector<float>> vertices)
 {
     for ( auto vertex : vertices )
     {
@@ -79,7 +79,7 @@ void Polygon::clear()
 
 
 // Return True if a given point is inside polygon.
-bool Polygon::point_in_polygon(int x, int y)
+bool Polygon::point_in_polygon(float x, float y)
 {
     /*
         Casting a ray in the -x direction and then checking
@@ -123,7 +123,7 @@ void Polygon::scale(float _scale)
 
 
 // Move polygon by a given distance.
-void Polygon::move(int dx, int dy)
+void Polygon::move(float dx, float dy)
 {
     for ( Vector2D &vertex : vertices )
     {

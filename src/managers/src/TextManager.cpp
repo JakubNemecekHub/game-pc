@@ -84,7 +84,7 @@ SDL_Texture* TextManager::create_texture_(std::string text, COLOR color)
 }
 
 
-void TextManager::transform_(std::unique_ptr<Sprite>& sprite, int x, int y)
+void TextManager::transform_(std::unique_ptr<Sprite>& sprite, float x, float y)
 {
     sprite->match_dimensions();
     /*
@@ -96,7 +96,7 @@ void TextManager::transform_(std::unique_ptr<Sprite>& sprite, int x, int y)
         we are...
     */
     int screen_width { renderer_->get_screen_width() };
-    int final_x, final_y;
+    float final_x, final_y;
     final_x = screen_width - sprite->w();
     if ( final_x > x )
     {
@@ -117,37 +117,37 @@ Sprite* TextManager::create_sprite(std::string text, COLOR color)
 }
 
 
-void TextManager::submit_player(std::string text, int x, int y, COLOR color)
+void TextManager::submit_player(std::string text, float x, float y, COLOR color)
 {
     if ( std::get<0>(text_player_) )
     {
         std::get<0>(text_player_).release();
     }
     SDL_Texture* text_texture = create_texture_(text, color);
-    std::get<0>(text_player_) = std::make_unique<Sprite>(text_texture, 1, 3);
+    std::get<0>(text_player_) = std::make_unique<Sprite>(text_texture, 1.0f, 3);
     std::get<0>(text_player_)->depiction("text");
     transform_(std::get<0>(text_player_), x, y);
     std::get<1>(text_player_) = 0;
 }
 
 
-void TextManager::submit_label(std::string text, int x, int y, COLOR color)
+void TextManager::submit_label(std::string text, float x, float y, COLOR color)
 {
     if ( text_label_ )
     {
         text_label_.release();
     }
     SDL_Texture* text_texture = create_texture_(text, color);
-    text_label_ = std::make_unique<Sprite>(text_texture, 1, 3);
+    text_label_ = std::make_unique<Sprite>(text_texture, 1.0f, 3);
     text_label_->depiction("text");
     transform_(text_label_, x, y);
 }
 
 
-void TextManager::submit_free(std::string text, int x, int y, COLOR color)
+void TextManager::submit_free(std::string text, float x, float y, COLOR color)
 {
     SDL_Texture* text_texture = create_texture_(text, color);                   // Create Sprite from text
-    text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1, 3), 0);   // Insert new Sprite into list
+    text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1.0f, 3), 0);   // Insert new Sprite into list
     std::unique_ptr<Sprite>& sprite { std::get<0>(text_free_.back()) };
     sprite->depiction("text");
     transform_(sprite, x, y);                                                   // Set Sprite's dimensions

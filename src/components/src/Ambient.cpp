@@ -19,7 +19,7 @@ void Ambient::update(RenderManager* renderer, int dt)
 }
 
 
-bool Ambient::clicked(int x, int y)
+bool Ambient::clicked(float x, float y)
 {
     bool x_in { (sprite_->x() < x) && (x <= sprite_->x() + sprite_->w()) };
     bool y_in { (sprite_->y() < y) && (y <= sprite_->y() + sprite_->h()) };

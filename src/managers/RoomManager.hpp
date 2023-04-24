@@ -47,10 +47,10 @@ public:
 
     void activate_room(const std::string& room_id);
     void update(RenderManager* renderer, int dt);
-    bool walkable(int x, int y);
-    GameObject* get_object(int x, int y);
-    GameObject* get_item(int x, int y);
-    GameObject* get_hot_spot(int x, int y);
+    bool walkable(float x, float y);
+    GameObject* get_object(float x, float y);
+    GameObject* get_item(float x, float y);
+    GameObject* get_hot_spot(float x, float y);
     void remove_item(std::string id);
     void handle_keyboard(ACTION_ROOM action);
 

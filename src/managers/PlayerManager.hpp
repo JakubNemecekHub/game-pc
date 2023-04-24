@@ -36,7 +36,7 @@ public:
     Player(AssetManager* assets);
 
     void update(RenderManager* renderer, int dt);
-    void walk(int x, int y);
+    void walk(float x, float y);
 
 };
 

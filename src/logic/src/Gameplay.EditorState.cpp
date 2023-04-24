@@ -220,14 +220,14 @@ void Gameplay::Editor::visit_over(Ambient* ambient, SDL_Event& event)
 void Gameplay::Editor::visit_drag(Item* item, SDL_Event& event)
 {
     auto[x, y] = managers_->control.mouse_position(event);
-    int dx = event.motion.xrel;
-    int dy = event.motion.yrel;
+    float dx = static_cast<float>(event.motion.xrel);
+    float dy = static_cast<float>(event.motion.yrel);
 
     item->move(dx, dy);
 
     std::string message { "ITEM: " + item->id() };
-    int item_x { item->sprite()->x() };
-    int item_y { item->sprite()->y() };
+    float item_x { item->sprite()->x() };
+    float item_y { item->sprite()->y() };
     message += " " + std::to_string(item_x) + " " + std::to_string(item_y);
     managers_->text.submit_player(message, x, y, COLOR::RED);
 

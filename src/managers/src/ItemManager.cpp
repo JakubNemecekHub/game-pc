@@ -91,8 +91,8 @@ void ItemManager::load(SerializationManager* io)
         std::string item_id; io->read(item_id);
         bool lock; io->read(lock);
         std::string sprite_id; io->read(sprite_id);
-        int x; io->read(x);
-        int y; io->read(y);
+        float x; io->read(x);
+        float y; io->read(y);
         float scale; io->read(scale);
         int z_index; io->read(z_index);
         std::string depiction; io->read(depiction);

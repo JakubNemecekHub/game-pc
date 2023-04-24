@@ -30,11 +30,11 @@ public:
     void add_vertex(Vector2D vertex);
     void add_vertex(int x, int y);
     void add_vertices(std::vector<Vector2D> vertices);
-    void add_vertices(std::vector<std::vector<int>> vertices);
+    void add_vertices(std::vector<std::vector<float>> vertices);
     void clear();
-    bool point_in_polygon(int x, int y);
+    bool point_in_polygon(float x, float y);
     void scale(float _scale);
-    void move (int dx, int dy);
+    void move (float dx, float dy);
 
     // Rendering methods
     Visual visual;

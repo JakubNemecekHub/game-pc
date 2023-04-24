@@ -32,7 +32,7 @@ public:
     void load(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt);
 
-    Ambient* get_animation(int x, int y);
+    Ambient* get_animation(float x, float y);
 
 };
 
@@ -60,15 +60,15 @@ private:
 
     // Debug
 
-    bool visible_click_map_  { false };
-    bool visible_walk_area_  { false };
-    bool visible_item_debug_      { false };
-    bool visible_hot_spot_debug_      { false };
+    bool visible_click_map_      { false };
+    bool visible_walk_area_      { false };
+    bool visible_item_debug_     { false };
+    bool visible_hot_spot_debug_ { false };
 
     // Methods
 
-    auto relative_coordinates(int x, int y);
-    Uint32 get_mapped_object_id_(int x, int y);
+    auto relative_coordinates(float x, float y);
+    Uint32 get_mapped_object_id_(float x, float y);
 
 public:
 
@@ -79,8 +79,8 @@ public:
     // Methods
 
            void update(RenderManager* renderer, int dt);
-           bool walkable(int x, int y);
-    GameObject* get_object(int x, int y);
+           bool walkable(float x, float y);
+    GameObject* get_object(float x, float y);
            void remove_item(std::string id);
 
     // DEBUG
@@ -90,7 +90,7 @@ public:
     inline void toggle_item_debug()     { visible_item_debug_ = !visible_item_debug_; visible_hot_spot_debug_ = false; }
     inline void toggle_hot_spot_debug() { visible_hot_spot_debug_ = !visible_hot_spot_debug_; visible_item_debug_ = false; }
 
-    GameObject* get_item(int x, int y);
-    GameObject* get_hot_spot(int x, int y);
+    GameObject* get_item(float x, float y);
+    GameObject* get_hot_spot(float x, float y);
 
 };

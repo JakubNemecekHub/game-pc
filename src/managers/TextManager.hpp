@@ -56,7 +56,7 @@ private:
 
 public:
     SDL_Texture* create_texture_(std::string text, COLOR color);
-    void transform_(std::unique_ptr<Sprite>& sprite, int x, int y);
+    void transform_(std::unique_ptr<Sprite>& sprite, float x, float y);
 
     TextManager() {};
     TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini);
@@ -69,9 +69,9 @@ public:
     // std::unique_ptr<Sprite> create_sprite(std::string text, COLOR color=BEIGE);
     Sprite* create_sprite(std::string text, COLOR color=BEIGE);
 
-    void submit_player(std::string text, int x, int y, COLOR color=BEIGE);
-    void submit_label(std::string text, int x, int y, COLOR color=BEIGE);
-    void submit_free(std::string text, int x, int y, COLOR color=BEIGE);
+    void submit_player(std::string text, float x, float y, COLOR color=BEIGE);
+    void submit_label(std::string text, float x, float y, COLOR color=BEIGE);
+    void submit_free(std::string text, float x, float y, COLOR color=BEIGE);
     void clean();
     void clean_player();
     

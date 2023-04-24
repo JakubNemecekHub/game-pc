@@ -23,7 +23,7 @@ void Player::update(RenderManager* renderer, int dt)
 }
 
 
-void Player::walk(int x, int y)
+void Player::walk(float x, float y)
 {
     destination.x = x;
     destination.y = y;

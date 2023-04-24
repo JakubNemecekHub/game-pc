@@ -19,8 +19,8 @@ void RoomAnimations::load(YAML::Node data, AssetManager* assets)
         animations_.emplace_back(id, assets->sprite(id), state);
         animations_.at(i).sprite()->z_index(1);
         animations_.at(i).sprite()->scale(data[i]["scale"].as<float>());
-        int x { data[i]["position"][0].as<int>() };
-        int y { data[i]["position"][1].as<int>() };
+        float x { data[i]["position"][0].as<float>() };
+        float y { data[i]["position"][1].as<float>() };
         animations_.at(i).sprite()->position(x, y);
         // Reset animation
         animations_.at(i).sprite()->reset();
@@ -40,7 +40,7 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 }
 
 
-Ambient* RoomAnimations::get_animation(int x, int y)
+Ambient* RoomAnimations::get_animation(float x, float y)
 {
     for ( auto& animation : animations_ )
     {
@@ -65,7 +65,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     sprite_->center_horizontally();
     sprite_->z_index(0);
     // Load walk area polygon
-    walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<int>>>());
+    walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<float>>>());
     walk_area_.visual.scale = sprite_->scale();
     walk_area_.visual.dx = sprite_->x();
     walk_area_.visual.dy = sprite_->y();
@@ -155,19 +155,19 @@ Room::~Room()
 
 
 // Transform coordinates to room's coordinates.
-auto Room::relative_coordinates(int x, int y)
+auto Room::relative_coordinates(float x, float y)
 {
-    struct result { int room_x; int room_y; };
+    struct result { float room_x; float room_y; };
     return result
     {
-        static_cast<int>((x - sprite_->x()) / sprite_->scale()),
-        static_cast<int>(y / sprite_->scale())   
+        (x - sprite_->x()) / sprite_->scale(),
+        y / sprite_->scale()   
     };
 }
 
 
 // Return true if given point in the room's walk area.
-bool Room::walkable(int x, int y)
+bool Room::walkable(float x, float y)
 {
     auto [room_x, room_y] = relative_coordinates(x, y);
     return walk_area_.point_in_polygon(room_x, room_y);
@@ -224,9 +224,11 @@ void Room::update(RenderManager* renderer, int dt)
     8bits = 2 ^ 8 = 256 colours, this should be enough
 
 */
-Uint32 Room::get_mapped_object_id_(int x, int y)
+Uint32 Room::get_mapped_object_id_(float x, float y)
 {
-    auto [room_x, room_y] = relative_coordinates(x, y);
+    auto [room_float_x, room_float_y] = relative_coordinates(x, y);
+    int room_x { static_cast<int>(room_float_x) };
+    int room_y { static_cast<int>(room_float_y) };
     int bpp = click_map_->format->BytesPerPixel; // bytes per pixel, depends on loaded image
     Uint8 *p = (Uint8 *)click_map_->pixels + room_y * click_map_->pitch + room_x * bpp;
     switch (bpp)
@@ -260,7 +262,7 @@ Uint32 Room::get_mapped_object_id_(int x, int y)
 }
 
 
-GameObject* Room::get_object(int x, int y)
+GameObject* Room::get_object(float x, float y)
 {
 
     // Order: Item -> Door -> Hot Spot
@@ -282,7 +284,7 @@ GameObject* Room::get_object(int x, int y)
 }
 
 
-GameObject* Room::get_item(int x, int y)
+GameObject* Room::get_item(float x, float y)
 {
     for ( auto& item : items_ )
         if ( item.second->clicked(x, y) && item.second->state() ) return item.second;
@@ -290,7 +292,7 @@ GameObject* Room::get_item(int x, int y)
 }
 
 
-GameObject* Room::get_hot_spot(int x, int y)
+GameObject* Room::get_hot_spot(float x, float y)
 {
     for ( auto& hot_spot : objects_["hot_spots"] )
         if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();

@@ -109,7 +109,7 @@ bool RenderManager::submit(Sprite* sprite)
 /*
     Register a Polygon to be rendered.
 */
-bool RenderManager::submit(SDL_Surface* surface, SDL_Rect* dest_rect)
+bool RenderManager::submit(SDL_Surface* surface, SDL_FRect* dest_rect)
 {
     surface_queue_.push(std::make_tuple(surface, dest_rect));
     return true;
@@ -191,14 +191,18 @@ void RenderManager::render_surface()
     SDL_UnlockSurface(window_surface);
     // Then copy all submitted surfaces onto the screen
     SDL_Surface* original_surface { nullptr };
-    SDL_Rect* dest_rect;
     while ( !surface_queue_.empty() )
     {
-        std::tuple<SDL_Surface*, SDL_Rect*> surface_info { surface_queue_.front() };
+        std::tuple<SDL_Surface*, SDL_FRect*> surface_info { surface_queue_.front() };
         original_surface = std::get<0>(surface_info);
-        dest_rect = std::get<1>(surface_info);
+        SDL_FRect* dest_rect = std::get<1>(surface_info);
+        SDL_Rect final_dest_rect;
+        final_dest_rect.x = (int)dest_rect->x;
+        final_dest_rect.y = (int)dest_rect->y;
+        final_dest_rect.w = (int)dest_rect->w;
+        final_dest_rect.h = (int)dest_rect->h;
         SDL_Surface* converted_surface = SDL_ConvertSurface(original_surface, window_surface->format, 0);
-        SDL_BlitScaled(converted_surface, NULL, window_surface, dest_rect);
+        SDL_BlitScaled(converted_surface, NULL, window_surface, &final_dest_rect);
         SDL_FreeSurface(converted_surface);
         surface_queue_.pop();
     }
@@ -230,8 +234,8 @@ void RenderManager::center_horizontally(Sprite* sprite)
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer_, &w, &h);
-    int sprite_w { sprite->w() };
-    int x = 0.5f * (w - sprite_w);
+    float sprite_w { sprite->w() };
+    float x = 0.5f * (w - sprite_w);
     sprite->x(x);
 }
 
@@ -240,8 +244,8 @@ void RenderManager::center_vertically(Sprite* sprite)
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer_, &w, &h);
-    int sprite_h { sprite->h() };
-    int y = 0.5f * (h - sprite_h);
+    float sprite_h { sprite->h() };
+    float y = 0.5f * (h - sprite_h);
     sprite->y(y);
 }
 

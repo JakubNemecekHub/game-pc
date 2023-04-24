@@ -28,7 +28,7 @@ public:
     void state(bool new_state);
     
     virtual void update(RenderManager* renderer, int dt) = 0;
-    virtual bool clicked(int x, int y) = 0;
+    virtual bool clicked(float x, float y) = 0;
 
     // Game Logic
 

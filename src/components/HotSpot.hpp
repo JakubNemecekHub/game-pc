@@ -41,7 +41,7 @@ public:
 
     BitmapHotSpot(YAML::Node data);
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(int x, int y) override;
+    bool clicked(float x, float y) override;
 
 };
 
@@ -57,6 +57,6 @@ public:
 
     SpriteHotSpot(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(int x, int y) override;
+    bool clicked(float x, float y) override;
 
 };

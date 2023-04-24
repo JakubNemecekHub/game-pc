@@ -43,7 +43,7 @@ BitmapHotSpot::BitmapHotSpot(YAML::Node data)
 void BitmapHotSpot::update(RenderManager* renderer, int dt) {}
 
 
-bool BitmapHotSpot::clicked(int x, int y) { return false; }
+bool BitmapHotSpot::clicked(float x, float y) { return false; }
 
 
 /********************************************************************************
@@ -54,14 +54,14 @@ SpriteHotSpot::SpriteHotSpot(YAML::Node data, AssetManager* assets)
     : HotSpot{data}
 {
     sprite_ = assets->sprite(data["sprite"].as<std::string>());
-    std::vector<int> position { data["position"].as<std::vector<int>>() };
+    std::vector<float> position { data["position"].as<std::vector<float>>() };
     // scale item by its scale and also by the Room's scale.
     float hot_spot_scale { data["scale"].as<float>() };
     float room_scale { sprite_->scale() };
     sprite_->match_dimensions();
     sprite_->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
     sprite_->scale(room_scale * hot_spot_scale);
-    click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<int>>>());
+    click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<float>>>());
     // Scale the click area Polygon in the same way
     click_area_.scale(hot_spot_scale * room_scale);
     // click_area_.move(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
@@ -81,7 +81,7 @@ void SpriteHotSpot::update(RenderManager* renderer, int dt)
 }
 
 
-bool SpriteHotSpot::clicked(int x, int y)
+bool SpriteHotSpot::clicked(float x, float y)
 {
     return click_area_.point_in_polygon(x, y) && state_;
 }

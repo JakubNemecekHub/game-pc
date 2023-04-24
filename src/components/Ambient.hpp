@@ -18,7 +18,7 @@ public:
     Ambient(std::string id, Sprite* sprite, bool state = false);
 
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(int x, int y) override;
+    bool clicked(float x, float y) override;
 
     std::string id();
     bool        state();

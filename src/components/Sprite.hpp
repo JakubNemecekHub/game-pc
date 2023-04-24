@@ -40,7 +40,7 @@ public:
 
     virtual void update(int dt) = 0;
     virtual void reset() = 0;
-    virtual void render(SDL_Renderer* renderer, SDL_Rect destination) = 0; // This will need more info
+    virtual void render(SDL_Renderer* renderer, SDL_FRect destination) = 0; // This will need more info
     virtual void destroy() = 0;
     
 };
@@ -64,7 +64,7 @@ public:
 
     void update(int dt) override;
     void reset() override;
-    void render(SDL_Renderer* renderer, SDL_Rect destination) override;
+    void render(SDL_Renderer* renderer, SDL_FRect destination) override;
     void destroy() override;
 
 };
@@ -85,7 +85,7 @@ public:
 
     void update(int dt) override;
     void reset() override;
-    void render(SDL_Renderer* renderer, SDL_Rect destination) override;
+    void render(SDL_Renderer* renderer, SDL_FRect destination) override;
     void destroy() override;
 
 };
@@ -99,7 +99,7 @@ private:
     std::string id_;
     Vector2D    position_;
     float       scale_;
-    SDL_Rect    dest_rect_;
+    SDL_FRect   dest_rect_;
     int         z_index_;
     
     std::unordered_map<std::string, std::unique_ptr<Depiction>> depictions_;
@@ -122,15 +122,15 @@ public:
 
     // Setters
 
-    void position(int x, int y);
-    void x(int x);
-    void y(int y);
-    void move(int dx, int dy);
-    void dimensions(int w, int h);
+    void position(float x, float y);
+    void x(float x);
+    void y(float y);
+    void move(float dx, float dy);
+    void dimensions(float w, float h);
     void match_dimensions();
     void scale(float s);
-    void set_dest(int _x, int _y, int _w, int _h);
-    void dest_rect(SDL_Rect& source);
+    void set_dest(float _x, float _y, float _w, float _h);
+    void dest_rect(SDL_FRect& source);
     void z_index(int index);
     void scale_full_h();
     void center();
@@ -139,15 +139,15 @@ public:
 
     // Getters
 
-    inline std::string id()        { return id_;          }
-    inline   SDL_Rect* dest_rect() { return &dest_rect_;  }
-    inline   Vector2D* position()  { return &position_;   }
-    inline         int x()         { return dest_rect_.x; }
-    inline         int y()         { return dest_rect_.y; }
-    inline         int w()         { return dest_rect_.w; }
-    inline         int h()         { return dest_rect_.h; }
-    inline       float scale()     { return scale_;       }
-    inline         int z_index()   { return z_index_;     }
+    inline std::string id()         { return id_;          }
+    inline   SDL_FRect* dest_rect() { return &dest_rect_;  }
+    inline   Vector2D* position()   { return &position_;   }
+    inline         float x()        { return dest_rect_.x; }
+    inline         float y()        { return dest_rect_.y; }
+    inline         float w()        { return dest_rect_.w; }
+    inline         float h()        { return dest_rect_.h; }
+    inline       float scale()      { return scale_;       }
+    inline         int z_index()    { return z_index_;     }
     // void rotate(d) // Not yet
 
     void destroy();

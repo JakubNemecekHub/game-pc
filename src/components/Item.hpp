@@ -28,9 +28,9 @@ public:
 
     Item(YAML::Node data, AssetManager* assets);
 
-    void update(RenderManager* renderer, int dt);
+    void update(RenderManager* renderer, int dt) override;
 
-    bool        clicked(int x, int y);
+    bool        clicked(float x, float y) override;
     std::string observation();
     std::string pick_observation();
     bool        lock();
@@ -40,9 +40,9 @@ public:
 
     // Position
 
-    void x(int x);
-    void y(int y);
-    void move (int dx, int dy);
+    void x(float x);
+    void y(float y);
+    void move (float dx, float dy);
 
     // Game logic
 

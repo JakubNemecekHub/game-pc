@@ -47,10 +47,10 @@ public:
     void handle_window(SDL_Event& event);
     auto mouse_position(SDL_Event& event)
     {
-        struct result{ int x; int y; };
+        struct result{ float x; float y; };
         int x, y;
         SDL_GetMouseState(&x, &y);
-        return result{x, y};
+        return result{static_cast<float>(x), static_cast<float>(y)};
     }
     
 };

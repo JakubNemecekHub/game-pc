@@ -56,7 +56,7 @@ BitmapDoor::BitmapDoor(YAML::Node data)
 void BitmapDoor::update(RenderManager* renderer, int dt) {}
 
 
-bool BitmapDoor::clicked(int x, int y) { return false; }
+bool BitmapDoor::clicked(float x, float y) { return false; }
 
 
 /********************************************************************************
@@ -74,7 +74,7 @@ SpriteDoor::SpriteDoor(YAML::Node data, AssetManager* assets)
     sprite_->match_dimensions();
     sprite_->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
     sprite_->scale(room_scale * hot_spot_scale);
-    click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<int>>>());
+    click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<float>>>());
 }
 
 
@@ -84,7 +84,7 @@ void SpriteDoor::update(RenderManager* renderer, int dt)
 }
 
 
-bool SpriteDoor::clicked(int x, int y)
+bool SpriteDoor::clicked(float x, float y)
 {
     return click_area_.point_in_polygon(x, y) && state_;
 }

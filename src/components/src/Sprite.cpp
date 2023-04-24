@@ -50,10 +50,10 @@ void Animation::reset()
 }
 
 
-void Animation::render(SDL_Renderer* renderer, SDL_Rect destination)
+void Animation::render(SDL_Renderer* renderer, SDL_FRect destination)
 {
     SDL_Rect src_rect { (*frames_).at(current_frame_).src_rect_ };
-    SDL_RenderCopyEx(renderer, texture_, &src_rect, &destination, 0.0f, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyExF(renderer, texture_, &src_rect, &destination, 0.0f, NULL, SDL_FLIP_NONE);
 }
 
 void Animation::destroy() {};
@@ -84,9 +84,9 @@ void Texture::update(int dt) {}
 void Texture::reset() {}
 
 
-void Texture::render(SDL_Renderer* renderer, SDL_Rect destination)
+void Texture::render(SDL_Renderer* renderer, SDL_FRect destination)
 {
-    SDL_RenderCopyEx(renderer, texture_, &src_rect_, &destination, 0.0f, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyExF(renderer, texture_, &src_rect_, &destination, 0.0f, NULL, SDL_FLIP_NONE);
 }
 
 void Texture::destroy() { SDL_DestroyTexture(texture_); }
@@ -166,8 +166,8 @@ void Sprite::render(SDL_Renderer* renderer)
 */
 void Sprite::match_dimensions()
 {
-    dest_rect_.w = static_cast<int>(current_depiction_->w() * scale_);
-    dest_rect_.h = static_cast<int>(current_depiction_->h() * scale_);
+    dest_rect_.w = current_depiction_->w() * scale_;
+    dest_rect_.h = current_depiction_->h() * scale_;
 }
 
 
@@ -175,25 +175,27 @@ void Sprite::match_dimensions()
     Set Sprite's position to given coordinates.
     Also changes destination rectangle for renderer.
 */
-void Sprite::position(int x, int y)
+void Sprite::position(float x, float y)
 {
     position_.x = x;
     position_.y = y;
     dest_rect_.x = x;
     dest_rect_.y = y;
 }
-void Sprite::x(int x) {position_.x = x; dest_rect_.x = x;}
-void Sprite::y(int y) {position_.y = y; dest_rect_.y = y;}
+void Sprite::x(float x) {position_.x = x; dest_rect_.x = x;}
+void Sprite::y(float y) {position_.y = y; dest_rect_.y = y;}
 
 
 /*
     Move Sprite by given values from its current position.
     Also changes destination rectangle for renderer.
 */
-void Sprite::move(int dx, int dy)
+void Sprite::move(float dx, float dy)
 {
-    int final_x { static_cast<int>(position_.x) + dx };
-    int final_y { static_cast<int>(position_.y) + dy };
+    // int final_x { static_cast<int>(position_.x) + dx };
+    // int final_y { static_cast<int>(position_.y) + dy };
+    float final_x { position_.x + dx };
+    float final_y { position_.y + dy };
     position_.x = final_x;
     position_.y = final_y;
     dest_rect_.x = final_x;
@@ -204,7 +206,7 @@ void Sprite::move(int dx, int dy)
     Set dimensions of destination rectangle to given values.
     Doesn't change scale_, so it can create discrepancies.
 */
-void Sprite::dimensions(int w, int h)
+void Sprite::dimensions(float w, float h)
 {
     dest_rect_.w = w;
     dest_rect_.h = h;
@@ -223,7 +225,7 @@ void Sprite::scale(float s)
 /*
     Set src_dest values.
 */
-void Sprite::set_dest(int _x, int _y, int _w, int _h)
+void Sprite::set_dest(float _x, float _y, float _w, float _h)
 {
     dest_rect_.x = _x;
     dest_rect_.y = _y;
@@ -233,9 +235,9 @@ void Sprite::set_dest(int _x, int _y, int _w, int _h)
 
 
 /*
-    Copy the values from a given SDL_Rect destination.
+    Copy the values from a given SDL_FRect destination.
 */
-void Sprite::dest_rect(SDL_Rect& source)
+void Sprite::dest_rect(SDL_FRect& source)
 {
     dest_rect_.x = source.x;
     dest_rect_.y = source.y;

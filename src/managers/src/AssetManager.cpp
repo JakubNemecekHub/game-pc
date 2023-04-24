@@ -221,8 +221,8 @@ void AssetManager::load(SerializationManager* io)
     {
         // read in the data
         std::string id; io->read(id); log_->log(id);
-        int x; io->read(x);
-        int y; io->read(y);
+        float x; io->read(x);
+        float y; io->read(y);
         float scale; io->read(scale);
         int z_index; io->read(z_index);
         std::string depiction; io->read(depiction);

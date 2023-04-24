@@ -22,9 +22,9 @@ private:
 public:
 
     Button() {}
-    Button(std::string label, Sprite* sprite, int x, int y, float scale, TextManager* text);
+    Button(std::string label, Sprite* sprite, float x, float y, float scale, TextManager* text);
 
-    bool clicked(int x, int y);
+    bool clicked(float x, float y);
 
     void update(RenderManager* renderer, int dt);
 
