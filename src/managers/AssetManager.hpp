@@ -34,6 +34,7 @@ private:
     // Level 1
 
     std::map<std::string, Sprite> sprites_;
+    std::map<std::string, int>    sprite_counter_;
 
     // Loading methods
 

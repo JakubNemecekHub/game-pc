@@ -35,12 +35,13 @@ class Depiction
 public:
 
     virtual ~Depiction() {};
+    virtual Depiction* clone() = 0;
     virtual int w() = 0;
     virtual int h() = 0;
 
     virtual void update(int dt) = 0;
     virtual void reset() = 0;
-    virtual void render(SDL_Renderer* renderer, SDL_FRect destination) = 0; // This will need more info
+    virtual void render(SDL_Renderer* renderer, SDL_FRect destination) = 0;
     virtual void destroy() = 0;
     
 };
@@ -50,7 +51,7 @@ class Animation : public Depiction
 private:
 
     SDL_Texture* texture_;
-    std::vector<Frame>* frames_;
+    const std::vector<Frame>* frames_;
     bool flag_loop_;
     bool flag_finished_;
     int current_frame_;
@@ -59,6 +60,8 @@ private:
 public:
 
     Animation(std::string id, bool loop, AssetManager* assets);
+    Animation(const Animation& source);
+    Animation* clone() override;
     int w() override; 
     int h() override; 
 
@@ -80,6 +83,7 @@ public:
 
     Texture(SDL_Texture* texture);
     Texture(std::string id, AssetManager* assets);
+    Texture* clone() override;
     int w() override; 
     int h() override; 
 
@@ -110,6 +114,7 @@ public:
 
     Sprite(std::string id, RenderManager* renderer);
     Sprite(SDL_Texture* texture, float scale, int z_index);
+    Sprite(const Sprite& source);
 
     void add_depiction(std::string id, AssetManager* assets);               // Add Texture depiction
     void add_depiction(std::string id, bool loop, AssetManager* assets);    // Add Animation depiction

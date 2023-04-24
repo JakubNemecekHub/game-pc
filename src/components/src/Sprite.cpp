@@ -18,6 +18,23 @@ Animation::Animation(std::string id, bool loop, AssetManager* assets)
 }
 
 
+Animation::Animation(const Animation& source)
+{
+    this->texture_ = source.texture_;
+    this->frames_ = source.frames_;
+    this->flag_loop_ = source.flag_loop_;
+    this->flag_finished_ = false;
+    this->current_frame_ = 0;
+    this->last_updated_ = 0;
+}
+
+
+Animation* Animation::clone()
+{
+    return new Animation { *this };
+}
+
+
 int Animation::w() { return (*frames_).at(current_frame_).src_rect_.w; }
 int Animation::h() { return (*frames_).at(current_frame_).src_rect_.h; }
 void Animation::update(int dt)
@@ -70,6 +87,8 @@ Texture::Texture(SDL_Texture* texture)
     src_rect_.y = 0;
     SDL_QueryTexture(texture, NULL, NULL, &src_rect_.w, &src_rect_.h);
 }
+
+
 Texture::Texture(std::string id, AssetManager* assets)
 {
     texture_ = assets->texture(id);
@@ -77,6 +96,13 @@ Texture::Texture(std::string id, AssetManager* assets)
     src_rect_.y = 0;
     SDL_QueryTexture(texture_, NULL, NULL, &src_rect_.w, &src_rect_.h);
 }
+
+
+Texture* Texture::clone()
+{
+    return new Texture { *this };
+}
+
 
 int Texture::w() { return src_rect_.w; }
 int Texture::h() { return src_rect_.h; }
@@ -99,11 +125,31 @@ Sprite::Sprite(std::string id, RenderManager* renderer)
     : id_{id}, renderer_{renderer}, position_{0, 0}, scale_{1}, dest_rect_{0, 0, 0, 0},
       z_index_{0} {}
 
+
 // To create a Sprite for Text in TextManager
 Sprite::Sprite(SDL_Texture* texture, float scale, int z_index)
     : scale_{scale}, z_index_{z_index}
 {
     depictions_.insert(std::make_pair("text", new Texture(texture)));
+}
+
+
+Sprite::Sprite(const Sprite& source)
+{
+    this->renderer_ = source.renderer_;
+    this->id_ = source.id_;
+    this->position_ = Vector2D { 0, 0 };
+    this->scale_ = 1.0f;
+    this->dest_rect_ = SDL_FRect { 0, 0, 0, 0 };
+    this->z_index_ = source.z_index_;
+    for ( const auto& depiction : source.depictions_ )
+    {
+        this->depictions_.emplace(std::piecewise_construct,
+            std::forward_as_tuple(depiction.first),
+            std::forward_as_tuple(depiction.second->clone()));
+    }
+    this->current_depiction_id_ = source.current_depiction_id_; // TO DO: Should be "first" or "default" depiction
+    this->current_depiction_ = this->depictions_.at(this->current_depiction_id_).get();
 }
 
 
@@ -114,6 +160,7 @@ void Sprite::add_depiction(std::string id, AssetManager* assets)
         std::forward_as_tuple(std::make_unique<Texture>(id, assets))
     );
 }
+
 
 void Sprite::add_depiction(std::string id, bool loop, AssetManager* assets)
 {
@@ -153,10 +200,12 @@ void Sprite::reset()
     dest_rect_.h = current_depiction_->h() * scale_;
 }
 
+
 void Sprite::render(SDL_Renderer* renderer)
 {
     current_depiction_->render(renderer, dest_rect_);
 }
+
 
 /*
     Match dimensions of destination rectangle to dimensions of
@@ -201,6 +250,7 @@ void Sprite::move(float dx, float dy)
     dest_rect_.x = final_x;
     dest_rect_.y = final_y;
 }
+
 
 /*
     Set dimensions of destination rectangle to given values.
@@ -289,6 +339,7 @@ void Sprite::center_vertically()
 {
     renderer_->center_vertically(this);
 }
+
 
 // Destroy pointers
 void Sprite::destroy() { current_depiction_->destroy(); }

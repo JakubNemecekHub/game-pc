@@ -72,6 +72,7 @@ void AssetManager::create_sprite_(YAML::Node sprite_data)
     sprites_.emplace(std::piecewise_construct,
         std::forward_as_tuple(sprite_id),
         std::forward_as_tuple(sprite_id, renderer_));
+    sprite_counter_.insert(std::make_pair(sprite_id, 0));
     Sprite* sprite { &sprites_.at(sprite_id) };
     for ( auto& depiction : sprite_data["textures"] ) 
     {
@@ -167,10 +168,28 @@ SDL_Surface* AssetManager::bitmap(std::string id)
 }
 Sprite* AssetManager::sprite(std::string id)
 {
-    if ( sprites_.find(id) != sprites_.end() ) return &sprites_.at(id);
-    // else if no such id exists
-    log_->error("Requested missing sprite id \"", id, "\"");
-    return nullptr;
+    if ( sprites_.find(id) == sprites_.end() )
+    {
+        // No such id exists
+        log_->error("Requested missing sprite id \"", id, "\"");
+        return nullptr;
+    }
+    if ( sprite_counter_.at(id) != 0 )
+    {
+        // Make a copy of the Sprite
+        std::string new_id { id + "_" + std::to_string(sprite_counter_.at(id)) };
+        sprites_.emplace(std::piecewise_construct,
+            std::forward_as_tuple(new_id),
+            std::forward_as_tuple(sprites_.at(id)));
+        sprite_counter_.at(id) += 1;
+        return &sprites_.at(new_id);
+    }
+    else
+    {
+        // Return the Sprite
+        sprite_counter_.at(id) += 1;
+        return &sprites_.at(id);
+    }
 }
 std::queue<fs::directory_entry> AssetManager::items_meta()
 {

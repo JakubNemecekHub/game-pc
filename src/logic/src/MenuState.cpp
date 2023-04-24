@@ -16,8 +16,8 @@ bool MenuState::enter(Managers* managers)
     managers_ = managers;
 
     button_new_game_ = Button { "New Game", managers_->assets.sprite("button_animated"), 10, 20, 10, &managers_->text };
-    button_load_ = Button { "Load Game", managers_->assets.sprite("button_animated_1"), 10, 120, 10, &managers_->text };
-    button_exit_ = Button { "Exit", managers_->assets.sprite("button_animated_2"), 10, 220, 10, &managers_->text };
+    button_load_ = Button { "Load Game", managers_->assets.sprite("button_animated"), 10, 120, 10, &managers_->text };
+    button_exit_ = Button { "Exit", managers_->assets.sprite("button_animated"), 10, 220, 10, &managers_->text };
 
     return true;
 }
