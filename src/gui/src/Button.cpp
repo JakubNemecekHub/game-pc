@@ -13,11 +13,11 @@ Button::Button(std::string label, Sprite* sprite, float x, float y, float scale,
     // Set up Sprite.
     sprite_->position(x, y);
     sprite_->scale(scale);
+    sprite_->match_dimensions();
     // Set up a textual label inside the Sprite.
     label_sprite_ = std::make_unique<Sprite>(text->create_texture_(label_, COLOR::BEIGE), 1.0f, 3);
     label_sprite_->depiction("text");
-    label_sprite_->dimensions(sprite_->w(), sprite_->h());
-    // label_sprite_->position(sprite_->x(), sprite_->y());
+    label_sprite_->match_dimensions();
     float text_x { x + (sprite_->w() - label_sprite_->w())/2 };
     float text_y { y + (sprite_->h() - label_sprite_->h())/2 };
     label_sprite_->position(text_x, text_y);
