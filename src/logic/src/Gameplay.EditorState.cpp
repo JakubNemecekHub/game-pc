@@ -1,6 +1,9 @@
 #include "../Gameplay.EditorState.hpp"
 
+#include <format>
+
 #include <SDL2/SDL.h>
+#include <string>
 
 #include "../../Game.hpp"
 #include "../components/GameObject.hpp"
@@ -225,10 +228,9 @@ void Gameplay::Editor::visit_drag(Item* item, SDL_Event& event)
 
     item->move(dx, dy);
 
-    std::string message { "ITEM: " + item->id() };
-    float item_x { item->sprite()->x() };
-    float item_y { item->sprite()->y() };
-    message += " " + std::to_string(item_x) + " " + std::to_string(item_y);
+    std::string message { "ITEM: " + item->id() };                                                      // Get item's id, and...
+    std::string position { std::format("{:.0f} {:.0f}", item->sprite()->x(), item->sprite()->y()) };    // ... attach its formatted position
+    message += " " + position;
     managers_->text.submit_player(message, x, y, COLOR::RED);
 
 }

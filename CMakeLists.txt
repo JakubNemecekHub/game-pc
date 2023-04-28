@@ -6,7 +6,7 @@ project(
     DESCRIPTION "Very simple point and click adventure game written in c++ using SDL2."
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 add_compile_options(/wd4251 /wd4275) # Ignore warnings raised by yaml-cpp
 
 # External lbraries such as SDL2
