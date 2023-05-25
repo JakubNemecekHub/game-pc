@@ -73,7 +73,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     click_map_ = assets->bitmap(id);
 
     // Load HotSpots
-    for ( auto& hot_spot : data["hot_spots"] )
+    for ( auto hot_spot : data["hot_spots"] )
     {
         std::string id { hot_spot["id"].as<std::string>() };
         // Two types of HotSpot
@@ -96,7 +96,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     }
 
     // Load Doors
-    for ( auto& door : data["doors"] )
+    for ( auto door : data["doors"] )
     {
         std::string id { door["id"].as<std::string>() };
         // Two types of Doors
@@ -119,7 +119,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     }
 
     // Items
-    for ( auto& item_data : data["items"] )
+    for ( auto item_data : data["items"] )
     {
         std::string id { item_data["id"].as<std::string>() };
         Item* item { items->get(id) };

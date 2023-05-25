@@ -74,7 +74,7 @@ void AssetManager::create_sprite_(YAML::Node sprite_data)
         std::forward_as_tuple(sprite_id, renderer_));
     sprite_counter_.insert(std::make_pair(sprite_id, 0));
     Sprite* sprite { &sprites_.at(sprite_id) };
-    for ( auto& depiction : sprite_data["textures"] ) 
+    for ( auto depiction : sprite_data["textures"] ) 
     {
         std::string depiction_id { depiction["id"].as<std::string>() };
         if ( !frames(depiction_id) )
@@ -105,7 +105,7 @@ void AssetManager::load_sprites_(std::queue<fs::directory_entry>& paths)
         fs::directory_entry entry { paths.front() };
         std::string id { base_name(entry) };
         YAML::Node data = YAML::LoadFile(entry.path().string());
-        for (auto& sprite_data : data) create_sprite_(sprite_data);
+        for (auto sprite_data : data) create_sprite_(sprite_data);
         log_->log("Created Sprites", entry.path().string());
         paths.pop();
     }
