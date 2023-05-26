@@ -3,6 +3,8 @@
 #include <iostream> // ostream
 #include <math.h>   // sqrt
 
+#include "../utils/SDL_GFX.hpp"
+
 // Constructor ====================================================================================
 Vector2D::Vector2D(float x, float y)
     : x(x), y(y) {}
@@ -163,6 +165,7 @@ void Vector2D::render(SDL_Renderer* renderer) const
     int x2 { static_cast<int>(x * visual.scale + visual.dx) };
     int y2 { static_cast<int>(y * visual.scale + visual.dy) };
     SDL_RenderDrawLine(renderer, 0, 0, x2, y2);
+    gfx::square_filled(renderer, x2, y2, 6);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 }
 

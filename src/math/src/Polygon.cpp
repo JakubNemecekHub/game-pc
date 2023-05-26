@@ -4,6 +4,7 @@
 
 #include "../managers/RenderManager.hpp"
 #include "../Vector2D.hpp"
+#include "../utils/SDL_GFX.hpp"
 
 
 // Constructor
@@ -148,6 +149,7 @@ void Polygon::render(SDL_Renderer* renderer) const
         x2 = static_cast<int>(vertices[i].x * visual.scale + visual.dx);
         y2 = static_cast<int>(vertices[i].y * visual.scale + visual.dy);
         SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+        gfx::square_filled(renderer, x1, y1, 6);
         j = i;
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
