@@ -11,6 +11,7 @@ Gameplay::Inventory Gameplay::Inventory::self_;
 Gameplay::Inventory::Inventory() {}
 Gameplay::Inventory* Gameplay::Inventory::get() { return &self_; }
 
+
 bool Gameplay::Inventory::enter(Managers* managers)
 {
     managers_ = managers;
@@ -18,11 +19,13 @@ bool Gameplay::Inventory::enter(Managers* managers)
     return true;
 }
 
+
 bool Gameplay::Inventory::exit()
 {
     managers_->player.inventory.hide();
     return true;
 }
+
 
 void Gameplay::Inventory::input_keyboard_(SDL_Event& event)
 {
@@ -33,28 +36,11 @@ void Gameplay::Inventory::input_keyboard_(SDL_Event& event)
     if ( kkey == mapping.KEY_INVENTORY ) managers_->state.next(Gameplay::Normal::get());
 }
 
+
 void Gameplay::Inventory::input_mouse_(SDL_Event& event)
 {
 }
 
-void Gameplay::Inventory::input(SDL_Event& event)
-{
-    switch (event.type)
-    {
-    // case SDL_KEYDOWN:
-    // case SDL_TEXTEDITING:
-    // case SDL_TEXTINPUT:
-    case SDL_KEYUP:
-        input_keyboard_(event);
-        break;
-    case SDL_MOUSEMOTION:
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
-    case SDL_MOUSEWHEEL:
-        input_mouse_(event);
-        break;
-    }
-}
 
 void Gameplay::Inventory::update(int dt)
 {
@@ -63,10 +49,12 @@ void Gameplay::Inventory::update(int dt)
     managers_->text.update(dt);
 }
 
+
 void Gameplay::Inventory::render()
 {
     managers_->renderer.render();
 }
+
 
 void Gameplay::Inventory::visit_click(Item* item, SDL_Event& event) {}
 void Gameplay::Inventory::visit_click(Door* door, SDL_Event& event) {}

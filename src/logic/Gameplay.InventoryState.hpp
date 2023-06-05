@@ -17,8 +17,8 @@ private:
 
     // Helper
 
-    void input_keyboard_(SDL_Event& event);
-    void input_mouse_(SDL_Event& event);
+    void input_keyboard_(SDL_Event& event) override;
+    void input_mouse_(SDL_Event& event) override;
 
 public:
     static Inventory* get();
@@ -30,7 +30,6 @@ public:
 
     // Game loop methods
 
-    void input(SDL_Event& event) override; 
     void update(int dt) override; 
     void render() override;
 

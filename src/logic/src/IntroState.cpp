@@ -28,16 +28,16 @@ bool IntroState::exit()
 }
 
 
-void IntroState::input(SDL_Event& event)
+void IntroState::input_keyboard_(SDL_Event& event)
 {
-    if ( event.type != SDL_KEYUP ) return;
-    
     if ( event.key.keysym.sym == SDLK_RETURN )
     {
         managers_->state.next(MenuState::get());
     }
-
 }
+
+
+void IntroState::input_mouse_(SDL_Event& event) {}
 
 
 void IntroState::update(int dt)

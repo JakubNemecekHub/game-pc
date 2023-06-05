@@ -10,6 +10,7 @@ ExitState ExitState::self_;
 ExitState::ExitState() {}
 ExitState* ExitState::get() { return &self_; }
 
+
 bool ExitState::enter(Managers* managers)
 {
     managers_ = managers;
@@ -19,27 +20,34 @@ bool ExitState::enter(Managers* managers)
     return true;
 }
 
+
 bool ExitState::exit()
 {
     outro_ = nullptr;
     return true;
 }
 
-void ExitState::input(SDL_Event& event)
+
+void ExitState::input_keyboard_(SDL_Event& event)
 {
-    if ( event.type != SDL_KEYUP ) return;
-    
     if ( event.key.keysym.sym == SDLK_RETURN )
     {
         managers_->window.close();
     }
+}
+
+
+void ExitState::input_mouse_(SDL_Event& event)
+{
 
 }
+
 
 void ExitState::update(int dt)
 {
     outro_->update(&(managers_->renderer), dt);
 }
+
 
 void ExitState::render()
 {

@@ -60,32 +60,13 @@ void MenuState::input_mouse_(SDL_Event& event)
 }
 
 
-void MenuState::input(SDL_Event& event)
-{
-    switch (event.type)
-    {
-    // case SDL_KEYDOWN:
-    // case SDL_TEXTEDITING:
-    // case SDL_TEXTINPUT:
-    case SDL_KEYUP:
-        input_keyboard_(event);
-        break;
-    case SDL_MOUSEMOTION:
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
-    case SDL_MOUSEWHEEL:
-        input_mouse_(event);
-        break;
-    }
-}
-
-
 void MenuState::update(int dt)
 {
     button_new_game_.update(&(managers_->renderer), dt);
     button_load_.update(&(managers_->renderer), dt);
     button_exit_.update(&(managers_->renderer), dt);
 }
+
 
 void MenuState::render()
 {

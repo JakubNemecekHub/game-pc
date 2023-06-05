@@ -1,27 +1,28 @@
 #pragma once
 
-#include "State.hpp"
+#include "../State.hpp"
 
+class GameObject;
 
-class IntroState : public State
+class WalkAreaEditor : public Gameplay::GameplayState
 {
 private:
 
-    static IntroState self_;
-    IntroState();
+    static WalkAreaEditor self_;
+    WalkAreaEditor();
 
     Managers* managers_;
-
-    Sprite* logo_;
 
     // Helper
 
     void input_keyboard_(SDL_Event& event) override;
     void input_mouse_(SDL_Event& event) override;
 
-public:
+    bool        mouse_down_;
+    GameObject* selection_;
 
-    static IntroState* get();
+public:
+    static WalkAreaEditor* get();
 
     // State lifecycle
 
@@ -34,3 +35,4 @@ public:
     void render() override;
 
 };
+
