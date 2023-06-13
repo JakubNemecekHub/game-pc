@@ -36,11 +36,12 @@ Managers::Managers()
 
     window.startUp();
     renderer.startUp(window.window());
-    assets.startUp(&renderer);
+    std::string source_path = ini["source"].as<std::string>();
+    assets.startUp(&renderer, source_path);
     text.startUp();
     serial.startUp();
     control.startUp(ini["control"]);
-    script.startUp(&state, &text, &player, &rooms, &window, &serial, &items, &assets);
+    script.startUp(source_path, &state, &text, &player, &rooms, &window, &serial, &items, &assets);
 
     log.log("All Managers started.");
 }

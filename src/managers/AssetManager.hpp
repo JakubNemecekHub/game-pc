@@ -21,7 +21,6 @@ private:
 
     LogManager* log_;
     RenderManager* renderer_;
-    fs::path path_ { "D:/Prog/game_project/game/res" };
 
     // Level 0
 
@@ -49,7 +48,7 @@ public:
     AssetManager() {};
     AssetManager(LogManager* log);
 
-    bool startUp(RenderManager* renderer);
+    bool startUp(RenderManager* renderer, std::string source_path);
     bool shutDown();
 
     // Public getters

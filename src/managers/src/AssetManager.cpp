@@ -112,10 +112,11 @@ void AssetManager::load_sprites_(std::queue<fs::directory_entry>& paths)
 }
 
 
-bool AssetManager::startUp(RenderManager* renderer)
+bool AssetManager::startUp(RenderManager* renderer, std::string source_path)
 {
     log_->log("Starting Asset Manager.");
     renderer_ = renderer;
+    std::string full_source_path { source_path + "/res" };
 
     // Loop all the files in "res" folder and sort their paths into their respective stacks.
     
@@ -124,7 +125,7 @@ bool AssetManager::startUp(RenderManager* renderer)
     std::queue<fs::directory_entry> frames_paths;
     std::queue<fs::directory_entry> sprites_paths;
 
-    for (auto const& entry : std::filesystem::recursive_directory_iterator{path_})
+    for (auto const& entry : std::filesystem::recursive_directory_iterator{full_source_path})
     {
         fs::path name { fs::path(entry).filename()  };
         fs::path ext  { fs::path(entry).extension() };

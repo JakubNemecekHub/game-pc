@@ -52,8 +52,7 @@ bool State::enter(std::string state)
 {
     name_ = state;
     timer_ = 0;
-    std::string path { "D:\\Prog\\game_project\\game\\lgc\\" };
-    script_ = managers_->script.load_game_state(path + "state." + state + ".lua");
+    script_ = managers_->script.load_game_state(state);
     game_ = script_.get<bool>("game"); // This should always be in the script
     duration_ = script_.get_or("duration", 0);
     // Load sprites

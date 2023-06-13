@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #define SOL_ALL_SAFETIES_ON 1
 #include <SDL2/SDL.h>
 extern "C" {
@@ -27,6 +29,8 @@ private:
     LogManager* log_;
     sol::state lua_;
 
+    std::string source_path_;
+
 public:
 
     ScriptManager() {};
@@ -36,7 +40,7 @@ public:
         All the C++ function needed in the lua scripts
         must be bound to lua state.
     */
-    bool startUp(StateManager* state, TextManager* text, PlayerManager* player, RoomManager* rooms, WindowManager* window, SerializationManager* io, ItemManager* items, AssetManager* assets);
+    bool startUp(std::string source_path, StateManager* state, TextManager* text, PlayerManager* player, RoomManager* rooms, WindowManager* window, SerializationManager* io, ItemManager* items, AssetManager* assets);
     bool shutdown();
 
 

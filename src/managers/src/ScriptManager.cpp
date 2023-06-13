@@ -20,9 +20,12 @@ ScriptManager::ScriptManager(LogManager* log)
 /*
     Bind necessary C++ functions and member functions into "cpp" table in Lua state
 */
-bool ScriptManager::startUp(StateManager* state, TextManager* text, PlayerManager* player, RoomManager* rooms,
+bool ScriptManager::startUp(std::string source_path, StateManager* state, TextManager* text, PlayerManager* player, RoomManager* rooms,
                             WindowManager* window, SerializationManager* io, ItemManager* items, AssetManager* assets)
 {
+
+    source_path_ = source_path + "/lgc";
+
     lua_.open_libraries(sol::lib::base, sol::lib::package); // TO DO: Check what libraries we need
     // Set up managers' member functions
     // create "cpp" namespace
@@ -90,8 +93,9 @@ bool ScriptManager::startUp(StateManager* state, TextManager* text, PlayerManage
 bool ScriptManager::shutdown() { return true; }
 
 
-sol::table ScriptManager::load_game_state(std::string file_name)
+sol::table ScriptManager::load_game_state(std::string state_name)
 {
-    lua_.script_file(file_name);
+    std::string file_path { source_path_ + "/state." + state_name + ".lua" };
+    lua_.script_file(file_path);
     return lua_["state"];
 }
