@@ -2,8 +2,6 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "src/logic/States.hpp"
-
 
 #define kkey event.key.keysym.sym // because i don't understand why this doesn'z work: SDL_KeyCode key = event.key.keysym.sym;
 
@@ -28,22 +26,21 @@ Managers::Managers()
     window = WindowManager(&log, ini["window"]);
     renderer = RenderManager(&log);
     assets = AssetManager(&log);
-    text = TextManager(&log, &renderer, ini["text"]);
-    items = ItemManager(&log);
-    rooms = RoomManager(&log);
-    player = PlayerManager(&log);
-    control = ControlManager(&log, &state, &window);
     serial = SerializationManager(&log, &assets);
+    text = TextManager(&log, &renderer, ini["text"]);
+    items = ItemManager(&log, &assets, &serial);
+    rooms = RoomManager(&log, &items, &assets);
+    player = PlayerManager(&log, &assets, &items);
+    control = ControlManager(&log, &state, &window);
+    script = ScriptManager(&log);
 
     window.startUp();
     renderer.startUp(window.window());
     assets.startUp(&renderer);
     text.startUp();
-    items.startUp(&assets);
-    rooms.startUp(&items, &assets);
-    control.startUp(ini["control"]);
-    player.startUp(&assets, &items);
     serial.startUp();
+    control.startUp(ini["control"]);
+    script.startUp(&state, &text, &player, &rooms, &window, &serial, &items, &assets);
 
     log.log("All Managers started.");
 }
@@ -52,7 +49,7 @@ Managers::Managers()
 Game::Game()
 {
     managers.log.log("Starting at default Intro State.");
-    managers.state.start(IntroState::get(), &managers);
+    managers.state.start(&managers, "intro");
 }
 
 
@@ -75,5 +72,5 @@ void Game::update(int dt)
     }
     current_sate->update(dt);                   // 2) Update
     current_sate->render();                     // 3) Render
-    managers.state.change(&managers);           // 4) Change state
+    managers.state.change();                    // 4) Change state
 }

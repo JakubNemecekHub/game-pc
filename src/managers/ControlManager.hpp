@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <unordered_map>
 
 #include <SDL2/SDL.h>
 
@@ -33,6 +34,7 @@ private:
     StateManager* state_;
 
     Controls       mapping_;
+    std::unordered_map<SDL_Keycode, std::string> mapping_m_;
 
 public:
 
@@ -45,12 +47,31 @@ public:
     Controls mapping();
     
     void handle_window(SDL_Event& event);
-    auto mouse_position(SDL_Event& event)
+    inline auto mouse_position(SDL_Event& event)
     {
         struct result{ float x; float y; };
         int x, y;
         SDL_GetMouseState(&x, &y);
         return result{static_cast<float>(x), static_cast<float>(y)};
+    }
+    inline auto mouse_click(SDL_Event& event)
+    {
+        struct result{ float x; float y; bool r; };
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        return result{static_cast<float>(x), static_cast<float>(y), event.button.button == SDL_BUTTON_RIGHT};
+    }
+    inline std::string key(SDL_Keycode key_code)
+    {
+        try
+        {
+            return mapping_m_.at(key_code);
+        }
+        catch(const std::out_of_range& e)
+        {
+            return "";
+        }
+        
     }
     
 };

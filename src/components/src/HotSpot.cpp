@@ -4,7 +4,7 @@
 
 #include "../managers/AssetManager.hpp"
 #include "../managers/RenderManager.hpp"
-#include "../logic/States.hpp"
+#include "../logic/State.hpp"
 
 
 HotSpot::HotSpot(YAML::Node data)
@@ -27,9 +27,9 @@ std::string HotSpot::use_observation()
 }
 
 
-void HotSpot::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
-void HotSpot::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
-void HotSpot::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void HotSpot::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
+void HotSpot::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void HotSpot::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
 
 
 /********************************************************************************

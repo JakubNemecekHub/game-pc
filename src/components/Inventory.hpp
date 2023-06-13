@@ -33,7 +33,7 @@ public:
     void startUp(ItemManager* items);
 
     // GUI set up
-    void ini_gui(AssetManager* assets, RenderManager* renderer_);
+    void ini_gui(AssetManager* assets, RenderManager* renderer_, std::string inventory_sprite_name);
 
     void toggle_visibility();
     void show();

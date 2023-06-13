@@ -9,16 +9,7 @@ project(
 
 add_library(
     ${PROJECT_NAME}
-    src/IntroState.cpp
-    src/MenuState.cpp
-    src/ExitState.cpp
-    src/Gameplay.NormalState.cpp
-    src/Gameplay.InventoryState.cpp
-    editor/src/EditorState.cpp
-    editor/src/EditorState.Item.cpp
-    editor/src/EditorState.HotSpot.cpp
-    editor/src/EditorState.WalkArea.cpp
-    editor/src/EditorState.Bitmap.cpp
+    src/State.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

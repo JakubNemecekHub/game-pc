@@ -1,38 +1,30 @@
 #include "../StateManager.hpp"
 
-#include "../logic/States.hpp"
+// #include "../logic/States.hpp"
 
 
-StateManager::StateManager()
-    : state_{nullptr}, next_state_{nullptr} {}
+StateManager::StateManager() {}
 
 
-void StateManager::start(State* state, Managers* managers)
+void StateManager::start(Managers* managers, std::string state)
 {
-    state->enter(managers);
-    state_ = state;
+    state_.set(managers);
+    state_.enter(state);
 }
 
 
-void StateManager::next(State* state)
+void StateManager::next(std::string state)
 {
     // TO DO: Handle States priority?
     next_state_ = state;
 }
 
 
-void StateManager::change(Managers* managers)
+void StateManager::change()
 {
-    if ( !next_state_ ) return;
-    if ( state_ == ExitState::get() && next_state_ == ExitState::get()) return;
-    state_->exit();
-    next_state_->enter(managers);
-    state_ = next_state_;
-    next_state_ = nullptr;
-}
-
-
-State* StateManager::state()
-{
-    return state_;
+    if ( next_state_.empty() ) return;
+    if ( state_.name() == "exit" && next_state_ == "exit" ) return;
+    state_.exit();
+    state_.enter(next_state_);
+    next_state_.clear();
 }

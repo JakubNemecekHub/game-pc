@@ -30,19 +30,21 @@ class RoomManager
 {
 private:
 
-    LogManager* log_;
+    LogManager*   log_;
+    ItemManager*  items_;
+    AssetManager* assets_;
     std::unordered_map<std::string, Room> rooms_;
     Room* active_room_;
     std::string path_ {"D:/Prog/game_project/game/res/"};
 
-    void load_rooms_(std::string suite_file, ItemManager* items, AssetManager* assets);
+    void load_rooms_(std::string suite_file);
 
 public:
 
     RoomManager();
-    RoomManager(LogManager* log);
+    RoomManager(LogManager* log, ItemManager* items, AssetManager* assets);
 
-    bool startUp(ItemManager* items, AssetManager* assets);
+    bool startUp();
     bool shutDown();
 
     void activate_room(const std::string& room_id);

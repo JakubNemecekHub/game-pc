@@ -221,6 +221,7 @@ void RenderManager::render_surface()
 */
 void RenderManager::scale_full_h(Sprite* sprite)
 {
+    sprite->match_dimensions();
     // Get screen dimensions.
     int w, h;
     SDL_GetRendererOutputSize(renderer_, &w, &h);

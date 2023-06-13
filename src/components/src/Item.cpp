@@ -2,7 +2,7 @@
 
 #include <stdlib.h> // rand
 
-#include "../logic/States.hpp"
+#include "../logic/State.hpp"
 
 
 Item::Item(YAML::Node data, AssetManager* assets)
@@ -73,9 +73,9 @@ void Item::move (float dx, float dy)
     click_area_.move(dx, dy);
 }
 
-void Item::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
-void Item::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
-void Item::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void Item::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
+void Item::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void Item::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
 
 
 /********* Serialization *********/

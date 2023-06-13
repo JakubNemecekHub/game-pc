@@ -18,14 +18,14 @@ RoomManager::RoomManager()
     : active_room_{nullptr} {}
 
 
-RoomManager::RoomManager(LogManager* log)
-    : log_{log} {}
+RoomManager::RoomManager(LogManager* log, ItemManager* items, AssetManager* assets)
+    : log_{log}, items_{items}, assets_{assets} {}
 
 
-bool RoomManager::startUp(ItemManager* items, AssetManager* assets)
+bool RoomManager::startUp()
 {
     log_->log("Starting Room Manager.");
-    load_rooms_("rooms", items, assets);
+    load_rooms_("rooms");
     activate_room("hall");
     return true;
 }
@@ -43,10 +43,10 @@ bool RoomManager::shutDown()
     Load necessary room data. All information is stored in a .yaml file.
 
 */
-void RoomManager::load_rooms_(std::string suite_file, ItemManager* items, AssetManager* assets)
+void RoomManager::load_rooms_(std::string suite_file)
 {
     log_->log("Loading rooms.");
-    std::queue<fs::directory_entry> rooms_meta { assets->rooms_meta() };
+    std::queue<fs::directory_entry> rooms_meta { assets_->rooms_meta() };
     while ( !rooms_meta.empty() )
     {
         fs::directory_entry entry { rooms_meta.front() };
@@ -54,7 +54,7 @@ void RoomManager::load_rooms_(std::string suite_file, ItemManager* items, AssetM
         std::string id            { room_data["id"].as<std::string>() };
         rooms_.emplace(std::piecewise_construct,
                       std::forward_as_tuple(id),
-                      std::forward_as_tuple(room_data, items, assets));
+                      std::forward_as_tuple(room_data, items_, assets_));
         log_->log("Room \"", id, "\" created.");
         rooms_meta.pop();
     }

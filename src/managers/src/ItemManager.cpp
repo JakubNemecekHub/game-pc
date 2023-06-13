@@ -13,14 +13,14 @@
 namespace fs = std::filesystem;
 
 
-ItemManager::ItemManager(LogManager* log)
-    : log_{log} {}
+ItemManager::ItemManager(LogManager* log, AssetManager* assets, SerializationManager* io)
+    : log_{log}, assets_{assets}, io_{io} {}
 
 
-bool ItemManager::startUp(AssetManager* assets)
+bool ItemManager::startUp()
 {
     log_->log("Starting Item Manager.");
-    std::queue<fs::directory_entry> items_meta { assets->items_meta() };
+    std::queue<fs::directory_entry> items_meta { assets_->items_meta() };
     while ( !items_meta.empty() )
     {
         fs::directory_entry entry { items_meta.front() };
@@ -29,7 +29,7 @@ bool ItemManager::startUp(AssetManager* assets)
         item_data["id"] = id;
         items_.emplace(std::piecewise_construct,
                 std::forward_as_tuple(id),
-                std::forward_as_tuple(item_data, assets));
+                std::forward_as_tuple(item_data, assets_));
         log_->log("Item \"", id, "\" created.");
         items_meta.pop();
     }
@@ -58,44 +58,44 @@ Item* ItemManager::get(std::string id)
 
 // Serialization
     
-void ItemManager::save(SerializationManager* io)
+void ItemManager::save()
 {
 
-    if ( !io->open_out() ) return;
+    if ( !io_->open_out() ) return;
 
-    io->write( items_.size() );
+    io_->write( items_.size() );
     for ( auto& item : items_ )
     {
-        io->write(item.first);
-        item.second.write(io);
+        io_->write(item.first);
+        item.second.write(io_);
     }
 
-    io->close_out();
+    io_->close_out();
 
 }
 
 
-void ItemManager::load(SerializationManager* io)
+void ItemManager::load()
 {
 
     // The very first value is the number of items in data.
     // item_id lock (sprite)  sprite_id x   y   scale  z current_depiction
     // bottle  1              bottle    514 480 24     0 bottle
 
-    if ( !io->open_in() ) return;
+    if ( !io_->open_in() ) return;
 
-    int size; io->read(size);
+    int size; io_->read(size);
     for ( int i = 0; i < size; i++ )
     {
         // read in the data
-        std::string item_id; io->read(item_id);
-        bool lock; io->read(lock);
-        std::string sprite_id; io->read(sprite_id);
-        float x; io->read(x);
-        float y; io->read(y);
-        float scale; io->read(scale);
-        int z_index; io->read(z_index);
-        std::string depiction; io->read(depiction);
+        std::string item_id; io_->read(item_id);
+        bool lock; io_->read(lock);
+        std::string sprite_id; io_->read(sprite_id);
+        float x; io_->read(x);
+        float y; io_->read(y);
+        float scale; io_->read(scale);
+        int z_index; io_->read(z_index);
+        std::string depiction; io_->read(depiction);
         // Update item
         Item* item { &items_.at(item_id) };
         item->lock(lock);
@@ -107,6 +107,6 @@ void ItemManager::load(SerializationManager* io)
         item->sprite()->depiction(depiction);
     }
 
-    io->close_in();
+    io_->close_in();
 
 }

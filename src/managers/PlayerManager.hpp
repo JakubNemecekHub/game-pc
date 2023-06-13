@@ -33,7 +33,7 @@ private:
 public:
 
     Player() {};
-    Player(AssetManager* assets);
+    Player(AssetManager* assets, std::string sprite_name, std::string start_animation_name);
 
     void update(RenderManager* renderer, int dt);
     void walk(float x, float y);
@@ -45,8 +45,10 @@ class PlayerManager
 {
 private:
 
-    LogManager* log_;
+    LogManager*    log_;
     RenderManager* renderer_;
+    AssetManager*  assets_;
+    ItemManager*   items_;
 
 public:
 
@@ -54,9 +56,9 @@ public:
     Inventory   inventory;
 
     PlayerManager() {};
-    PlayerManager(LogManager* log);
+    PlayerManager(LogManager* log, AssetManager* assets, ItemManager* items);
 
-    bool startUp(AssetManager* assets, ItemManager* items);
+    bool startUp(std::string sprite_name, std::string start_animation_name, std::string inventory_sprite_name);
     bool shutDown();
     void update(RenderManager* renderer, int dt);
 

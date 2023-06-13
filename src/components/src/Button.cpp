@@ -2,13 +2,13 @@
 
 #include <SDL2/SDL.h>
 
-// #include "../../components/Sprite.hpp"
-#include "../../managers/RenderManager.hpp"
-#include "../../managers/TextManager.hpp"
+#include "../managers/RenderManager.hpp"
+#include "../managers/TextManager.hpp"
+#include "../logic/State.hpp"
 
 
-Button::Button(std::string label, Sprite* sprite, float x, float y, float scale, TextManager* text)
-    : label_{label}, sprite_{sprite}
+Button::Button(std::string label, Sprite* sprite, float x, float y, float scale, TextManager* text, sol::function action)
+    : label_{label}, sprite_{sprite}, action{action}
 {
     // Set up Sprite.
     sprite_->position(x, y);
@@ -36,3 +36,7 @@ void Button::update(RenderManager* renderer, int dt)
     sprite_->update(renderer, dt);
     label_sprite_->update(renderer, dt);
 }
+
+void Button::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
+void Button::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void Button::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }

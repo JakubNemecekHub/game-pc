@@ -15,6 +15,7 @@
 #include "src/managers/ControlManager.hpp"
 #include "src/managers/StateManager.hpp"
 #include "src/managers/SerializationManager.hpp"
+#include "src/managers/ScriptManager.hpp"
 
 
 class Managers
@@ -31,6 +32,7 @@ public:
     ControlManager   control;
     StateManager     state;
     SerializationManager serial;
+    ScriptManager    script;
 
     Managers();
 };

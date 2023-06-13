@@ -8,7 +8,7 @@
 
 
 class RenderManager;
-namespace Gameplay { class GameplayState; }
+class State;
 
 class GameObject
 {
@@ -20,6 +20,7 @@ protected:
 
 public:
 
+    GameObject() {}
     GameObject(std::string id, bool state = false);
     ~GameObject() {}
 
@@ -32,9 +33,9 @@ public:
 
     // Game Logic
 
-    virtual void accept_click(Gameplay::GameplayState* handler, SDL_Event& event) = 0;
-    virtual void accept_over(Gameplay::GameplayState* handler, SDL_Event& event) = 0;
-    virtual void accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) = 0;
+    virtual void accept_click(State* handler, int x, int y, bool r) = 0;
+    virtual void accept_over(State* handler, SDL_Event& event) = 0;
+    virtual void accept_drag(State* handler, SDL_Event& event) = 0;
 
     // DEBUG
 

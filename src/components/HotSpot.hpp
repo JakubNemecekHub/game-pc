@@ -28,9 +28,9 @@ public:
     std::string observation();
     std::string use_observation();
 
-    void accept_click(Gameplay::GameplayState* handler, SDL_Event& event) override;
-    void accept_over(Gameplay::GameplayState* handler, SDL_Event& event) override;
-    void accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) override;
+    void accept_click(State* handler, int x, int y, bool r) override;
+    void accept_over(State* handler, SDL_Event& event) override;
+    void accept_drag(State* handler, SDL_Event& event) override;
 
 };
 

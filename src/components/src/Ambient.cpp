@@ -1,6 +1,6 @@
 #include "../Ambient.hpp"
 
-#include "../logic/States.hpp"
+#include "../logic/State.hpp"
 
 
 Ambient::Ambient(std::string id, Sprite* sprite, bool state)
@@ -27,6 +27,6 @@ bool Ambient::clicked(float x, float y)
 }
 
 
-void Ambient::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
-void Ambient::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
-void Ambient::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void Ambient::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
+void Ambient::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void Ambient::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }

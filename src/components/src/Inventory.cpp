@@ -9,9 +9,9 @@ void Inventory::startUp(ItemManager* items)
 }
 
 
-void Inventory::ini_gui(AssetManager* assets, RenderManager* renderer_)
+void Inventory::ini_gui(AssetManager* assets, RenderManager* renderer_, std::string inventory_sprite_name)
 {
-    gui_frame_ = assets->sprite("inventory_frame");
+    gui_frame_ = assets->sprite(inventory_sprite_name);
     gui_frame_->z_index(3);
     gui_frame_->scale(10.0f);
     gui_frame_->center();

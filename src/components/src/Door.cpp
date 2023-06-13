@@ -4,7 +4,7 @@
 
 #include "../../managers/AssetManager.hpp"
 #include "../../managers/RenderManager.hpp"
-#include "../logic/States.hpp"
+#include "../logic/State.hpp"
 
 
 // Door::Door() {}
@@ -40,9 +40,9 @@ std::string Door::locked_observation()
 
 std::string Door::key_id() { return key_id_; }
 
-void Door::accept_click(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_click(this, event); }
-void Door::accept_over(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_over(this, event); }
-void Door::accept_drag(Gameplay::GameplayState* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void Door::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
+void Door::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void Door::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
 
 
 /********************************************************************************
