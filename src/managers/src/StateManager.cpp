@@ -22,9 +22,7 @@ void StateManager::next(std::string state)
 
 void StateManager::change()
 {
-    if ( next_state_.empty() ) return;
-    if ( state_.name() == "exit" && next_state_ == "exit" ) return;
+    if ( next_state_.empty() || (state_.name() == next_state_) ) return;
     state_.exit();
     state_.enter(next_state_);
-    next_state_.clear();
 }
