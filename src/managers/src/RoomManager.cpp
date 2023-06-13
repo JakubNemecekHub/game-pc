@@ -27,6 +27,7 @@ bool RoomManager::startUp()
     log_->log("Starting Room Manager.");
     load_rooms_("rooms");
     activate_room("hall");
+    log_->log("Room Manager Started.");
     return true;
 }
 
@@ -58,6 +59,7 @@ void RoomManager::load_rooms_(std::string suite_file)
         log_->log("Room \"", id, "\" created.");
         rooms_meta.pop();
     }
+    log_->log("Rooms loaded.");
 }
 
 
