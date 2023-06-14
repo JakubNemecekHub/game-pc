@@ -26,7 +26,7 @@ public:
     Sprite*     sprite();
 
     void accept_click(State* handler, int x, int y, bool r) override;
-    void accept_over(State* handler, SDL_Event& event) override;
+    void accept_over(State* handler, int x, int y) override;
     void accept_drag(State* handler, SDL_Event& event) override;
 
 };

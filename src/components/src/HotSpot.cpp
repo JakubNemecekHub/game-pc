@@ -28,7 +28,7 @@ std::string HotSpot::use_observation()
 
 
 void HotSpot::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
-void HotSpot::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void HotSpot::accept_over(State* handler, int x, int y) { handler->visit_over(this, x, y); }
 void HotSpot::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
 
 

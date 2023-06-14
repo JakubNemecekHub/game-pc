@@ -74,7 +74,7 @@ void Item::move (float dx, float dy)
 }
 
 void Item::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
-void Item::accept_over(State* handler, SDL_Event& event) { handler->visit_over(this, event); }
+void Item::accept_over(State* handler, int x, int y) { handler->visit_over(this, x, y); }
 void Item::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
 
 

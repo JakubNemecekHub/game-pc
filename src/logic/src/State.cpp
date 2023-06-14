@@ -8,7 +8,7 @@
 #include "../components/Sprite.hpp"
 
 State::State()
-    : game_{false}, duration_{0}, timer_{0} {}
+    : game_{false}, duration_{0}, timer_{0}, mouse_down_{false}, selection_{nullptr} {}
 
 
 void State::load_sprite_(std::pair<sol::object, sol::object> sprite_data)
@@ -74,27 +74,51 @@ void State::input_keyboard_(SDL_Event& event)
     // Need to convert the integer value of "event.key.keysym.sym" to some string from controls binging.
     // E.g. 105 = SDLK_i = "inventory"
     SDL_Keycode key_code = event.key.keysym.sym;
-    std::string key = managers_->control.key(key_code);
-    managers_->script.lua()->traverse_get<sol::function>("state", "input")(key);
+    // std::string key = managers_->control.key(key_code);
+    std::string key = SDL_GetKeyName(key_code);
+    managers_->script.lua()->traverse_get<sol::function>("state", "input_keyboard")(key);
 }
 
+GameObject* State::get_join_object_(float x, float y)
+{
+    for (auto& button : buttons_ ) if ( button.clicked(x, y) ) return &button;
+    if (game_) return managers_->rooms.get_object(x, y);
+    return nullptr;
+}
 
 void State::input_mouse_(SDL_Event& event)
 {
-    auto[x, y, r] = managers_->control.mouse_click(event);      // TO DO: use custom struct?
-    // First check if any button was clicked
-    for (auto& button : buttons_)
+    auto[x, y, r] = managers_->control.mouse_click(event);  // TO DO: use custom struct?
+    GameObject* object { get_join_object_(x, y) };
+    switch (event.type)
     {
-        if ( button.clicked(x, y) )
+    case SDL_MOUSEMOTION:
+        if ( mouse_down_ )
         {
-            button.action();
-            break;
+            // Left mouse button is pressed, we are draging an object
+            // The state of the button could probably be determined derectly from the event
+            if ( selection_ ) selection_->accept_drag(this, event);
         }
+        else
+        {
+            if (object)
+            {
+                object->accept_over(this, x, y);
+            }
+            else managers_->text.clean_player();
+        }
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        selection_ = object;
+        mouse_down_ = true;
+        break;
+    case SDL_MOUSEBUTTONUP:
+        mouse_down_ = false;
+        if (object) object->accept_click(this, x, y, r);
+        break;
+    default:
+        break;
     }
-    // Then, if we are in a game state, check game objects.
-    if (!game_) return;
-    GameObject* object { managers_->rooms.get_object(x, y) };   // Get object from Room Manager.
-    if (object) object->accept_click(this, x, y, r);            // Do something with that object.
 }
 
 

@@ -74,6 +74,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
 
     // Door user type
     sol::usertype<Door> type_door = lua_.new_usertype<Door>("cpp_door");
+    type_door["id"] = &Door::id;
     type_door["locked"] = &Door::locked;
     type_door["unlock"] = &Door::unlock;
     type_door["observation"] = &Door::observation;
@@ -83,8 +84,17 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
 
     // Hot Spot user type
     sol::usertype<HotSpot> type_hot_spot = lua_.new_usertype<HotSpot>("cpp_hot_spot");
+    type_hot_spot["id"] = &HotSpot::id;
     type_hot_spot["observation"] = &HotSpot::observation;
     type_hot_spot["use_observation"] = &HotSpot::use_observation;
+
+    // Ambient user type
+    sol::usertype<Ambient> type_ambient = lua_.new_usertype<Ambient>("cpp_ambient");
+    type_ambient["id"] = &Ambient::id;
+
+    // Button user type
+    sol::usertype<Button> type_button = lua_.new_usertype<Button>("cpp_button");
+    type_button["id"] = &Button::id;
 
     return true;
 }
