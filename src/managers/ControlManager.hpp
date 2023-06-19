@@ -47,19 +47,17 @@ public:
     Controls mapping();
     
     void handle_window(SDL_Event& event);
-    inline auto mouse_position(SDL_Event& event)
+
+    inline Mouse::Transform mouse_transform(SDL_Event& event)
     {
-        struct result{ float x; float y; };
         int x, y;
         SDL_GetMouseState(&x, &y);
-        return result{static_cast<float>(x), static_cast<float>(y)};
-    }
-    inline auto mouse_click(SDL_Event& event)
-    {
-        struct result{ float x; float y; bool r; };
-        int x, y;
-        SDL_GetMouseState(&x, &y);
-        return result{static_cast<float>(x), static_cast<float>(y), event.button.button == SDL_BUTTON_RIGHT};
+        return Mouse::Transform
+        {
+            static_cast<float>(x), static_cast<float>(y),
+            static_cast<float>(event.motion.xrel), static_cast<float>(event.motion.yrel),
+            event.button.button == SDL_BUTTON_RIGHT
+        };
     }
     inline std::string key(SDL_Keycode key_code)
     {
