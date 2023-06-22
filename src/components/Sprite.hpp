@@ -133,6 +133,7 @@ public:
     void move(float dx, float dy);
     void dimensions(float w, float h);
     void match_dimensions();
+    void set_scale(float s);
     void scale(float s);
     void set_dest(float _x, float _y, float _w, float _h);
     void dest_rect(SDL_FRect& source);

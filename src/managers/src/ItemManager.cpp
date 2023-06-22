@@ -102,7 +102,7 @@ void ItemManager::load()
         item->x(x);
         item->y(y);
         // Update item's sprite
-        item->sprite()->scale(scale);
+        item->sprite()->set_scale(scale);
         item->sprite()->z_index(z_index);
         item->sprite()->depiction(depiction);
     }

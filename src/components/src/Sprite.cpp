@@ -264,9 +264,15 @@ void Sprite::dimensions(float w, float h)
 /*
     Scale the destination rectangle.
 */
-void Sprite::scale(float s)
+void Sprite::set_scale(float s)
 {
     scale_ = s;
+    dest_rect_.w *= s;
+    dest_rect_.h *= s;
+}
+void Sprite::scale(float s)
+{
+    scale_ *= s;
     dest_rect_.w *= s;
     dest_rect_.h *= s;
 }

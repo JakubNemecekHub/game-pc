@@ -4,7 +4,7 @@
 namespace Mouse
 {
 
-struct Transform
+struct Status
 {
     float x;
     float y;

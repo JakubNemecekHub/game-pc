@@ -33,9 +33,9 @@ public:
 
     // Game Logic
 
-    virtual void accept_click(State* handler, int x, int y, bool r) = 0;
-    virtual void accept_over(State* handler, int x, int y) = 0;
-    virtual void accept_drag(State* handler, SDL_Event& event) = 0;
+    virtual void accept_click(State* handler, Mouse::Status mouse) = 0;
+    virtual void accept_over(State* handler, Mouse::Status mouse) = 0;
+    virtual void accept_drag(State* handler, Mouse::Status mouse) = 0;
 
     // DEBUG
 

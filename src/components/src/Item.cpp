@@ -73,9 +73,9 @@ void Item::move (float dx, float dy)
     click_area_.move(dx, dy);
 }
 
-void Item::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
-void Item::accept_over(State* handler, int x, int y) { handler->visit_over(this, x, y); }
-void Item::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void Item::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
+void Item::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
+void Item::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }
 
 
 /********* Serialization *********/

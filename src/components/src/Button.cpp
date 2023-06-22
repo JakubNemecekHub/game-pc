@@ -37,6 +37,6 @@ void Button::update(RenderManager* renderer, int dt)
     label_sprite_->update(renderer, dt);
 }
 
-void Button::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
-void Button::accept_over(State* handler, int x, int y) { handler->visit_over(this, x, y); }
-void Button::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void Button::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
+void Button::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
+void Button::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }

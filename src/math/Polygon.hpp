@@ -33,7 +33,7 @@ public:
     void add_vertices(std::vector<std::vector<float>> vertices);
     void clear();
     bool point_in_polygon(float x, float y);
-    void scale(float _scale);
+    void scale(float _scale, bool _in_place = false);
     void move (float dx, float dy);
 
     // Rendering methods

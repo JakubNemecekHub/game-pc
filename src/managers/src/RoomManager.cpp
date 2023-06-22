@@ -88,28 +88,3 @@ GameObject* RoomManager::get_object(float x, float y) { return active_room_->get
 GameObject* RoomManager::get_item(float x, float y) { return active_room_->get_item(x, y); }
 GameObject* RoomManager::get_hot_spot(float x, float y) { return active_room_->get_hot_spot(x, y); }
 void RoomManager::remove_item(std::string id) { active_room_->remove_item(id); }
-
-
-/*
-    Handle keyboard inputs concerning room an room management.
-*/
-void RoomManager::handle_keyboard(ACTION_ROOM action)
-{
-    switch ( action )
-    {
-    case ACTION_ROOM::EDITOR_BITMAP:
-        active_room_->toggle_click_map();
-        break;
-    case ACTION_ROOM::EDITOR_WALK_POLYGON:
-        active_room_->toggle_walk_area();
-        break;
-    case ACTION_ROOM::EDITOR_ITEMS:
-        active_room_->toggle_item_debug();
-        break;
-    case ACTION_ROOM::EDITOR_HOT_SPOTS:
-        active_room_->toggle_hot_spot_debug();
-        break;
-    default:
-        break;
-    }
-}

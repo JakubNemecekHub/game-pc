@@ -12,6 +12,7 @@
 #include "../components/Door.hpp"
 #include "../components/HotSpot.hpp"
 #include "../components/Inventory.hpp"
+#include "../utils/Mouse.hpp"
 
 
 ScriptManager::ScriptManager(LogManager* log)
@@ -58,12 +59,20 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     lua_cpp_player.set_function("inventory_add_item", &Inventory::add, &(player->inventory));
     lua_cpp_player.set_function("inventory_has_item", &Inventory::has_item, &(player->inventory));
     lua_cpp_player.set_function("inventory_remove_item", &Inventory::remove, &(player->inventory));
+    lua_cpp_player.set_function("inventory_show", &Inventory::show, &(player->inventory));
+    lua_cpp_player.set_function("inventory_hide", &Inventory::hide, &(player->inventory));
 
     // create "cpp.room" namespace
     auto lua_cpp_rooms = lua_["cpp"]["room"].get_or_create<sol::table>();    
     lua_cpp_rooms.set_function("remove_item", &RoomManager::remove_item, rooms);
     lua_cpp_rooms.set_function("activate_room", &RoomManager::activate_room, rooms);
+    lua_cpp_rooms.set_function("save_items", &ItemManager::save, items);
     lua_cpp_rooms.set_function("load_items", &ItemManager::load, items);
+
+    lua_cpp_rooms.set_function("toggle_click_map", &RoomManager::toggle_click_map, rooms);
+    lua_cpp_rooms.set_function("toggle_walk_area", &RoomManager::toggle_walk_area, rooms);
+    lua_cpp_rooms.set_function("toggle_item_debug", &RoomManager::toggle_item_debug, rooms);
+    lua_cpp_rooms.set_function("toggle_hot_spot_debug", &RoomManager::toggle_hot_spot_debug, rooms);
 
 
     // Item user type
@@ -71,6 +80,9 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     type_item["observation"] = &Item::observation;
     type_item["pick_observation"] = &Item::pick_observation;
     type_item["id"] = &Item::id;
+    type_item["move"] = &Item::move;
+    type_item["get_x"] = sol::resolve<float()>(&Item::x);
+    type_item["get_y"] = sol::resolve<float()>(&Item::y);
 
     // Door user type
     sol::usertype<Door> type_door = lua_.new_usertype<Door>("cpp_door");
@@ -87,6 +99,11 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     type_hot_spot["id"] = &HotSpot::id;
     type_hot_spot["observation"] = &HotSpot::observation;
     type_hot_spot["use_observation"] = &HotSpot::use_observation;
+    type_hot_spot["move"] = &HotSpot::move;
+    type_hot_spot["get_x"] = sol::resolve<float()>(&HotSpot::x);
+    type_hot_spot["get_y"] = sol::resolve<float()>(&HotSpot::y);
+    type_hot_spot["get_scale"] = sol::resolve<float()>(&HotSpot::scale);
+    type_hot_spot["scale"] = sol::resolve<void(float)>(&HotSpot::scale);
 
     // Ambient user type
     sol::usertype<Ambient> type_ambient = lua_.new_usertype<Ambient>("cpp_ambient");
@@ -95,6 +112,15 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     // Button user type
     sol::usertype<Button> type_button = lua_.new_usertype<Button>("cpp_button");
     type_button["id"] = &Button::id;
+
+    // Mouse::Status user type
+    sol::usertype<Mouse::Status> type_mouse = lua_.new_usertype<Mouse::Status>("cpp_mouse");
+    type_mouse.set("x", sol::readonly(&Mouse::Status::x));
+    type_mouse.set("y", sol::readonly(&Mouse::Status::y));
+    type_mouse.set("xrel", sol::readonly(&Mouse::Status::xrel));
+    type_mouse.set("yrel", sol::readonly(&Mouse::Status::yrel));
+    type_mouse.set("r", sol::readonly(&Mouse::Status::r));
+
 
     return true;
 }

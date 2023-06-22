@@ -16,16 +16,6 @@
 #include "../components/HotSpot.hpp"
 
 
-enum ACTION_ROOM
-{
-    EDITOR_ITEMS,
-    EDITOR_HOT_SPOTS,
-    EDITOR_DOORS,
-    EDITOR_WALK_POLYGON,
-    EDITOR_BITMAP
-};
-
-
 class RoomManager
 {
 private:
@@ -54,6 +44,10 @@ public:
     GameObject* get_item(float x, float y);
     GameObject* get_hot_spot(float x, float y);
     void remove_item(std::string id);
-    void handle_keyboard(ACTION_ROOM action);
+
+    inline void toggle_click_map()      { active_room_->toggle_click_map();      }
+    inline void toggle_walk_area()      { active_room_->toggle_walk_area();      }
+    inline void toggle_item_debug()     { active_room_->toggle_item_debug();     }
+    inline void toggle_hot_spot_debug() { active_room_->toggle_hot_spot_debug(); }
 
 };

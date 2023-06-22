@@ -27,9 +27,9 @@ std::string HotSpot::use_observation()
 }
 
 
-void HotSpot::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
-void HotSpot::accept_over(State* handler, int x, int y) { handler->visit_over(this, x, y); }
-void HotSpot::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void HotSpot::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
+void HotSpot::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
+void HotSpot::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }
 
 
 /********************************************************************************
@@ -60,11 +60,10 @@ SpriteHotSpot::SpriteHotSpot(YAML::Node data, AssetManager* assets)
     float room_scale { sprite_->scale() };
     sprite_->match_dimensions();
     sprite_->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
-    sprite_->scale(room_scale * hot_spot_scale);
+    sprite_->set_scale(room_scale * hot_spot_scale);
     click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<float>>>());
     // Scale the click area Polygon in the same way
     click_area_.scale(hot_spot_scale * room_scale);
-    // click_area_.move(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
     click_area_.move(position[0], position[1]);
 }
 
@@ -84,4 +83,24 @@ void SpriteHotSpot::update(RenderManager* renderer, int dt)
 bool SpriteHotSpot::clicked(float x, float y)
 {
     return click_area_.point_in_polygon(x, y) && state_;
+}
+
+void SpriteHotSpot::x(float x)
+{
+    float old_x { sprite_->x() };
+    float dx { x - old_x };
+    click_area_.move(dx, 0);
+    sprite_->x(x);
+}
+void SpriteHotSpot::y(float y)
+{
+    float old_y { sprite_->y() };
+    float dy { y - old_y };
+    click_area_.move(0, dy);
+    sprite_->y(y);
+}
+void SpriteHotSpot::move (float dx, float dy)
+{
+    sprite_->move(dx, dy);
+    click_area_.move(dx, dy);
 }

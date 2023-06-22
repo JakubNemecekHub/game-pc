@@ -90,7 +90,7 @@ GameObject* State::get_join_object_(float x, float y)
 
 void State::input_mouse_(SDL_Event& event)
 {
-    Mouse::Transform mouse = managers_->control.mouse_transform(event);
+    Mouse::Status mouse = managers_->control.mouse_transform(event);
     GameObject* object { get_join_object_(mouse.x, mouse.y) };
     switch (event.type)
     {
@@ -99,13 +99,13 @@ void State::input_mouse_(SDL_Event& event)
         {
             // Left mouse button is pressed, we are draging an object
             // The state of the button could probably be determined derectly from the event
-            if ( selection_ ) selection_->accept_drag(this, event);
+            if ( selection_ ) selection_->accept_drag(this, mouse);
         }
         else
         {
             if (object)
             {
-                object->accept_over(this, mouse.x, mouse.y);
+                object->accept_over(this, mouse);
             }
             else managers_->text.clean_player();
         }
@@ -116,7 +116,7 @@ void State::input_mouse_(SDL_Event& event)
         break;
     case SDL_MOUSEBUTTONUP:
         mouse_down_ = false;
-        if (object) object->accept_click(this, mouse.x, mouse.y, mouse.r);
+        if (object) object->accept_click(this, mouse);
         break;
     default:
         break;

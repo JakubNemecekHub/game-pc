@@ -48,11 +48,11 @@ public:
     
     void handle_window(SDL_Event& event);
 
-    inline Mouse::Transform mouse_transform(SDL_Event& event)
+    inline Mouse::Status mouse_transform(SDL_Event& event)
     {
         int x, y;
         SDL_GetMouseState(&x, &y);
-        return Mouse::Transform
+        return Mouse::Status
         {
             static_cast<float>(x), static_cast<float>(y),
             static_cast<float>(event.motion.xrel), static_cast<float>(event.motion.yrel),

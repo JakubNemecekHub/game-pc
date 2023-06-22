@@ -27,6 +27,6 @@ bool Ambient::clicked(float x, float y)
 }
 
 
-void Ambient::accept_click(State* handler, int x, int y, bool r) { handler->visit_click(this, x, y, r); }
-void Ambient::accept_over(State* handler, int x, int y) { handler->visit_over(this, x, y); }
-void Ambient::accept_drag(State* handler, SDL_Event& event) { handler->visit_drag(this, event); }
+void Ambient::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
+void Ambient::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
+void Ambient::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }

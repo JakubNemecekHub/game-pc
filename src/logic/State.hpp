@@ -80,20 +80,22 @@ public:
     void update(int dt); 
     void render(); 
 
-    inline void visit_click(Item* item, int x, int y, bool r)        { script_["lua_visit_click_item"](item, x, y, r);         }
-    inline void visit_click(Door* door, int x, int y, bool r)        { script_["lua_visit_click_door"](door, x, y, r);         }
-    inline void visit_click(HotSpot* hot_spot, int x, int y, bool r) { script_["lua_visit_click_hot_spot"](hot_spot, x, y, r); }
-    inline void visit_click(Ambient* ambient, int x, int y, bool r)  { script_["lua_visit_click_ambient"](ambient, x, y, r);   }
-    inline void visit_click(Button* button, int x, int y, bool r)    { button->action(); }
-    inline void visit_over(Item* item, int x, int y)         { script_["lua_visit_over_item"](item, x, y);          }
-    inline void visit_over(Door* door, int x, int y)         { script_["lua_visit_over_door"](door, x, y);          }
-    inline void visit_over(HotSpot* hot_spot, int x, int y)  { script_["lua_visit_over_hot_spot"](hot_spot, x, y);  }
-    inline void visit_over(Ambient* ambient, int x, int y)   { script_["lua_visit_over_ambient"](ambient, x, y);    }
-    inline void visit_over(Button* button, int x, int y)     { script_["lua_visit_over_button"](button, x, y); }
-    inline void visit_drag(Item* item, SDL_Event& event)         { script_["lua_visit_drag_item"](item, event);          }
-    inline void visit_drag(Door* door, SDL_Event& event)         { script_["lua_visit_drag_door"](door, event);          }
-    inline void visit_drag(HotSpot* hot_spot, SDL_Event& event)  { script_["lua_visit_drag_hot_spot"](hot_spot, event);  }
-    inline void visit_drag(Ambient* ambient, SDL_Event& event)   { script_["lua_visit_drag_ambient"](ambient, event);    }
-    inline void visit_drag(Button* button, SDL_Event& event)     { script_["lua_visit_drag_button"](button, event);      }
+    inline void visit_click(Item* item, Mouse::Status mouse)        { script_["lua_visit_click_item"](item, mouse);         }
+    inline void visit_click(Door* door, Mouse::Status mouse)        { script_["lua_visit_click_door"](door, mouse);         }
+    inline void visit_click(HotSpot* hot_spot, Mouse::Status mouse) { script_["lua_visit_click_hot_spot"](hot_spot, mouse); }
+    inline void visit_click(Ambient* ambient, Mouse::Status mouse)  { script_["lua_visit_click_ambient"](ambient, mouse);   }
+    inline void visit_click(Button* button, Mouse::Status mouse)    { button->action(); }
+
+    inline void visit_over(Item* item, Mouse::Status mouse)         { script_["lua_visit_over_item"](item, mouse);          }
+    inline void visit_over(Door* door, Mouse::Status mouse)         { script_["lua_visit_over_door"](door, mouse);          }
+    inline void visit_over(HotSpot* hot_spot, Mouse::Status mouse)  { script_["lua_visit_over_hot_spot"](hot_spot, mouse);  }
+    inline void visit_over(Ambient* ambient, Mouse::Status mouse)   { script_["lua_visit_over_ambient"](ambient, mouse);    }
+    inline void visit_over(Button* button, Mouse::Status mouse)     { script_["lua_visit_over_button"](button, mouse);      }
+
+    inline void visit_drag(Item* item, Mouse::Status mouse)         { script_["lua_visit_drag_item"](item, mouse);          }
+    inline void visit_drag(Door* door, Mouse::Status mouse)         { script_["lua_visit_drag_door"](door, mouse);          }
+    inline void visit_drag(HotSpot* hot_spot, Mouse::Status mouse)  { script_["lua_visit_drag_hot_spot"](hot_spot, mouse);  }
+    inline void visit_drag(Ambient* ambient, Mouse::Status mouse)   { script_["lua_visit_drag_ambient"](ambient, mouse);    }
+    inline void visit_drag(Button* button, Mouse::Status mouse)     { script_["lua_visit_drag_button"](button, mouse);      }
     
 };

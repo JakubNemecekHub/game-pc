@@ -23,14 +23,24 @@ protected:
 public:
 
     HotSpot(YAML::Node data);
-    ~HotSpot() {};
+    virtual ~HotSpot() {};
 
     std::string observation();
     std::string use_observation();
 
-    void accept_click(State* handler, int x, int y, bool r) override;
-    void accept_over(State* handler, int x, int y) override;
-    void accept_drag(State* handler, SDL_Event& event) override;
+    void accept_click(State* handler, Mouse::Status mouse) override;
+    void accept_over(State* handler, Mouse::Status mouse) override;
+    void accept_drag(State* handler, Mouse::Status mouse) override;
+
+    // TO DO: These are the same member function that Ambient, Item and Door/SpriteDoor must have.
+    // How to avoid repetition?  
+    virtual void x(float x) = 0;
+    virtual void y(float y) = 0;
+    virtual float x() = 0;
+    virtual float y() = 0;
+    virtual void move(float dx, float dy)  = 0;
+    virtual void scale(float s) = 0;
+    virtual float scale() = 0;
 
 };
 
@@ -42,6 +52,16 @@ public:
     BitmapHotSpot(YAML::Node data);
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
+
+    // inline void accept_drag(State* handler, Mouse::Status mouse) override {}
+
+    void x(float x) override {};
+    void y(float y) override {};
+    inline float x() override { return 0.0f; }
+    inline float y() override { return 0.0f; }
+    void move(float dx, float dy) override {};
+    void scale(float s) override {};
+    float scale() override { return 1.0f; }
 
 };
 
@@ -58,5 +78,18 @@ public:
     SpriteHotSpot(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
+
+    void x(float x) override;
+    void y(float y) override;
+    inline float x() override { return sprite_->x(); }
+    inline float y() override { return sprite_->y(); }
+    void move(float dx, float dy) override;
+    inline void scale(float s) override
+    {
+        sprite_->scale(s);
+        click_area_.scale(s);
+        click_area_.move((1.0f-s)*sprite_->x(), (1.0f-s)*sprite_->y()); // TO DO: implement vector arithmetic
+    }
+    inline float scale() override { return sprite_->scale(); }
 
 };

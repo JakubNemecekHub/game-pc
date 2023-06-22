@@ -113,13 +113,21 @@ bool Polygon::point_in_polygon(float x, float y)
 
 
 // Scale polygon by a given value.
-void Polygon::scale(float _scale)
+void Polygon::scale(float _scale, bool _in_place)
 {
+    // get the initial position of the firts vertex
+    const float initial_x = vertices.at(0).x;
+    const float initial_y = vertices.at(0).y;
     for ( Vector2D &vertex: vertices )
     {
         vertex.x *= _scale;
         vertex.y *= _scale;
     }
+    // Compute deltas
+    const float delta_x = initial_x - vertices.at(0).x;
+    const float delta_y = initial_y - vertices.at(0).y;
+    // Move polygon back
+    if (_in_place) this->move(delta_x, delta_y);
 }
 
 

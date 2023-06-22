@@ -42,13 +42,15 @@ public:
 
     void x(float x);
     void y(float y);
+    inline float x() { return sprite_->x(); }
+    inline float y() { return sprite_->y(); }
     void move (float dx, float dy);
 
     // Game logic
 
-    void accept_click(State* handler, int x, int y, bool r) override;
-    void accept_over(State* handler, int x, int y) override;
-    void accept_drag(State* handler, SDL_Event& event) override;
+    void accept_click(State* handler, Mouse::Status mouse) override;
+    void accept_over(State* handler, Mouse::Status mouse) override;
+    void accept_drag(State* handler, Mouse::Status mouse) override;
 
     // Serialization
 
