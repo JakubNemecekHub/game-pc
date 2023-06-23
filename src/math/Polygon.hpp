@@ -7,6 +7,8 @@
 #include "Vector2D.hpp"
 #include "Visual.hpp"
 
+typedef std::vector<std::vector<float>> Vertices;
+
 class Polygon
 {
 private:
@@ -35,6 +37,12 @@ public:
     bool point_in_polygon(float x, float y);
     void scale(float _scale, bool _in_place = false);
     void move (float dx, float dy);
+
+    // "Position" of a polygon is a top left corner of its envelope rectangle
+    float x();
+    float y();
+    void x(float x);
+    void y(float y);
 
     // Rendering methods
     Visual visual;

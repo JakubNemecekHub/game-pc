@@ -98,13 +98,13 @@ void ItemManager::load()
         std::string depiction; io_->read(depiction);
         // Update item
         Item* item { &items_.at(item_id) };
-        item->lock(lock);
+        item->set_use(lock);
         item->x(x);
         item->y(y);
         // Update item's sprite
-        item->sprite()->set_scale(scale);
-        item->sprite()->z_index(z_index);
-        item->sprite()->depiction(depiction);
+        item->set_scale(scale);
+        item->z_index(z_index);
+        item->depiction(depiction);        
     }
 
     io_->close_in();

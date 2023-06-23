@@ -69,24 +69,36 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     lua_cpp_rooms.set_function("save_items", &ItemManager::save, items);
     lua_cpp_rooms.set_function("load_items", &ItemManager::load, items);
 
-    lua_cpp_rooms.set_function("toggle_click_map", &RoomManager::toggle_click_map, rooms);
+    // lua_cpp_rooms.set_function("toggle_click_map", &RoomManager::toggle_click_map, rooms);
     lua_cpp_rooms.set_function("toggle_walk_area", &RoomManager::toggle_walk_area, rooms);
     lua_cpp_rooms.set_function("toggle_item_debug", &RoomManager::toggle_item_debug, rooms);
     lua_cpp_rooms.set_function("toggle_hot_spot_debug", &RoomManager::toggle_hot_spot_debug, rooms);
+    lua_cpp_rooms.set_function("toggle_door_debug", &RoomManager::toggle_door_debug, rooms);
 
 
     // Item user type
     sol::usertype<Item> type_item = lua_.new_usertype<Item>("cpp_item");    // Defined without constructor, cannot create Item inside lua script
+    // General GameObject stuff
+    type_item["id"] = &Item::id;
+    type_item["x"] = sol::property(sol::resolve<float()>(&Item::x), sol::resolve<void(float)>(&Item::x));
+    type_item["y"] = sol::property(sol::resolve<float()>(&Item::y), sol::resolve<void(float)>(&Item::y));
+    type_item["move"] = &Item::move;
+    type_item["scale"] = sol::property(sol::resolve<float()>(&Item::scale), sol::resolve<void(float)>(&Item::scale));
+    type_item["absolute_scale"] = &Item::set_scale; 
+    // Item Specific stuff
     type_item["observation"] = &Item::observation;
     type_item["pick_observation"] = &Item::pick_observation;
-    type_item["id"] = &Item::id;
-    type_item["move"] = &Item::move;
-    type_item["get_x"] = sol::resolve<float()>(&Item::x);
-    type_item["get_y"] = sol::resolve<float()>(&Item::y);
 
     // Door user type
     sol::usertype<Door> type_door = lua_.new_usertype<Door>("cpp_door");
+    // General GameObject stuff
     type_door["id"] = &Door::id;
+    type_door["x"] = sol::property(sol::resolve<float()>(&Door::x), sol::resolve<void(float)>(&Door::x));
+    type_door["y"] = sol::property(sol::resolve<float()>(&Door::y), sol::resolve<void(float)>(&Door::y));
+    type_door["move"] = &Item::move;
+    type_door["scale"] = sol::property(sol::resolve<float()>(&Door::scale), sol::resolve<void(float)>(&Door::scale));
+    type_door["absolute_scale"] = &Door::set_scale; 
+    // Door Specific stuff
     type_door["locked"] = &Door::locked;
     type_door["unlock"] = &Door::unlock;
     type_door["observation"] = &Door::observation;
@@ -96,14 +108,16 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
 
     // Hot Spot user type
     sol::usertype<HotSpot> type_hot_spot = lua_.new_usertype<HotSpot>("cpp_hot_spot");
+    // General GameObject stuff
     type_hot_spot["id"] = &HotSpot::id;
+    type_hot_spot["x"] = sol::property(sol::resolve<float()>(&HotSpot::x), sol::resolve<void(float)>(&HotSpot::x));
+    type_hot_spot["y"] = sol::property(sol::resolve<float()>(&HotSpot::y), sol::resolve<void(float)>(&HotSpot::y));
+    type_hot_spot["move"] = &HotSpot::move;
+    type_hot_spot["scale"] = sol::property(sol::resolve<float()>(&HotSpot::scale), sol::resolve<void(float)>(&HotSpot::scale));
+    type_hot_spot["absolute_scale"] = &HotSpot::set_scale; 
+    // Hot Spot Specific stuff
     type_hot_spot["observation"] = &HotSpot::observation;
     type_hot_spot["use_observation"] = &HotSpot::use_observation;
-    type_hot_spot["move"] = &HotSpot::move;
-    type_hot_spot["get_x"] = sol::resolve<float()>(&HotSpot::x);
-    type_hot_spot["get_y"] = sol::resolve<float()>(&HotSpot::y);
-    type_hot_spot["get_scale"] = sol::resolve<float()>(&HotSpot::scale);
-    type_hot_spot["scale"] = sol::resolve<void(float)>(&HotSpot::scale);
 
     // Ambient user type
     sol::usertype<Ambient> type_ambient = lua_.new_usertype<Ambient>("cpp_ambient");

@@ -3,36 +3,28 @@
 #include <stdlib.h> // rand
 
 #include "../logic/State.hpp"
+#include "../managers/AssetManager.hpp"
+#include "../managers/RenderManager.hpp"
+#include "../managers/SerializationManager.hpp"
+#include "../Sprite.hpp"
 
 
 Item::Item(YAML::Node data, AssetManager* assets)
     : GameObject{data["id"].as<std::string>(), false}
 {
-    lock_ = false;
+    used_ = false;
     // Texts
     observations_ = data["observations"].as<std::vector<std::string>>();
     pick_observation_ = data["pick_observation"].as<std::string>();
-    // Load click area polygon
-    click_area_.add_vertices(data["click_area"].as<std::vector<std::vector<float>>>());
-    // Load texture
-    sprite_ = assets->sprite(id_);  // TO DO: log error if assets return nullptr
+    // Form, should be RigidBody
+    // Others do not make much sense.
+    form_ = std::make_unique<RigidBody>(assets->sprite(id_), data["click_area"].as<std::vector<std::vector<float>>>());
 }
+
 
 void Item::update(RenderManager* renderer, int dt)
 {
-    sprite_->update(renderer, dt);
-    if ( debug_ )
-    {
-        renderer->submit(sprite_->position());
-        renderer->submit(&click_area_);
-        debug_ = false;
-    }
-}
-
-
-bool Item::clicked(float x, float y)
-{
-    return click_area_.point_in_polygon(x, y) && state_;
+    form_->update(renderer, dt);
 }
 
 
@@ -48,30 +40,9 @@ std::string Item::pick_observation()
 }
 
 
-bool Item::lock()              { return lock_;        }
-void Item::lock(bool new_lock) { lock_ = new_lock;    }
-Sprite* Item::sprite()         { return sprite_;      }
-Polygon* Item::click_area()    { return &click_area_; }
+bool Item::is_used() { return used_; }
+void Item::set_use(bool flag) { used_ = flag; }
 
-void Item::x(float x)
-{
-    float old_x { sprite_->x() };
-    float dx { x - old_x };
-    click_area_.move(dx, 0);
-    sprite_->x(x);
-}
-void Item::y(float y)
-{
-    float old_y { sprite_->y() };
-    float dy { y - old_y };
-    click_area_.move(0, dy);
-    sprite_->y(y);
-}
-void Item::move (float dx, float dy)
-{
-    sprite_->move(dx, dy);
-    click_area_.move(dx, dy);
-}
 
 void Item::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void Item::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
@@ -82,6 +53,6 @@ void Item::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_dra
 
 void Item::write(SerializationManager* io)
 {
-    io->write(lock_);
-    sprite_->write(io);
+    io->write(used_);
+    // sprite_->write(io); // TO DO: Serialize GameObject
 }

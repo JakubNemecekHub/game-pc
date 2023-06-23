@@ -43,8 +43,9 @@ void State::load_button_(std::pair<sol::object, sol::object> button_data)
     float x = data.get<float>("x");
     float y = data.get<float>("y");
     float s = data.get<float>("scale");
+    Vertices vertices = data.get<Vertices>("click_area");
     sol::function action = data["fnc"];
-    buttons_.emplace_back(text, managers_->assets.sprite(sprite_name), x, y, s, &managers_->text, action);
+    buttons_.emplace_back(text, managers_->assets.sprite(sprite_name), x, y, s, &managers_->text, action, vertices);
 }
 
 
@@ -60,7 +61,12 @@ bool State::enter(std::string state)
     if (sprites) std::ranges::for_each(sprites, [&](auto sprite) { load_sprite_(sprite); });
     // load the buttons
     sol::table buttons = script_.get_or<sol::table>("buttons", sol::nil);
-    if (buttons) std::ranges::for_each(buttons, [&](auto button) { load_button_(button); });
+    if (buttons)
+    {
+        size_t button_count = buttons.size();
+        buttons_.reserve(button_count);
+        std::ranges::for_each(buttons, [&](auto button) { load_button_(button); });
+    }
 
     // Call state's lua enter function
     managers_->script.lua()->traverse_get<sol::function>("state", "enter")();

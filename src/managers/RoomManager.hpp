@@ -45,9 +45,9 @@ public:
     GameObject* get_hot_spot(float x, float y);
     void remove_item(std::string id);
 
-    inline void toggle_click_map()      { active_room_->toggle_click_map();      }
     inline void toggle_walk_area()      { active_room_->toggle_walk_area();      }
     inline void toggle_item_debug()     { active_room_->toggle_item_debug();     }
     inline void toggle_hot_spot_debug() { active_room_->toggle_hot_spot_debug(); }
+    inline void toggle_door_debug()     { active_room_->toggle_door_debug();     }
 
 };

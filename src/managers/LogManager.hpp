@@ -30,7 +30,7 @@ public:
     template<typename... Messages>
     void log(Messages... messages)
     {
-        std::cout << get_time_stamp() << " | ";
+        // std::cout << get_time_stamp() << " | ";
         ((std::cout << std::forward<Messages>(messages) << " "), ...);
         std::cout << std::endl;
     }

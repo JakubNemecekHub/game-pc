@@ -10,10 +10,10 @@
 #include "Serial.hpp"
 #include "../math/Vector2D.hpp"
 
-
 class RenderManager;
 class AssetManager;
 class SerializationManager;
+
 
 class Frame
 {

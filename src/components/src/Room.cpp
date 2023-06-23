@@ -1,8 +1,15 @@
 #include "../Room.hpp"
 
-#include <unordered_map>
-#include <string>
 #include <charconv>         // std::string to number conversion
+
+#include "../Sprite.hpp"
+#include "../GameObject.hpp"
+#include "../Item.hpp"
+#include "../Door.hpp"
+#include "../HotSpot.hpp"
+#include "../../managers/RenderManager.hpp"
+#include "../../managers/ItemManager.hpp"
+#include "../../managers/AssetManager.hpp"
 
 
 /*
@@ -17,13 +24,11 @@ void RoomAnimations::load(YAML::Node data, AssetManager* assets)
         std::string id { data[i]["id"].as<std::string>() }; // Id both of the Ambient object and its Sprite.
         bool state { data[i]["state"].as<bool>() };
         animations_.emplace_back(id, assets->sprite(id), state);
-        animations_.at(i).sprite()->z_index(1);
-        animations_.at(i).sprite()->scale(data[i]["scale"].as<float>());
+        animations_.at(i).z_index(1);
+        animations_.at(i).scale(data[i]["scale"].as<float>());
         float x { data[i]["position"][0].as<float>() };
         float y { data[i]["position"][1].as<float>() };
-        animations_.at(i).sprite()->position(x, y);
-        // Reset animation
-        animations_.at(i).sprite()->reset();
+        animations_.at(i).position(x, y);
     }
 }
 
@@ -76,46 +81,24 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     for ( auto hot_spot : data["hot_spots"] )
     {
         std::string id { hot_spot["id"].as<std::string>() };
-        // Two types of HotSpot
-        if ( hot_spot["sprite"] )   // Create SpriteHotSpot
-        {
-            objects_["hot_spots"].emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(id),
-                std::forward_as_tuple(std::make_shared<SpriteHotSpot>(hot_spot, assets))
-            );
-        }
-        else                        // Create BitmapHotSpot
-        {
-            objects_["hot_spots"].emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(id),
-                std::forward_as_tuple(std::make_shared<BitmapHotSpot>(hot_spot))
-            );
-        }
+        objects_["hot_spots"].emplace(
+            std::piecewise_construct,
+            std::forward_as_tuple(id),
+            std::forward_as_tuple(std::make_shared<HotSpot>(hot_spot, assets, sprite_->x(), sprite_->y(), sprite_->scale()))
+        );
+
     }
 
     // Load Doors
     for ( auto door : data["doors"] )
     {
         std::string id { door["id"].as<std::string>() };
-        // Two types of Doors
-        if ( door["sprite"] )   // Create SpriteDoor
-        {
-            objects_["doors"].emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(id),
-                std::forward_as_tuple(std::make_shared<SpriteDoor>(door, assets))
-            );
-        }
-        else                        // Create BitmapDoor
-        {
-            objects_["doors"].emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(id),
-                std::forward_as_tuple(std::make_shared<BitmapDoor>(door))
-            );
-        }
+        objects_["doors"].emplace(
+            std::piecewise_construct,
+            std::forward_as_tuple(id),
+            std::forward_as_tuple(std::make_shared<Door>(door, assets, sprite_->x(), sprite_->y(), sprite_->scale()))
+        );
+
     }
 
     // Items
@@ -123,28 +106,23 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     {
         std::string id { item_data["id"].as<std::string>() };
         Item* item { items->get(id) };
+        item->set_use(true);
+        item->state(item_data["state"].as<bool>());
         std::vector<int> position { item_data["position"].as<std::vector<int>>() };
-        // scale item by its scale and also by the Room's scale.
         float item_scale { item_data["scale"].as<float>() };
         float room_scale { sprite_->scale() };
-        item->sprite()->match_dimensions();
-        item->sprite()->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
-        item->sprite()->scale(room_scale * item_scale);
-
-        // Scale the click area Polygon in the same way
-        item->click_area()->scale(item_scale * room_scale);
-        item->click_area()->move(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
-        // Also scale its visual 
-        item->click_area()->visual.scale = 1;
-        item->click_area()->visual.dx = 0;
-        item->click_area()->visual.dy = 0;
-
-        item->state(item_data["state"].as<bool>());
-        item->lock(true);
+        item->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
+        item->scale(room_scale * item_scale);
         items_.insert(std::make_pair(id, item));
     }
+
     // load room ambient animations
-    animations_.load(data["animations"], assets);
+    if ( data["animations"] )
+    {
+        size_t animation_count = data["animations"].size();
+        animations_.reserve(animation_count);
+        animations_.load(data["animations"], assets);
+    }
 }
 
 
@@ -191,21 +169,22 @@ void Room::update(RenderManager* renderer, int dt)
     }
     animations_.update(renderer, dt);
     // START OF DEBUG
-    if ( visible_click_map_ ) renderer->submit(click_map_, sprite_->dest_rect());   // Register Click map if should be visible
-    if ( visible_walk_area_ ) renderer->submit(&walk_area_);                        // Render Walk area if it should be visible
-    if ( visible_item_debug_ )
+    switch (debug_)
     {
-        for ( auto& item : items_ )
-        {
-            item.second->show_attributes();
-        }
-    }
-    if ( visible_hot_spot_debug_ )
-    {
-        for ( auto& hot_spot : objects_["hot_spots"] )
-        {
-            hot_spot.second->show_attributes();
-        }
+    case DEBUG_STATE::WALK_AREA:
+        renderer->submit(&walk_area_);
+        break;
+    case DEBUG_STATE::ITEM:
+        for ( auto& item : items_ ) item.second->show_attributes();
+        break;
+    case DEBUG_STATE::HOT_SPOT:
+        for ( auto& hot_spot : objects_["hot_spots"] ) hot_spot.second->show_attributes();
+        break;
+    case DEBUG_STATE::DOOR:
+        for ( auto& door : objects_["doors"] ) door.second->show_attributes();
+        break;
+    default:
+        break;
     }
     // END OF DEBUG
 }
@@ -304,14 +283,3 @@ void Room::remove_item(std::string id)
 {
     if ( !items_.erase(id) ) objects_.erase(id);
 }
-
-// void Room::item_activate(Uint32 id)
-// {
-//     items.at(id).set_state(true);
-// }
-
-// void Room::item_deactivate(Uint32 id)
-// {
-//     items.at(id).set_state(false);
-// }
-

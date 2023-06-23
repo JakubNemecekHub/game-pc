@@ -1,6 +1,6 @@
 ---
-source: D:/Prog/game_project/res lgc archive game 1
-# source: D:/Prog/game_project/res lgc archive game 2
+source: D:/Prog/game_project/game 1
+# source: D:/Prog/game_project/game 2
 log:
   file_log: log.txt
   file_error: error.txt

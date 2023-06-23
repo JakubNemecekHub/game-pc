@@ -8,43 +8,32 @@
 #include <yaml-cpp/yaml.h>
 
 #include "GameObject.hpp"
-#include "../managers/AssetManager.hpp"
 #include "Serial.hpp"
-#include "Sprite.hpp"
-#include "../math/Polygon.hpp"
+
+class State;
+class AssetManager;
+class RenderManager;
+class SerializationManager;
 
 
 class Item : public GameObject, public Serial
 {
 private:
 
-    bool                        lock_;
+    bool                        used_;
     std::vector<std::string>    observations_;
     std::string                 pick_observation_;
-    Polygon                     click_area_;
-    Sprite*                     sprite_;
-    
+
 public:
 
     Item(YAML::Node data, AssetManager* assets);
 
     void update(RenderManager* renderer, int dt) override;
 
-    bool        clicked(float x, float y) override;
     std::string observation();
     std::string pick_observation();
-    bool        lock();
-    void        lock(bool new_lock);
-    Sprite*     sprite();
-    Polygon*    click_area();
-
-    // Position
-
-    void x(float x);
-    void y(float y);
-    inline float x() { return sprite_->x(); }
-    inline float y() { return sprite_->y(); }
-    void move (float dx, float dy);
+    bool        is_used();
+    void        set_use(bool flag);
 
     // Game logic
 

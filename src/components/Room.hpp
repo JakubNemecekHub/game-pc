@@ -2,20 +2,20 @@
 
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 #include <yaml-cpp/yaml.h>
 #include <SDL2/SDL.h>
 
-#include "Sprite.hpp"
-#include "GameObject.hpp"
-#include "Item.hpp"
-#include "Door.hpp"
-#include "HotSpot.hpp"
 #include "Ambient.hpp"
 #include "../math/Polygon.hpp"
-#include "../managers/RenderManager.hpp"
-#include "../managers/ItemManager.hpp"
-#include "../managers/AssetManager.hpp"
+
+class Sprite;
+class GameObject;
+class Item;
+class RenderManager;
+class ItemManager;
+class AssetManager;
 
 
 class RoomAnimations
@@ -32,8 +32,19 @@ public:
     void load(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt);
 
+    inline void reserve(int count) { animations_.reserve(count); }
     Ambient* get_animation(float x, float y);
 
+};
+
+
+enum DEBUG_STATE
+{
+    NORMAL,
+    WALK_AREA,
+    ITEM,
+    HOT_SPOT,
+    DOOR
 };
 
 
@@ -58,17 +69,15 @@ private:
     std::unordered_map<std::string, Item*> items_;
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<GameObject>>> objects_;
 
-    // Debug
-
-    bool visible_click_map_      { false };
-    bool visible_walk_area_      { false };
-    bool visible_item_debug_     { false };
-    bool visible_hot_spot_debug_ { false };
 
     // Methods
 
     auto relative_coordinates(float x, float y);
     Uint32 get_mapped_object_id_(float x, float y);
+
+    // DEBUG
+
+    DEBUG_STATE debug_ { DEBUG_STATE::NORMAL }; 
 
 public:
 
@@ -83,14 +92,14 @@ public:
     GameObject* get_object(float x, float y);
            void remove_item(std::string id);
 
-    // DEBUG
-
-    inline void toggle_click_map()      { visible_click_map_ = !visible_click_map_; }
-    inline void toggle_walk_area()      { visible_walk_area_ = !visible_walk_area_; }
-    inline void toggle_item_debug()     { visible_item_debug_ = !visible_item_debug_; visible_hot_spot_debug_ = false; }
-    inline void toggle_hot_spot_debug() { visible_hot_spot_debug_ = !visible_hot_spot_debug_; visible_item_debug_ = false; }
-
     GameObject* get_item(float x, float y);
     GameObject* get_hot_spot(float x, float y);
+
+    // DEBUG
+
+    inline void toggle_walk_area()      { debug_ = (debug_ == DEBUG_STATE::WALK_AREA) ? DEBUG_STATE::NORMAL : DEBUG_STATE::WALK_AREA;}
+    inline void toggle_item_debug()     { debug_ = (debug_ == DEBUG_STATE::ITEM) ? DEBUG_STATE::NORMAL : DEBUG_STATE::ITEM;           }
+    inline void toggle_hot_spot_debug() { debug_ = (debug_ == DEBUG_STATE::HOT_SPOT) ? DEBUG_STATE::NORMAL : DEBUG_STATE::HOT_SPOT;   }
+    inline void toggle_door_debug()     { debug_ = (debug_ == DEBUG_STATE::DOOR) ? DEBUG_STATE::NORMAL : DEBUG_STATE::DOOR;           }
 
 };

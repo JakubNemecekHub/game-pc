@@ -116,16 +116,16 @@ bool Polygon::point_in_polygon(float x, float y)
 void Polygon::scale(float _scale, bool _in_place)
 {
     // get the initial position of the firts vertex
-    const float initial_x = vertices.at(0).x;
-    const float initial_y = vertices.at(0).y;
+    const float initial_x = this->x();
+    const float initial_y = this->y();
     for ( Vector2D &vertex: vertices )
     {
         vertex.x *= _scale;
         vertex.y *= _scale;
     }
     // Compute deltas
-    const float delta_x = initial_x - vertices.at(0).x;
-    const float delta_y = initial_y - vertices.at(0).y;
+    const float delta_x = initial_x - this->x();
+    const float delta_y = initial_y - this->y();
     // Move polygon back
     if (_in_place) this->move(delta_x, delta_y);
 }
@@ -140,7 +140,31 @@ void Polygon::move(float dx, float dy)
         vertex.y += dy;
     }
 }
+
+
+// Polygons "position"
+float Polygon::x()
+{
+    auto point = std::min_element(vertices.begin(), vertices.end(), [](auto a, auto b) { return a.x < b.x; });
+    return point->x;
+}
+float Polygon::y()
+{
+    auto point = std::min_element(vertices.begin(), vertices.end(), [](auto a, auto b) { return a.y < b.y; });
+    return point->y;
+}
+void Polygon::x(float x)
+{
+    float dx = x - this->x();
+    move(dx, 0);
+}
+void Polygon::y(float y)
+{
+    float dy = y - this->y();
+    move(0, dy);
+}
  
+
 /*
     Render scaled and moved version of polygon.
 */
