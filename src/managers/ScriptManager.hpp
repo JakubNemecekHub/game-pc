@@ -2,15 +2,7 @@
 
 #include <string>
 
-#define SOL_ALL_SAFETIES_ON 1
-#include <SDL2/SDL.h>
-extern "C" {
-    #include "lua.h"
-    #include "lualib.h"
-    #include "lauxlib.h"
-}
-#include <sol/sol.hpp>
-
+#include "../utils/Sol.hpp"
 
 class LogManager;
 class StateManager;
@@ -21,6 +13,7 @@ class WindowManager;
 class SerializationManager;
 class ItemManager;
 class AssetManager;
+
 
 class ScriptManager
 {

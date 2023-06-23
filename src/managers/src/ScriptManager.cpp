@@ -25,7 +25,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
                             WindowManager* window, SerializationManager* io, ItemManager* items, AssetManager* assets)
 {
 
-    source_path_ = source_path + "/lgc";
+    source_path_ = source_path + "/lgc/";
 
     lua_.open_libraries(sol::lib::base, sol::lib::package); // TO DO: Check what libraries we need
     // Set up managers' member functions
@@ -144,7 +144,7 @@ bool ScriptManager::shutdown() { return true; }
 
 sol::table ScriptManager::load_game_state(std::string state_name)
 {
-    std::string file_path { source_path_ + "/state." + state_name + ".lua" };
+    std::string file_path { source_path_ + state_name + ".lua" };
     lua_.script_file(file_path);
     return lua_["State"];
 }

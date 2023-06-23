@@ -1,5 +1,4 @@
-// TO DO: Find a way which doesn't require introducing the sol2 library here.
-// Can we use std::function somehow?
+#define SOL_ALL_SAFETIES_ON 1
 extern "C" {
     #include "lua.h"
     #include "lualib.h"
