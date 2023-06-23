@@ -146,5 +146,5 @@ sol::table ScriptManager::load_game_state(std::string state_name)
 {
     std::string file_path { source_path_ + "/state." + state_name + ".lua" };
     lua_.script_file(file_path);
-    return lua_["state"];
+    return lua_["State"];
 }

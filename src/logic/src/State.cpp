@@ -69,7 +69,7 @@ bool State::enter(std::string state)
     }
 
     // Call state's lua enter function
-    managers_->script.lua()->traverse_get<sol::function>("state", "enter")();
+    managers_->script.lua()->traverse_get<sol::function>("State", "enter")();
 
     return true;
 }
@@ -82,7 +82,7 @@ void State::input_keyboard_(SDL_Event& event)
     SDL_Keycode key_code = event.key.keysym.sym;
     // std::string key = managers_->control.key(key_code);
     std::string key = SDL_GetKeyName(key_code);
-    managers_->script.lua()->traverse_get<sol::function>("state", "input_keyboard")(key);
+    managers_->script.lua()->traverse_get<sol::function>("State", "input_keyboard")(key);
 }
 
 
@@ -136,7 +136,7 @@ bool State::exit()
     buttons_.clear(); // TO DO:: This should destroy the buttons.
 
     // Call state's lua exit function
-    managers_->script.lua()->traverse_get<sol::function>("state", "exit")();
+    managers_->script.lua()->traverse_get<sol::function>("State", "exit")();
     return true;
 }
 
