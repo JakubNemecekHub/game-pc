@@ -73,10 +73,8 @@ private:
     static SDL_Renderer*    renderer_;
     static const int        MAX_LAYERS_ {5};
     std::array<std::queue<MyType::Object>, MAX_LAYERS_> render_queues_;
-    std::queue<std::tuple<SDL_Surface*, SDL_FRect*>>     surface_queue_;
 
     void render_sprite();
-    void render_surface();
 
 public:
 
@@ -95,7 +93,6 @@ public:
     // Render stuff.
 
     bool submit(Sprite* sprite);
-    bool submit(SDL_Surface* surface, SDL_FRect* dest_rect);
     bool submit(Polygon* polygon);
     bool submit(Vector2D* vector2d);
     void render();

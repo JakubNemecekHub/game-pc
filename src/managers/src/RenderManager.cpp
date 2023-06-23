@@ -109,14 +109,6 @@ bool RenderManager::submit(Sprite* sprite)
 /*
     Register a Polygon to be rendered.
 */
-bool RenderManager::submit(SDL_Surface* surface, SDL_FRect* dest_rect)
-{
-    surface_queue_.push(std::make_tuple(surface, dest_rect));
-    return true;
-}
-/*
-    Register a Polygon to be rendered.
-*/
 bool RenderManager::submit(Polygon* polygon)
 {
     render_queues_.at(MAX_LAYERS_ - 1).push(MyType::Object(polygon));
@@ -139,14 +131,12 @@ bool RenderManager::submit(Vector2D* vector2d)
              2..(N-3) : various stuff                               (for N = 5, as it is now, this layer is number 2)
              N-2      : GUI                                         (for N = 5, as it is now, this layer is number 3)
              N-1      : polygons                    (topmost layer) (for N = 5, as it is now, this layer is number 4)
-             Bitmaps are render over everything else.
 */
 void RenderManager::render()
 {
     SDL_RenderClear(renderer_);
 
-    render_sprite();                                    // Render submitted renderable sprites objects 
-    if ( !surface_queue_.empty() ) render_surface();    // Render bitmaps on top of everything.
+    render_sprite();
 
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderPresent(renderer_);
@@ -170,44 +160,6 @@ void RenderManager::render_sprite()
             render_queues_[i].pop();
         }
     }
-}
-
-
-/*
-    Render all bitmap surfaces from the surface_queue_.
-*/
-void RenderManager::render_surface()
-{
-    // Get window surface. We will blit all surfaces onto here.
-    SDL_Surface* window_surface { SDL_GetWindowSurface(window_) };
-    if ( window_surface == NULL )
-    {
-        log_->error("Cannot create window surface", SDL_GetError());
-        return;
-    }
-    // Clear the window's surface to all black.
-    SDL_LockSurface(window_surface);
-    SDL_memset(window_surface->pixels, 0, window_surface->h * window_surface->pitch);
-    SDL_UnlockSurface(window_surface);
-    // Then copy all submitted surfaces onto the screen
-    SDL_Surface* original_surface { nullptr };
-    while ( !surface_queue_.empty() )
-    {
-        std::tuple<SDL_Surface*, SDL_FRect*> surface_info { surface_queue_.front() };
-        original_surface = std::get<0>(surface_info);
-        SDL_FRect* dest_rect = std::get<1>(surface_info);
-        SDL_Rect final_dest_rect;
-        final_dest_rect.x = (int)dest_rect->x;
-        final_dest_rect.y = (int)dest_rect->y;
-        final_dest_rect.w = (int)dest_rect->w;
-        final_dest_rect.h = (int)dest_rect->h;
-        SDL_Surface* converted_surface = SDL_ConvertSurface(original_surface, window_surface->format, 0);
-        SDL_BlitScaled(converted_surface, NULL, window_surface, &final_dest_rect);
-        SDL_FreeSurface(converted_surface);
-        surface_queue_.pop();
-    }
-    // finally update the window surface with all the bitmaps blitted.
-    SDL_UpdateWindowSurface(window_);
 }
 
 

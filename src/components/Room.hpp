@@ -57,7 +57,6 @@ private:
     Sprite*        sprite_;        // Background texture.
     Polygon        walk_area_;     // A polygon representing the walk area.
     RoomAnimations animations_;    // Manages ambient animations.
-    SDL_Surface*   click_map_;     // A bitmap of hot-spots.
 
     /*
         Raw pointers to Items( Store and managed by ItemManager) are in separate map.
@@ -73,7 +72,6 @@ private:
     // Methods
 
     auto relative_coordinates(float x, float y);
-    Uint32 get_mapped_object_id_(float x, float y);
 
     // DEBUG
 
@@ -83,7 +81,7 @@ public:
 
     Room() {};
     Room(YAML::Node data, ItemManager* items, AssetManager* assets);
-    ~Room();
+    ~Room() {};
 
     // Methods
 

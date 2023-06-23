@@ -33,20 +33,6 @@ void AssetManager::load_png_(std::queue<fs::directory_entry>& paths)
 }
 
 
-// Load bmp files into the bitmaps_ map.
-void AssetManager::load_bmp_(std::queue<fs::directory_entry>& paths)
-{
-    while ( !paths.empty() )
-    {
-        fs::directory_entry entry { paths.front() };
-        std::string id { base_name(entry) };
-        bitmaps_.insert(std::make_pair(id, renderer_->load_bitmap(entry.path().string())));
-        log_->log("Loaded bitmap ", entry.path().string());
-        paths.pop();
-    }
-}
-
-
 // Load frames from yaml files into the frames_ map.
 void AssetManager::load_frames_(std::queue<fs::directory_entry>& paths)
 {
@@ -144,7 +130,6 @@ bool AssetManager::startUp(RenderManager* renderer, std::string source_path)
             rooms_meta_ queue will be handled by RoomManager.
     */
     load_png_(png_paths);
-    load_bmp_(bmp_paths);
     load_frames_(frames_paths);
     load_sprites_(sprites_paths);
     
@@ -161,11 +146,6 @@ std::vector<Frame>* AssetManager::frames(std::string id)
 {
     if ( frames_.find(id) != frames_.end() ) return &frames_.at(id);
     return nullptr;
-}
-SDL_Surface* AssetManager::bitmap(std::string id)
-{
-    if ( bitmaps_.find(id) != bitmaps_.end() ) return bitmaps_.at(id);
-    return nullptr; 
 }
 Sprite* AssetManager::sprite(std::string id)
 {
@@ -205,7 +185,6 @@ std::queue<fs::directory_entry> AssetManager::rooms_meta()
 bool AssetManager::shutDown()
 {
     for ( auto& texture : textures_ ) SDL_DestroyTexture(texture.second);
-    for ( auto& bitmap : bitmaps_ )   SDL_FreeSurface(bitmap.second);
     return true;
 }
 

@@ -69,7 +69,6 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     lua_cpp_rooms.set_function("save_items", &ItemManager::save, items);
     lua_cpp_rooms.set_function("load_items", &ItemManager::load, items);
 
-    // lua_cpp_rooms.set_function("toggle_click_map", &RoomManager::toggle_click_map, rooms);
     lua_cpp_rooms.set_function("toggle_walk_area", &RoomManager::toggle_walk_area, rooms);
     lua_cpp_rooms.set_function("toggle_item_debug", &RoomManager::toggle_item_debug, rooms);
     lua_cpp_rooms.set_function("toggle_hot_spot_debug", &RoomManager::toggle_hot_spot_debug, rooms);

@@ -74,8 +74,6 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     walk_area_.visual.scale = sprite_->scale();
     walk_area_.visual.dx = sprite_->x();
     walk_area_.visual.dy = sprite_->y();
-    // Load room click map
-    click_map_ = assets->bitmap(id);
 
     // Load HotSpots
     for ( auto hot_spot : data["hot_spots"] )
@@ -123,12 +121,6 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
         animations_.reserve(animation_count);
         animations_.load(data["animations"], assets);
     }
-}
-
-
-Room::~Room()
-{
-    SDL_FreeSurface(click_map_);
 }
 
 
@@ -190,57 +182,6 @@ void Room::update(RenderManager* renderer, int dt)
 }
 
 
-/*
-    Return the pixel colour value of the click map at a given location.
-
-    The engine works with 32-bit bmp files. This is a bit overkill,only a
-    few colours are needed for the click map. But lower bitrate seems to
-    return unstable results (e.g. the same colour in different images
-    lead to different results, probably based on other colour in the image)
-
-    Probably:
-    32bits = 2 ^ 32 = 4 294 967 296 colours
-    8bits = 2 ^ 8 = 256 colours, this should be enough
-
-*/
-Uint32 Room::get_mapped_object_id_(float x, float y)
-{
-    auto [room_float_x, room_float_y] = relative_coordinates(x, y);
-    int room_x { static_cast<int>(room_float_x) };
-    int room_y { static_cast<int>(room_float_y) };
-    int bpp = click_map_->format->BytesPerPixel; // bytes per pixel, depends on loaded image
-    Uint8 *p = (Uint8 *)click_map_->pixels + room_y * click_map_->pitch + room_x * bpp;
-    switch (bpp)
-    {
-        case 1:
-            return *p;
-            break;
-
-        case 2:
-            return *(Uint16 *)p;
-            break;
-
-        case 3:
-            if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            {
-                return p[0] << 16 | p[1] << 8 | p[2];
-            }
-            else
-            {
-                return p[0] | p[1] << 8 | p[2] << 16;
-            }
-            break;
-
-        case 4:
-            return *(Uint32 *)p;
-            break;
-
-        default:
-            return 0;
-    }
-}
-
-
 GameObject* Room::get_object(float x, float y)
 {
 
@@ -252,12 +193,6 @@ GameObject* Room::get_object(float x, float y)
         if ( door.second->clicked(x, y) && door.second->state() ) return door.second.get();
     for ( auto& hot_spot : objects_["hot_spots"] )
         if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();
-    std::string id { std::to_string(get_mapped_object_id_(x, y)) };
-    if ( objects_["doors"].find(id) != objects_["doors"].end() )
-        return objects_["doors"].at(id).get();
-    if ( objects_["hot_spots"].find(id) != objects_["hot_spots"].end() )
-        return objects_["hot_spots"].at(id).get();
-
     return nullptr;
 
 }
