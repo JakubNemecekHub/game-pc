@@ -52,6 +52,8 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     lua_cpp_text.set_function("label", &TextManager::submit_label, text);
     lua_cpp_text.set_function("free", &TextManager::submit_free, text);
     lua_cpp_text.set_function("clean", &TextManager::clean, text);
+    lua_cpp_text.set_function("clean_label", sol::resolve<void()>(&TextManager::clean_label), text);
+    lua_cpp_text.set_function("clean_specific_label", sol::resolve<void(std::string)>(&TextManager::clean_label), text);
 
     // create "cpp.player" namespace
     auto lua_cpp_player = lua_["cpp"]["player"].get_or_create<sol::table>();    

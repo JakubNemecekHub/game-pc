@@ -84,7 +84,7 @@ SDL_Texture* TextManager::create_texture_(std::string text, COLOR color)
 }
 
 
-void TextManager::transform_(std::unique_ptr<Sprite>& sprite, float x, float y)
+void TextManager::transform(std::unique_ptr<Sprite>& sprite, float x, float y)
 {
     sprite->match_dimensions();
     /*
@@ -126,31 +126,30 @@ void TextManager::submit_player(std::string text, float x, float y, COLOR color)
     SDL_Texture* text_texture = create_texture_(text, color);
     std::get<0>(text_player_) = std::make_unique<Sprite>(text_texture, 1.0f, 3);
     std::get<0>(text_player_)->depiction("text");
-    transform_(std::get<0>(text_player_), x, y);
+    transform(std::get<0>(text_player_), x, y);
     std::get<1>(text_player_) = 0;
 }
 
 
-void TextManager::submit_label(std::string text, float x, float y, COLOR color)
+void TextManager::submit_label(std::string id, std::string text, float x, float y, COLOR color)
 {
-    if ( text_label_ )
-    {
-        text_label_.release();
-    }
     SDL_Texture* text_texture = create_texture_(text, color);
-    text_label_ = std::make_unique<Sprite>(text_texture, 1.0f, 3);
-    text_label_->depiction("text");
-    transform_(text_label_, x, y);
+    if ( text_label_.count(id) == 1) clean_label(id);
+    text_label_.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(id),
+                        std::forward_as_tuple(std::make_unique<Sprite>(text_texture, 1.0f, 3)));
+    text_label_.at(id)->depiction("text");
+    transform(text_label_.at(id), x, y);
 }
 
 
 void TextManager::submit_free(std::string text, float x, float y, COLOR color)
 {
-    SDL_Texture* text_texture = create_texture_(text, color);                   // Create Sprite from text
-    text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1.0f, 3), 0);   // Insert new Sprite into list
+    SDL_Texture* text_texture = create_texture_(text, color);                       // Create Sprite from text
+    text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1.0f, 3), 0);    // Insert new Sprite into list
     std::unique_ptr<Sprite>& sprite { std::get<0>(text_free_.back()) };
     sprite->depiction("text");
-    transform_(sprite, x, y);                                                   // Set Sprite's dimensions
+    transform(sprite, x, y);                                                       // Set Sprite's dimensions
 }
 
 
@@ -173,7 +172,7 @@ void TextManager::update(int dt)
     }
 
     // Label
-    if ( text_label_ ) renderer_->submit(text_label_.get());
+    for (auto& label : text_label_ ) renderer_->submit(label.second.get());
 
     // Free text
     text_free_.remove_if([&](const text_tuple& text){ return std::get<1>(text) > max_duration_; }); // Remove expired text
@@ -189,7 +188,8 @@ void TextManager::clean()
 {
     std::get<0>(text_player_).reset();
     std::get<1>(text_player_) = 0;
-    text_label_.reset();
+    // text_label_.reset();
+    text_label_.clear();
     text_free_.clear();
 }
 
@@ -198,4 +198,16 @@ void TextManager::clean_player()
 {
     std::get<0>(text_player_).reset();
     std::get<1>(text_player_) = 0;
+}
+
+
+void TextManager::clean_label()
+{
+    text_label_.clear();
+}
+
+
+void TextManager::clean_label(std::string id)
+{
+    text_label_.erase(id);
 }

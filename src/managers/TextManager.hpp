@@ -49,14 +49,14 @@ private:
     TTF_Font*               font_;              // .ttf font to use to display text
     int                     max_duration_;
     text_tuple              text_player_;
-    std::unique_ptr<Sprite> text_label_;
+    std::unordered_map<std::string, std::unique_ptr<Sprite>> text_label_;
     std::list<text_tuple>   text_free_;
     std::unordered_map<int, Color>  colors_;
 
 
 public:
     SDL_Texture* create_texture_(std::string text, COLOR color);
-    void transform_(std::unique_ptr<Sprite>& sprite, float x, float y);
+    void transform(std::unique_ptr<Sprite>& sprite, float x, float y);
 
     TextManager() {};
     TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini);
@@ -70,9 +70,11 @@ public:
     Sprite* create_sprite(std::string text, COLOR color=BEIGE);
 
     void submit_player(std::string text, float x, float y, COLOR color=BEIGE);
-    void submit_label(std::string text, float x, float y, COLOR color=BEIGE);
+    void submit_label(std::string id, std::string text, float x, float y, COLOR color=BEIGE);
     void submit_free(std::string text, float x, float y, COLOR color=BEIGE);
     void clean();
     void clean_player();
+    void clean_label();               // Clean all labels
+    void clean_label(std::string id); // Clean specific label
     
 };
