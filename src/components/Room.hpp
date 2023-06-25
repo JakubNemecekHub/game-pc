@@ -90,9 +90,6 @@ public:
     GameObject* get_object(float x, float y);
            void remove_item(std::string id);
 
-    GameObject* get_item(float x, float y);
-    GameObject* get_hot_spot(float x, float y);
-
     // DEBUG
 
     inline void toggle_walk_area()      { debug_ = (debug_ == DEBUG_STATE::WALK_AREA) ? DEBUG_STATE::NORMAL : DEBUG_STATE::WALK_AREA;}

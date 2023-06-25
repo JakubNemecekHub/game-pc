@@ -198,22 +198,6 @@ GameObject* Room::get_object(float x, float y)
 }
 
 
-GameObject* Room::get_item(float x, float y)
-{
-    for ( auto& item : items_ )
-        if ( item.second->clicked(x, y) && item.second->state() ) return item.second;
-    return nullptr;
-}
-
-
-GameObject* Room::get_hot_spot(float x, float y)
-{
-    for ( auto& hot_spot : objects_["hot_spots"] )
-        if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();
-    return nullptr;
-}
-
-
 void Room::remove_item(std::string id)
 {
     if ( !items_.erase(id) ) objects_.erase(id);

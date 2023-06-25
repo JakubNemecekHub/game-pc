@@ -41,8 +41,6 @@ public:
     void update(RenderManager* renderer, int dt);
     bool walkable(float x, float y);
     GameObject* get_object(float x, float y);
-    GameObject* get_item(float x, float y);
-    GameObject* get_hot_spot(float x, float y);
     void remove_item(std::string id);
 
     inline void toggle_walk_area()      { active_room_->toggle_walk_area();      }
