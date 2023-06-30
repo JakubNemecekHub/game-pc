@@ -46,7 +46,6 @@ void Item::set_use(bool flag) { used_ = flag; }
 
 void Item::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void Item::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
-void Item::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }
 
 
 /********* Serialization *********/

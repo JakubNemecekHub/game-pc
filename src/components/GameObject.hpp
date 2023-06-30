@@ -13,6 +13,7 @@ class RenderManager;
 class TextManager;
 class State;
 class Sprite;
+class Polygon;
 
 
 class Form
@@ -120,6 +121,8 @@ public:
       int z_index() override;
     void depiction(std::string id) override;
 
+    Polygon* get();
+
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
 
@@ -183,11 +186,10 @@ public:
     inline  void move(float dx, float dy)   { form_->move(dx, dy);     }
     inline  void set_scale(float s)         { form_->set_scale(s);     }
     inline  void scale(float s)             { form_->scale(s);         }
-    inline float scale()                    {
-        return form_->scale();   }
+    inline float scale()                    { return form_->scale();   }
     inline  void z_index(int z)             { form_->z_index(z);       }
     inline   int z_index()                  { return form_->z_index(); }
-    inline  void depiction(std::string id)  { form_->depiction(id);   }
+    inline  void depiction(std::string id)  { form_->depiction(id);    }
     
     virtual void update(RenderManager* renderer, int dt) = 0;
     inline bool clicked(float x, float y) { return form_->clicked(x, y) && state_; }
@@ -196,7 +198,6 @@ public:
 
     virtual void accept_click(State* handler, Mouse::Status mouse) = 0;
     virtual void accept_over(State* handler, Mouse::Status mouse) = 0;
-    virtual void accept_drag(State* handler, Mouse::Status mouse) = 0;
 
     // DEBUG
 

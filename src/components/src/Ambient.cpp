@@ -19,4 +19,3 @@ void Ambient::update(RenderManager* renderer, int dt)
 
 void Ambient::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void Ambient::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
-void Ambient::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }

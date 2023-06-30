@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 
 #include "Ambient.hpp"
+#include "WalkArea.hpp"
 #include "../math/Polygon.hpp"
 
 class Sprite;
@@ -55,7 +56,6 @@ private:
     // Fields
 
     Sprite*        sprite_;        // Background texture.
-    Polygon        walk_area_;     // A polygon representing the walk area.
     RoomAnimations animations_;    // Manages ambient animations.
 
     /*
@@ -67,6 +67,8 @@ private:
     */
     std::unordered_map<std::string, Item*> items_;
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<GameObject>>> objects_;
+    WalkArea walk_area_;
+
 
 
     // Methods
@@ -79,20 +81,20 @@ private:
 
 public:
 
-    Room() {};
+    // Room() {};
     Room(YAML::Node data, ItemManager* items, AssetManager* assets);
     ~Room() {};
 
     // Methods
 
            void update(RenderManager* renderer, int dt);
-           bool walkable(float x, float y);
+        //    bool walkable(float x, float y);
     GameObject* get_object(float x, float y);
            void remove_item(std::string id);
 
     // DEBUG
 
-    inline void toggle_walk_area()      { debug_ = (debug_ == DEBUG_STATE::WALK_AREA) ? DEBUG_STATE::NORMAL : DEBUG_STATE::WALK_AREA;}
+    inline void toggle_walk_area()      { debug_ = (debug_ == DEBUG_STATE::WALK_AREA) ? DEBUG_STATE::NORMAL : DEBUG_STATE::WALK_AREA; }
     inline void toggle_item_debug()     { debug_ = (debug_ == DEBUG_STATE::ITEM) ? DEBUG_STATE::NORMAL : DEBUG_STATE::ITEM;           }
     inline void toggle_hot_spot_debug() { debug_ = (debug_ == DEBUG_STATE::HOT_SPOT) ? DEBUG_STATE::NORMAL : DEBUG_STATE::HOT_SPOT;   }
     inline void toggle_door_debug()     { debug_ = (debug_ == DEBUG_STATE::DOOR) ? DEBUG_STATE::NORMAL : DEBUG_STATE::DOOR;           }

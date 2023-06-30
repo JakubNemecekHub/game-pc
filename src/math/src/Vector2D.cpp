@@ -39,6 +39,12 @@ Vector2D& Vector2D::add(const Vector2D& vec)
     this->y += vec.y;
     return *this;
 }
+Vector2D& Vector2D::add(const float x, const float y)
+{
+    this->x += x;
+    this->y += y;
+    return *this;
+}
 
 // Subtracting a vector from vector
 Vector2D& Vector2D::subtract(const Vector2D& vec)

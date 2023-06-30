@@ -26,7 +26,7 @@ bool RoomManager::startUp()
 {
     log_->log("Starting Room Manager.");
     load_rooms_("rooms");
-    activate_room("hall");
+    activate_room("hall"); // TO DO: This cannot be hardcoded
     log_->log("Room Manager Started.");
     return true;
 }
@@ -83,6 +83,6 @@ void RoomManager::update(RenderManager* renderer, int dt)
 }
 
 
-bool RoomManager::walkable(float x, float y) { return active_room_->walkable(x, y); }
+// bool RoomManager::walkable(float x, float y) { return active_room_->walkable(x, y); }
 GameObject* RoomManager::get_object(float x, float y) { return active_room_->get_object(x, y); }
 void RoomManager::remove_item(std::string id) { active_room_->remove_item(id); }

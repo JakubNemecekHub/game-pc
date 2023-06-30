@@ -102,8 +102,6 @@ Trigger::Trigger(std::vector<std::vector<float>> vertices)
 {
    click_area_.add_vertices(vertices);
 }
-// Polygon doesn't really have a "position"
-// TO DO: implement envelope rectangle
 void Trigger::x(float x) { click_area_.x(x); }
 void Trigger::y(float y) { click_area_.y(y); }
 void Trigger::position(float x, float y)
@@ -122,13 +120,15 @@ void Trigger::set_scale(float s)
 }
 void Trigger::scale(float s)
 {
-   scale_ = s;
+   scale_ *= s;
    click_area_.scale(s, true);
 }
 float Trigger::scale() { return scale_; }
 void Trigger::z_index(int z) {}
 int Trigger::z_index() { return 0; }
 void Trigger::depiction(std::string id) {}
+
+Polygon* Trigger::get() { return &click_area_; }
 
 void Trigger::update(RenderManager* renderer, int dt)
 {
@@ -234,13 +234,3 @@ bool ButtonForm::clicked(float x, float y) { return click_area_.point_in_polygon
 ********************************************************************************/
 GameObject::GameObject(std::string id, bool state)
     : id_{id}, state_{state} {}
-
-
-// std::string GameObject::id() { return id_; }
-// bool GameObject::state() { return state_; }
-// void GameObject::state(bool new_state) { state_ = new_state; }
-
-
-// DEBUG
-
-// void GameObject::show_attributes() { debug_ = true; }

@@ -21,7 +21,7 @@ public:
 
     Polygon() {};                                       // No arg constructor
     Polygon(std::vector<Vector2D> _vertices);           // Constructor with given vertices as Vector2D
-    Polygon(std::vector<std::vector<int>> _vertices);   // onstructor with given vertices as vector of ints
+    Polygon(std::vector<std::vector<float>> _vertices); // Constructor with given vertices as vector of ints
     Polygon(const Polygon &source);                     // Copy constructor
     ~Polygon() {};                                      // Destructor
 
@@ -37,6 +37,8 @@ public:
     bool point_in_polygon(float x, float y);
     void scale(float _scale, bool _in_place = false);
     void move (float dx, float dy);
+
+    Vector2D* closest_vertex(float x, float y, float threshold);
 
     // "Position" of a polygon is a top left corner of its envelope rectangle
     float x();

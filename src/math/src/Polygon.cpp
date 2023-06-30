@@ -1,6 +1,7 @@
 #include "../polygon.hpp"
 
 #include <vector>
+#include <iostream>
 
 #include "../managers/RenderManager.hpp"
 #include "../Vector2D.hpp"
@@ -12,9 +13,9 @@ Polygon::Polygon(std::vector<Vector2D> _vertices)
     : vertices{_vertices} {}
 
 
-Polygon::Polygon(std::vector<std::vector<int>> _vertices)
+Polygon::Polygon(std::vector<std::vector<float>> _vertices)
 {
-    for ( std::vector<int>& vertex : _vertices )
+    for ( std::vector<float>& vertex : _vertices )
     {
         Vector2D vec {static_cast<float>(vertex[0]), static_cast<float>(vertex[1])};
         vertices.push_back(vec);
@@ -139,6 +140,30 @@ void Polygon::move(float dx, float dy)
         vertex.x += dx;
         vertex.y += dy;
     }
+}
+
+// Return the square of the distance
+float distance(float x1, float y1, float x2, float y2)
+{
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    return (dx*dx) + (dy*dy);
+}
+
+Vector2D* Polygon::closest_vertex(float x, float y, float threshold)
+{
+    int closest_index = -1;
+    float closest_distance = std::numeric_limits<float>::infinity();
+    for (size_t i = 0; i < vertices.size(); i++)
+    {
+        float next_distance = distance(vertices.at(i).x, vertices.at(i).y, x, y);
+        if ( (next_distance < closest_distance) & (next_distance <= threshold) )
+        {
+            closest_distance = next_distance;
+            closest_index = i;
+        }
+    }
+    return ( closest_distance != -1 ) ? &vertices.at(closest_index) : nullptr;
 }
 
 

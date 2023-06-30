@@ -12,7 +12,10 @@
 #include "../components/Door.hpp"
 #include "../components/HotSpot.hpp"
 #include "../components/Inventory.hpp"
+#include "../components/WalkArea.hpp"
 #include "../utils/Mouse.hpp"
+#include "../math/Polygon.hpp"
+#include "../math/Vector2D.hpp"
 
 
 ScriptManager::ScriptManager(LogManager* log)
@@ -128,14 +131,34 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     sol::usertype<Button> type_button = lua_.new_usertype<Button>("cpp_button");
     type_button["id"] = &Button::id;
 
+    // WalkArea user type
+    sol::usertype<WalkArea> type_walkarea = lua_.new_usertype<WalkArea>("cpp_walkarea");
+    type_walkarea["get"] = &WalkArea::get;
+
+    // Mouse::BUTTON enumeration
+    // TO DO: check .new_enum function
+    lua_["BUTTON"] = lua_.create_table_with(
+        "NONE", Mouse::BUTTON::NONE,
+        "LEFT", Mouse::BUTTON::LEFT,
+        "RIGHT", Mouse::BUTTON::RIGHT
+    );
     // Mouse::Status user type
     sol::usertype<Mouse::Status> type_mouse = lua_.new_usertype<Mouse::Status>("cpp_mouse");
     type_mouse.set("x", sol::readonly(&Mouse::Status::x));
     type_mouse.set("y", sol::readonly(&Mouse::Status::y));
     type_mouse.set("xrel", sol::readonly(&Mouse::Status::xrel));
     type_mouse.set("yrel", sol::readonly(&Mouse::Status::yrel));
-    type_mouse.set("r", sol::readonly(&Mouse::Status::r));
+    type_mouse.set("b", sol::readonly(&Mouse::Status::b));
 
+    // Polygon user type
+    sol::usertype<Polygon> type_polygon = lua_.new_usertype<Polygon>("cpp_polygon");
+    type_polygon["closest_vertex"] = &Polygon::closest_vertex;
+
+    // Vector2D user type
+    sol::usertype<Vector2D> type_vector2D = lua_.new_usertype<Vector2D>("cpp_vector2D");
+    type_vector2D["x"] = &Vector2D::x;
+    type_vector2D["y"] = &Vector2D::y;
+    type_vector2D["add"] = sol::resolve<Vector2D&(float, float)>(&Vector2D::add);
 
     return true;
 }

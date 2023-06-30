@@ -17,6 +17,7 @@ add_library(
     src/Sprite.cpp
     src/Ambient.cpp
     src/Button.cpp
+    src/WalkArea.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})

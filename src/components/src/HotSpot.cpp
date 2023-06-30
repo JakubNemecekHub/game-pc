@@ -63,4 +63,3 @@ std::string HotSpot::use_observation()
 
 void HotSpot::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void HotSpot::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
-void HotSpot::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }

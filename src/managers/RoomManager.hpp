@@ -39,7 +39,7 @@ public:
 
     void activate_room(const std::string& room_id);
     void update(RenderManager* renderer, int dt);
-    bool walkable(float x, float y);
+    // bool walkable(float x, float y);
     GameObject* get_object(float x, float y);
     void remove_item(std::string id);
 

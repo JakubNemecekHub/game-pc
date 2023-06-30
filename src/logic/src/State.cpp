@@ -8,7 +8,7 @@
 #include "../components/Sprite.hpp"
 
 State::State()
-    : game_{false}, duration_{0}, timer_{0}, mouse_down_{false}, selection_{nullptr} {}
+    : game_{false}, duration_{0}, timer_{0}, selection_{nullptr} {}
 
 
 void State::load_sprite_(std::pair<sol::object, sol::object> sprite_data)
@@ -101,28 +101,39 @@ void State::input_mouse_(SDL_Event& event)
     switch (event.type)
     {
     case SDL_MOUSEMOTION:
-        if ( mouse_down_ )
-        {
-            // Left mouse button is pressed, we are draging an object
-            // The state of the button could probably be determined derectly from the event
-            if ( selection_ ) selection_->accept_drag(this, mouse);
-        }
-        else
-        {
-            if (object)
-            {
+             if (selection_ != nullptr)
+                selection_->accept_over(this, mouse);
+        else if (object)     
                 object->accept_over(this, mouse);
-            }
-            else managers_->text.clean_player();
-        }
+        else              
+                managers_->text.clean_player();
+        // if ( mouse_down_ )
+        // {
+        //     // if ( event.motion.state == SDL_BUTTON_LMASK )
+        //     //     managers_->log.log("LEFT");
+        //     // if ( event.motion.state == SDL_BUTTON_RMASK )
+        //     //     managers_->log.log("RIGHT");
+        //     // Left mouse button is pressed, we are draging an object
+        //     // The state of the button could probably be determined derectly from the event
+        //     if ( selection_ ) selection_->accept_drag(this, mouse);
+        // }
+        // else
+        // {
+        //     if (object)
+        //     {
+        //         object->accept_over(this, mouse);
+        //     }
+        //     else managers_->text.clean_player();
+        // }
         break;
     case SDL_MOUSEBUTTONDOWN:
         selection_ = object;
-        mouse_down_ = true;
+        if (object) object->accept_click(this, mouse);
+        // mouse_down_ = true;
         break;
     case SDL_MOUSEBUTTONUP:
-        mouse_down_ = false;
-        if (object) object->accept_click(this, mouse);
+        // mouse_down_ = false;
+        selection_ = nullptr;
         break;
     default:
         break;
@@ -132,8 +143,8 @@ void State::input_mouse_(SDL_Event& event)
 
 bool State::exit()
 {
-    sprites_.clear(); // TO DO: this must "free" the sprites in AssetManager.
-    buttons_.clear(); // TO DO:: This should destroy the buttons.
+    sprites_.clear(); // TO DO 1: this must "free" the sprites in AssetManager.
+    buttons_.clear();
 
     // Call state's lua exit function
     managers_->script.lua()->traverse_get<sol::function>("State", "exit")();

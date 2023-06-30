@@ -62,6 +62,7 @@ Ambient* RoomAnimations::get_animation(float x, float y)
     Loads room's data based on info in the room data dictionary.
 */
 Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
+    : walk_area_{data["walkarea"].as<std::vector<std::vector<float>>>()}
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
@@ -70,10 +71,10 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     sprite_->center_horizontally();
     sprite_->z_index(0);
     // Load walk area polygon
-    walk_area_.add_vertices(data["walkarea"].as<std::vector<std::vector<float>>>());
-    walk_area_.visual.scale = sprite_->scale();
-    walk_area_.visual.dx = sprite_->x();
-    walk_area_.visual.dy = sprite_->y();
+    walk_area_.scale(sprite_->scale());
+    float x = walk_area_.x() * sprite_->scale() + sprite_->x();
+    float y = walk_area_.y() * sprite_->scale() + sprite_->y();
+    walk_area_.position(x, y);
 
     // Load HotSpots
     for ( auto hot_spot : data["hot_spots"] )
@@ -136,12 +137,12 @@ auto Room::relative_coordinates(float x, float y)
 }
 
 
-// Return true if given point in the room's walk area.
-bool Room::walkable(float x, float y)
-{
-    auto [room_x, room_y] = relative_coordinates(x, y);
-    return walk_area_.point_in_polygon(room_x, room_y);
-}
+// // Return true if given point in the room's walk area.
+// bool Room::walkable(float x, float y)
+// {
+//     auto [room_x, room_y] = relative_coordinates(x, y);
+//     return walk_area_.point_in_polygon(room_x, room_y);
+// }
 
 
 void Room::update(RenderManager* renderer, int dt)
@@ -160,11 +161,12 @@ void Room::update(RenderManager* renderer, int dt)
         }
     }
     animations_.update(renderer, dt);
+    walk_area_.update(renderer, dt);
     // START OF DEBUG
     switch (debug_)
     {
     case DEBUG_STATE::WALK_AREA:
-        renderer->submit(&walk_area_);
+        walk_area_.show_attributes();
         break;
     case DEBUG_STATE::ITEM:
         for ( auto& item : items_ ) item.second->show_attributes();
@@ -185,7 +187,7 @@ void Room::update(RenderManager* renderer, int dt)
 GameObject* Room::get_object(float x, float y)
 {
 
-    // Order: Item -> Door -> Hot Spot
+    // Order: Item -> Door -> Hot Spot -> Walkarea
 
     for ( auto& item : items_ )
         if ( item.second->clicked(x, y) && item.second->state() ) return item.second;
@@ -193,6 +195,7 @@ GameObject* Room::get_object(float x, float y)
         if ( door.second->clicked(x, y) && door.second->state() ) return door.second.get();
     for ( auto& hot_spot : objects_["hot_spots"] )
         if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();
+    if ( walk_area_.clicked(x, y) && walk_area_.state() ) return &walk_area_;
     return nullptr;
 
 }

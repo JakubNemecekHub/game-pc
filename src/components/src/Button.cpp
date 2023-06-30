@@ -25,4 +25,3 @@ void Button::update(RenderManager* renderer, int dt)
 
 void Button::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void Button::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
-void Button::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }

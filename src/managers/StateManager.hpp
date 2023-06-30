@@ -6,7 +6,7 @@
 class Managers;
 
 
-// TO DO: hardcode default state into cpp as lua script string
+// TO DO 3: hardcode default state into cpp as lua script string
 class StateManager
 {
 private:

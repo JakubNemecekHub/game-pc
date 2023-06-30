@@ -20,6 +20,7 @@ public:
     Vector2D unit();
 
     Vector2D& add(const Vector2D& vec);
+    Vector2D& add(const float x, const float y);
     Vector2D& subtract(const Vector2D& vec);
     float multiply(const Vector2D& vec) const;  // Multiplication by vector (dot product)
     Vector2D& multiply(const float n);          // Multiplication by number (scaling)

@@ -65,4 +65,3 @@ std::string Door::locked_observation()
 
 void Door::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void Door::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
-void Door::accept_drag(State* handler, Mouse::Status mouse) { handler->visit_drag(this, mouse); }

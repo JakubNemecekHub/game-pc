@@ -52,11 +52,34 @@ public:
     {
         int x, y;
         SDL_GetMouseState(&x, &y);
+        Mouse::BUTTON b { Mouse::BUTTON::NONE };
+        // Get state of the buttons.
+        // Not sure how exactly to do this. Mouse Button events and Mouse motion event
+        // seem to require different aproaches.
+        // Also, during motion event more than one button can probably be pressed!
+        switch ( event.type )
+        {
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+            switch ( event.button.button )
+            {
+            case SDL_BUTTON_LEFT:  b = Mouse::BUTTON::LEFT;  break;
+            case SDL_BUTTON_RIGHT: b = Mouse::BUTTON::RIGHT; break;
+            }
+            break;
+        case SDL_MOUSEMOTION:
+            switch ( event.motion.state )
+            {
+            case SDL_BUTTON_LMASK:  b = Mouse::BUTTON::LEFT;  break;
+            case SDL_BUTTON_RMASK:  b = Mouse::BUTTON::RIGHT; break;
+            }
+            break;
+        }
         return Mouse::Status
         {
             static_cast<float>(x), static_cast<float>(y),
             static_cast<float>(event.motion.xrel), static_cast<float>(event.motion.yrel),
-            event.button.button == SDL_BUTTON_RIGHT
+            b
         };
     }
     inline std::string key(SDL_Keycode key_code)

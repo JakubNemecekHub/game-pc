@@ -21,6 +21,7 @@ class GameObject;
 #include "../components/HotSpot.hpp"
 #include "../components/Ambient.hpp"
 #include "../components/Button.hpp"
+#include "../components/Walkarea.hpp"
 
 class State
 {
@@ -33,7 +34,6 @@ private:
     int duration_;
     int timer_;
 
-    bool mouse_down_;
     GameObject* selection_;
 
     std::vector<Sprite*> sprites_;
@@ -80,22 +80,18 @@ public:
     void update(int dt); 
     void render(); 
 
-    inline void visit_click(Item* item, Mouse::Status mouse)        { script_["lua_visit_click_item"](item, mouse);         }
-    inline void visit_click(Door* door, Mouse::Status mouse)        { script_["lua_visit_click_door"](door, mouse);         }
-    inline void visit_click(HotSpot* hot_spot, Mouse::Status mouse) { script_["lua_visit_click_hot_spot"](hot_spot, mouse); }
-    inline void visit_click(Ambient* ambient, Mouse::Status mouse)  { script_["lua_visit_click_ambient"](ambient, mouse);   }
-    inline void visit_click(Button* button, Mouse::Status mouse)    { button->action(); }
+    inline void visit_click(Item* item, Mouse::Status mouse)         { script_["lua_visit_click_item"](item, mouse);         }
+    inline void visit_click(Door* door, Mouse::Status mouse)         { script_["lua_visit_click_door"](door, mouse);         }
+    inline void visit_click(HotSpot* hot_spot, Mouse::Status mouse)  { script_["lua_visit_click_hot_spot"](hot_spot, mouse); }
+    inline void visit_click(Ambient* ambient, Mouse::Status mouse)   { script_["lua_visit_click_ambient"](ambient, mouse);   }
+    inline void visit_click(Button* button, Mouse::Status mouse)     { button->action(); }
+    inline void visit_click(WalkArea* walkarea, Mouse::Status mouse) { script_["lua_visit_click_walkarea"](walkarea, mouse); }
 
     inline void visit_over(Item* item, Mouse::Status mouse)         { script_["lua_visit_over_item"](item, mouse);          }
     inline void visit_over(Door* door, Mouse::Status mouse)         { script_["lua_visit_over_door"](door, mouse);          }
     inline void visit_over(HotSpot* hot_spot, Mouse::Status mouse)  { script_["lua_visit_over_hot_spot"](hot_spot, mouse);  }
     inline void visit_over(Ambient* ambient, Mouse::Status mouse)   { script_["lua_visit_over_ambient"](ambient, mouse);    }
     inline void visit_over(Button* button, Mouse::Status mouse)     { script_["lua_visit_over_button"](button, mouse);      }
+    inline void visit_over(WalkArea* walkarea, Mouse::Status mouse) { script_["lua_visit_over_walkarea"](walkarea, mouse);  }
 
-    inline void visit_drag(Item* item, Mouse::Status mouse)         { script_["lua_visit_drag_item"](item, mouse);          }
-    inline void visit_drag(Door* door, Mouse::Status mouse)         { script_["lua_visit_drag_door"](door, mouse);          }
-    inline void visit_drag(HotSpot* hot_spot, Mouse::Status mouse)  { script_["lua_visit_drag_hot_spot"](hot_spot, mouse);  }
-    inline void visit_drag(Ambient* ambient, Mouse::Status mouse)   { script_["lua_visit_drag_ambient"](ambient, mouse);    }
-    inline void visit_drag(Button* button, Mouse::Status mouse)     { script_["lua_visit_drag_button"](button, mouse);      }
-    
 };
