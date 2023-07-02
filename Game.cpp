@@ -29,7 +29,7 @@ Managers::Managers()
     serial = SerializationManager(&log, &assets);
     text = TextManager(&log, &renderer, ini["text"]);
     items = ItemManager(&log, &assets, &serial);
-    rooms = RoomManager(&log, &items, &assets);
+    rooms = RoomManager(&log, &items, &assets, &serial);
     player = PlayerManager(&log, &assets, &items);
     control = ControlManager(&log, &state, &window);
     script = ScriptManager(&log);

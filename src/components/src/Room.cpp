@@ -62,7 +62,7 @@ Ambient* RoomAnimations::get_animation(float x, float y)
     Loads room's data based on info in the room data dictionary.
 */
 Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
-    : walk_area_{data["walkarea"].as<std::vector<std::vector<float>>>()}
+    : walk_area_{data["id"].as<std::string>(), data["walkarea"].as<std::vector<std::vector<float>>>()}
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
@@ -204,4 +204,14 @@ GameObject* Room::get_object(float x, float y)
 void Room::remove_item(std::string id)
 {
     if ( !items_.erase(id) ) objects_.erase(id);
+}
+
+
+void Room::save(SerializationManager* io)
+{
+    std::ranges::for_each(items_, [&](const auto& pair) { pair.second->write(io); });
+    std::ranges::for_each(objects_, [&](auto& pair) {
+        std::ranges::for_each(pair.second, [&](auto& object_pair) { object_pair.second->write(io); });
+    });
+    walk_area_.write(io);
 }

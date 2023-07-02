@@ -16,7 +16,7 @@ class RenderManager;
 class SerializationManager;
 
 
-class Item : public GameObject, public Serial
+class Item : public GameObject
 {
 private:
 

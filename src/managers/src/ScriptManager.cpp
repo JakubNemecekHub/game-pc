@@ -48,6 +48,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     // create "cpp.state" namespace
     auto lua_cpp_state = lua_["cpp"]["state"].get_or_create<sol::table>();  
     lua_cpp_state.set_function("next", &StateManager::next, state);
+    lua_cpp_state.set_function("save", &RoomManager::save, rooms);
 
     // create "cpp.text" namespace
     auto lua_cpp_text  = lua_["cpp"]["text"].get_or_create<sol::table>();   
@@ -71,8 +72,6 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     auto lua_cpp_rooms = lua_["cpp"]["room"].get_or_create<sol::table>();    
     lua_cpp_rooms.set_function("remove_item", &RoomManager::remove_item, rooms);
     lua_cpp_rooms.set_function("activate_room", &RoomManager::activate_room, rooms);
-    lua_cpp_rooms.set_function("save_items", &ItemManager::save, items);
-    lua_cpp_rooms.set_function("load_items", &ItemManager::load, items);
 
     lua_cpp_rooms.set_function("toggle_walk_area", &RoomManager::toggle_walk_area, rooms);
     lua_cpp_rooms.set_function("toggle_item_debug", &RoomManager::toggle_item_debug, rooms);

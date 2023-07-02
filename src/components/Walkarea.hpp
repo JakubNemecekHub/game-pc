@@ -16,8 +16,8 @@ class WalkArea : public GameObject
 // Shall only have Trigger Form
 public:
 
-    WalkArea(std::vector<std::vector<float>> vertices);
-    WalkArea(std::vector<std::vector<float>> vertices, float room_x, float room_y, float room_scale);
+    WalkArea(std::string id, std::vector<std::vector<float>> vertices);
+    WalkArea(std::string id, std::vector<std::vector<float>> vertices, float room_x, float room_y, float room_scale);
 
     Polygon* get()
     {

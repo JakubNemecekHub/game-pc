@@ -2,6 +2,7 @@
 
 #include "../../managers/RenderManager.hpp"
 #include "../../managers/TextManager.hpp"
+#include "../../managers/SerializationManager.hpp"
 #include "../Sprite.hpp"
 
 
@@ -21,16 +22,22 @@ float Body::scale() { return sprite_->scale(); }
   int Body::z_index() { return sprite_->z_index(); }
  void Body::depiction(std::string id) { sprite_->depiction(id); }
 
- void Body::update(RenderManager* renderer, int dt)
- {
-    sprite_->update(renderer, dt);
-    if ( debug )
-    {
-        renderer->submit(sprite_->position());
-        debug = false;
-    }
- }
- bool Body::clicked(float x, float y) { return false; } // TO DO: Check dest_rect for collision?
+void Body::update(RenderManager* renderer, int dt)
+{
+   sprite_->update(renderer, dt);
+   if ( debug )
+   {
+      renderer->submit(sprite_->position());
+      debug = false;
+   }
+}
+bool Body::clicked(float x, float y) { return false; } // TO DO: Check dest_rect for collision?
+
+void Body::write(SerializationManager* io)
+{
+   io->write("BODY");
+   sprite_->write(io);
+}
 
 
 /********************************************************************************
@@ -94,6 +101,16 @@ float RigidBody::scale() { return sprite_->scale(); }
  }
  bool RigidBody::clicked(float x, float y) { return click_area_.point_in_polygon(x, y); }
 
+void RigidBody::write(SerializationManager* io)
+{
+   io->write("RIGIDBODY");
+   sprite_->write(io);
+   std::ranges::for_each(click_area_.vertices, [&](const Vector2D& v)
+   {
+      io->write(v.x);
+      io->write(v.y);
+   });
+}
 
 /********************************************************************************
     TRIGGER
@@ -140,6 +157,16 @@ void Trigger::update(RenderManager* renderer, int dt)
 }
 bool Trigger::clicked(float x, float y) { return click_area_.point_in_polygon(x, y); }
 
+void Trigger::write(SerializationManager* io)
+{
+   io->write("TRIGGER");
+   io->write(scale_);
+   std::ranges::for_each(click_area_.vertices, [&](const Vector2D& v)
+   {
+      io->write(v.x);
+      io->write(v.y);
+   });
+}
 
 /********************************************************************************
     BUTTON FORM
@@ -228,9 +255,28 @@ void ButtonForm::update(RenderManager* renderer, int dt)
 }
 bool ButtonForm::clicked(float x, float y) { return click_area_.point_in_polygon(x, y); }
 
+void ButtonForm::write(SerializationManager* io)
+{
+   io->write("BUTTONFORM");
+   sprite_->write(io);
+   io->write(label_);
+   label_sprite_->write(io);
+   std::ranges::for_each(click_area_.vertices, [&](const Vector2D& v)
+   {
+      io->write(v.x);
+      io->write(v.y);
+   });
+}
 
 /********************************************************************************
     GAME OBJECT
 ********************************************************************************/
 GameObject::GameObject(std::string id, bool state)
     : id_{id}, state_{state} {}
+
+void GameObject::write(SerializationManager* io)
+{
+   io->write(id_);
+   io->write(state_);
+   form_->write(io);
+}

@@ -52,6 +52,7 @@ void Item::accept_over(State* handler, Mouse::Status mouse) { handler->visit_ove
 
 void Item::write(SerializationManager* io)
 {
+    io->write("ITEM");
+    GameObject::write(io);
     io->write(used_);
-    // sprite_->write(io); // TO DO: Serialize GameObject
 }

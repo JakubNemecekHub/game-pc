@@ -17,6 +17,7 @@ class Item;
 class RenderManager;
 class ItemManager;
 class AssetManager;
+class SerializationManager;
 
 
 class RoomAnimations
@@ -91,6 +92,8 @@ public:
         //    bool walkable(float x, float y);
     GameObject* get_object(float x, float y);
            void remove_item(std::string id);
+
+    void save(SerializationManager* io);
 
     // DEBUG
 

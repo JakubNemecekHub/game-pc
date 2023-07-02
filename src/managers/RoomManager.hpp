@@ -9,6 +9,7 @@
 #include "RenderManager.hpp"
 #include "ItemManager.hpp"
 #include "AssetManager.hpp"
+class SerializationManager;
 #include "../components/Room.hpp"
 #include "../components/GameObject.hpp"
 #include "../components/Item.hpp"
@@ -23,6 +24,7 @@ private:
     LogManager*   log_;
     ItemManager*  items_;
     AssetManager* assets_;
+    SerializationManager* io_;
     std::unordered_map<std::string, Room> rooms_;
     Room* active_room_;
     std::string path_ {"D:/Prog/game_project/game/res/"};
@@ -32,7 +34,7 @@ private:
 public:
 
     RoomManager();
-    RoomManager(LogManager* log, ItemManager* items, AssetManager* assets);
+    RoomManager(LogManager* log, ItemManager* items, AssetManager* assets, SerializationManager* io);
 
     bool startUp();
     bool shutDown();
@@ -42,6 +44,8 @@ public:
     // bool walkable(float x, float y);
     GameObject* get_object(float x, float y);
     void remove_item(std::string id);
+
+    void save();
 
     inline void toggle_walk_area()      { active_room_->toggle_walk_area();      }
     inline void toggle_item_debug()     { active_room_->toggle_item_debug();     }

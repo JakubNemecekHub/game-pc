@@ -18,8 +18,8 @@ RoomManager::RoomManager()
     : active_room_{nullptr} {}
 
 
-RoomManager::RoomManager(LogManager* log, ItemManager* items, AssetManager* assets)
-    : log_{log}, items_{items}, assets_{assets} {}
+RoomManager::RoomManager(LogManager* log, ItemManager* items, AssetManager* assets, SerializationManager* io)
+    : log_{log}, items_{items}, assets_{assets}, io_{io} {}
 
 
 bool RoomManager::startUp()
@@ -86,3 +86,18 @@ void RoomManager::update(RenderManager* renderer, int dt)
 // bool RoomManager::walkable(float x, float y) { return active_room_->walkable(x, y); }
 GameObject* RoomManager::get_object(float x, float y) { return active_room_->get_object(x, y); }
 void RoomManager::remove_item(std::string id) { active_room_->remove_item(id); }
+
+
+void RoomManager::save()
+{
+    if ( !io_->open_out() ) return;  // TO DO: return false and do something with it?
+
+    // TO DO: Save name of the active Room.
+    std::ranges::for_each(rooms_, [&](auto& pair)
+    {
+        io_->write(pair.first); // Room id
+        pair.second.save(io_);  // Write what is necessary in Room
+        io_->write("\n");       // New line, for convenience
+    });
+    io_->close_out();
+}

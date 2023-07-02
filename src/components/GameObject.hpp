@@ -11,6 +11,7 @@
 
 class RenderManager;
 class TextManager;
+class SerializationManager;
 class State;
 class Sprite;
 class Polygon;
@@ -37,6 +38,8 @@ public:
 
     virtual  void update(RenderManager* renderer, int dt) = 0;
     virtual  bool clicked(float x, float y) = 0;
+
+    virtual void write(SerializationManager* io) = 0;
 
 };
 
@@ -66,6 +69,8 @@ public:
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
 
+    void write(SerializationManager* io) override;
+
 };
 
 class RigidBody : public Form
@@ -94,6 +99,8 @@ public:
 
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
+
+    void write(SerializationManager* io) override;
 
 };
 
@@ -126,6 +133,8 @@ public:
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
 
+    void write(SerializationManager* io) override;
+
 };
 
 class ButtonForm : public Form
@@ -157,6 +166,8 @@ public:
 
     void update(RenderManager* renderer, int dt) override;
     bool clicked(float x, float y) override;
+
+    void write(SerializationManager* io) override;
 
 };
 
@@ -198,6 +209,8 @@ public:
 
     virtual void accept_click(State* handler, Mouse::Status mouse) = 0;
     virtual void accept_over(State* handler, Mouse::Status mouse) = 0;
+
+    virtual void write(SerializationManager* io);
 
     // DEBUG
 
