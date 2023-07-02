@@ -22,11 +22,11 @@ RoomManager::RoomManager(LogManager* log, ItemManager* items, AssetManager* asse
     : log_{log}, items_{items}, assets_{assets}, io_{io} {}
 
 
-bool RoomManager::startUp()
+bool RoomManager::startUp(std::string id)
 {
     log_->log("Starting Room Manager.");
-    load_rooms_("rooms");
-    activate_room("hall"); // TO DO: This cannot be hardcoded
+    load_rooms_();
+    activate_room(id);
     log_->log("Room Manager Started.");
     return true;
 }
@@ -42,9 +42,8 @@ bool RoomManager::shutDown()
 
 /*
     Load necessary room data. All information is stored in a .yaml file.
-
 */
-void RoomManager::load_rooms_(std::string suite_file)
+void RoomManager::load_rooms_()
 {
     log_->log("Loading rooms.");
     std::queue<fs::directory_entry> rooms_meta { assets_->rooms_meta() };

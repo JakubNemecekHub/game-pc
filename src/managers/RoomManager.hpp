@@ -29,14 +29,14 @@ private:
     Room* active_room_;
     std::string path_ {"D:/Prog/game_project/game/res/"};
 
-    void load_rooms_(std::string suite_file);
+    void load_rooms_();
 
 public:
 
     RoomManager();
     RoomManager(LogManager* log, ItemManager* items, AssetManager* assets, SerializationManager* io);
 
-    bool startUp();
+    bool startUp(std::string id);
     bool shutDown();
 
     void activate_room(const std::string& room_id);
