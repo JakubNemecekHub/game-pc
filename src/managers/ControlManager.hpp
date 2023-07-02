@@ -82,17 +82,5 @@ public:
             b
         };
     }
-    inline std::string key(SDL_Keycode key_code)
-    {
-        try
-        {
-            return mapping_m_.at(key_code);
-        }
-        catch(const std::out_of_range& e)
-        {
-            return "";
-        }
-        
-    }
     
 };

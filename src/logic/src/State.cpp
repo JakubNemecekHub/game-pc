@@ -77,10 +77,7 @@ bool State::enter(std::string state)
 
 void State::input_keyboard_(SDL_Event& event)
 {
-    // Need to convert the integer value of "event.key.keysym.sym" to some string from controls binging.
-    // E.g. 105 = SDLK_i = "inventory"
     SDL_Keycode key_code = event.key.keysym.sym;
-    // std::string key = managers_->control.key(key_code);
     std::string key = SDL_GetKeyName(key_code);
     managers_->script.lua()->traverse_get<sol::function>("State", "input_keyboard")(key);
 }
