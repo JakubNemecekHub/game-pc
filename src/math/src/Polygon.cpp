@@ -152,7 +152,7 @@ float distance(float x1, float y1, float x2, float y2)
 
 Vector2D* Polygon::closest_vertex(float x, float y, float threshold)
 {
-    int closest_index = -1;
+    size_t closest_index = -1;
     float closest_distance = std::numeric_limits<float>::infinity();
     for (size_t i = 0; i < vertices.size(); i++)
     {
