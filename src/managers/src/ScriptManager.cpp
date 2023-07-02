@@ -58,6 +58,13 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     lua_cpp_text.set_function("clean", &TextManager::clean, text);
     lua_cpp_text.set_function("clean_label", sol::resolve<void()>(&TextManager::clean_label), text);
     lua_cpp_text.set_function("clean_specific_label", sol::resolve<void(std::string)>(&TextManager::clean_label), text);
+    // COLOR enum
+    lua_.new_enum("COLOR",
+        "BEIGE",  COLOR::BEIGE,
+        "PURPLE", COLOR::PURPLE,
+        "GREEN",  COLOR::GREEN,
+        "RED",    COLOR::RED
+    );
 
     // create "cpp.player" namespace
     auto lua_cpp_player = lua_["cpp"]["player"].get_or_create<sol::table>();    

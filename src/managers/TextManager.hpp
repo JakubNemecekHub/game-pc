@@ -66,12 +66,11 @@ public:
 
     void update(int dt);
     
-    // std::unique_ptr<Sprite> create_sprite(std::string text, COLOR color=BEIGE);
-    Sprite* create_sprite(std::string text, COLOR color=BEIGE);
+    Sprite* create_sprite(std::string text, COLOR color=COLOR::BEIGE);
 
-    void submit_player(std::string text, float x, float y, COLOR color=BEIGE);
-    void submit_label(std::string id, std::string text, float x, float y, COLOR color=BEIGE);
-    void submit_free(std::string text, float x, float y, COLOR color=BEIGE);
+    void submit_player(std::string text, float x, float y, COLOR color=COLOR::BEIGE);
+    void submit_label(std::string id, std::string text, float x, float y, COLOR color=COLOR::BEIGE);
+    void submit_free(std::string text, float x, float y, COLOR color=COLOR::BEIGE);
     void clean();
     void clean_player();
     void clean_label();               // Clean all labels
