@@ -18,6 +18,7 @@ public:
     Button() {}
     Button(std::string label, Sprite* sprite, float x, float y, float scale, TextManager* text, sol::function action, Vertices vertices);
     Button(const Button& source) {};
+    ~Button() { action.abandon(); }
 
     void update(RenderManager* renderer, int dt) override;
 

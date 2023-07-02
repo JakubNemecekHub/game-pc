@@ -57,6 +57,7 @@ Game::Game()
 Game::~Game()
 {
     managers.assets.shutDown();
+    managers.script.shutdown();
 }
 
 
