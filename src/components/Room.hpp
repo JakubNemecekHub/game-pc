@@ -34,7 +34,7 @@ public:
     void load(YAML::Node data, AssetManager* assets);
     void update(RenderManager* renderer, int dt);
 
-    inline void reserve(int count) { animations_.reserve(count); }
+    inline void reserve(size_t count) { animations_.reserve(count); }
     Ambient* get_animation(float x, float y);
 
 };
