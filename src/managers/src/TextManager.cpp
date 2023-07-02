@@ -108,7 +108,6 @@ void TextManager::transform(std::unique_ptr<Sprite>& sprite, float x, float y)
 }
 
 
-// std::unique_ptr<Sprite> TextManager::create_sprite(std::string text, COLOR color)
 Sprite* TextManager::create_sprite(std::string text, COLOR color)
 {
     SDL_Texture* text_texture = create_texture_(text, color);

@@ -177,16 +177,12 @@ ButtonForm::ButtonForm(Sprite* sprite, std::vector<std::vector<float>> vertices,
 {
     click_area_.add_vertices(vertices);
     // Set up a textual label inside the Sprite.
-   //  float x = sprite->x(); // This is not necessary
-   //  float y = sprite->y();
    sprite_->match_dimensions(); // TO DO: Do it in the AssetManager
     label_sprite_ = std::make_unique<Sprite>(text->create_texture_(label_, COLOR::BEIGE), 1.0f, 3);
     label_sprite_->depiction("text");
     label_sprite_->match_dimensions();
     float label_scale = sprite_->w() / label_sprite_->w() * 0.8f;
     label_sprite_->set_scale(label_scale);
-   //  float text_x { x + (sprite_->w() - label_sprite_->w())/2 }; // This doesn't work
-   //  float text_y { y + (sprite_->h() - label_sprite_->h())/2 };
     float text_x { (sprite_->w() - label_sprite_->w())/2 };
     float text_y { (sprite_->h() - label_sprite_->h())/2 };
     label_sprite_->position(text_x, text_y);

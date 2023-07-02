@@ -13,18 +13,6 @@
 #include "WindowManager.hpp"
 
 
-struct Controls
-{
-    SDL_Keycode KEY_INVENTORY;
-    SDL_Keycode KEY_EDITOR;
-    SDL_Keycode KEY_EDITOR_ITEMS;
-    SDL_Keycode KEY_EDITOR_HOT_SPOTS;
-    SDL_Keycode KEY_EDITOR_DOORS;
-    SDL_Keycode KEY_EDITOR_WALK_POLYGON;
-    SDL_Keycode KEY_EDITOR_BITMAP;
-};
-
-
 class ControlManager
 {
 private:
@@ -33,19 +21,14 @@ private:
     WindowManager* window_;
     StateManager* state_;
 
-    Controls       mapping_;
-    std::unordered_map<SDL_Keycode, std::string> mapping_m_;
-
 public:
 
     ControlManager() {};
     ControlManager(LogManager* log, StateManager* state_,  WindowManager* window);
 
-    void startUp(YAML::Node mapping);
+    void startUp() { log_->log("Control Manager started."); }
     void shutDown();
 
-    Controls mapping();
-    
     void handle_window(SDL_Event& event);
 
     inline Mouse::Status mouse_transform(SDL_Event& event)

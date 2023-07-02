@@ -40,7 +40,7 @@ Managers::Managers()
     assets.startUp(&renderer, source_path);
     text.startUp();
     serial.startUp();
-    control.startUp(ini["control"]);
+    control.startUp();
     script.startUp(source_path, &state, &text, &player, &rooms, &window, &serial, &items, &assets);
 
     log.log("All Managers started.");
