@@ -135,8 +135,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     type_walkarea["get"] = &WalkArea::get;
 
     // Mouse::BUTTON enumeration
-    // TO DO: check .new_enum function
-    lua_["BUTTON"] = lua_.create_table_with(
+    lua_.new_enum("BUTTON",
         "NONE", Mouse::BUTTON::NONE,
         "LEFT", Mouse::BUTTON::LEFT,
         "RIGHT", Mouse::BUTTON::RIGHT
