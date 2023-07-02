@@ -64,16 +64,9 @@ void RoomManager::load_rooms_(std::string suite_file)
 
 
 void RoomManager::activate_room(const std::string& id)
-{
-    try
-    {
-        active_room_ = &rooms_.at(id);
-    }
-    catch(const std::out_of_range& e)
-    {
-        log_->error("Cannot activate missing room \"", id, "\"");
-    }
-    
+{  
+    if (auto it = rooms_.find(id); it != rooms_.end()) active_room_ = &(it->second);
+    else log_->error("Cannot activate missing room \"", id, "\"");
 }
 
 
