@@ -68,8 +68,7 @@ bool State::enter(std::string state)
         std::ranges::for_each(buttons, [&](auto button) { load_button_(button); });
     }
 
-    // Call state's lua enter function
-    managers_->script.lua()->traverse_get<sol::function>("State", "enter")();
+    script_["enter"](); // Call state's lua enter function
 
     return true;
 }
@@ -79,7 +78,7 @@ void State::input_keyboard_(SDL_Event& event)
 {
     SDL_Keycode key_code = event.key.keysym.sym;
     std::string key = SDL_GetKeyName(key_code);
-    managers_->script.lua()->traverse_get<sol::function>("State", "input_keyboard")(key);
+    script_["input_keyboard"](key);
 }
 
 
@@ -98,38 +97,15 @@ void State::input_mouse_(SDL_Event& event)
     switch (event.type)
     {
     case SDL_MOUSEMOTION:
-             if (selection_ != nullptr)
-                selection_->accept_over(this, mouse);
-        else if (object)     
-                object->accept_over(this, mouse);
-        else              
-                managers_->text.clean_player();
-        // if ( mouse_down_ )
-        // {
-        //     // if ( event.motion.state == SDL_BUTTON_LMASK )
-        //     //     managers_->log.log("LEFT");
-        //     // if ( event.motion.state == SDL_BUTTON_RMASK )
-        //     //     managers_->log.log("RIGHT");
-        //     // Left mouse button is pressed, we are draging an object
-        //     // The state of the button could probably be determined derectly from the event
-        //     if ( selection_ ) selection_->accept_drag(this, mouse);
-        // }
-        // else
-        // {
-        //     if (object)
-        //     {
-        //         object->accept_over(this, mouse);
-        //     }
-        //     else managers_->text.clean_player();
-        // }
+             if (selection_ != nullptr) selection_->accept_over(this, mouse);
+        else if (object) object->accept_over(this, mouse);
+        else managers_->text.clean_player();
         break;
     case SDL_MOUSEBUTTONDOWN:
-        selection_ = object;
-        if (object) object->accept_click(this, mouse);
-        // mouse_down_ = true;
+        if (selection_ = object; object) object->accept_click(this, mouse);
+        else script_["input_mouse"](mouse);
         break;
     case SDL_MOUSEBUTTONUP:
-        // mouse_down_ = false;
         selection_ = nullptr;
         break;
     default:
@@ -140,11 +116,9 @@ void State::input_mouse_(SDL_Event& event)
 
 bool State::exit()
 {
-    sprites_.clear(); // TO DO 1: this must "free" the sprites in AssetManager.
+    sprites_.clear();  // TO DO 1: this must "free" the sprites in AssetManager.
     buttons_.clear();
-
-    // Call state's lua exit function
-    managers_->script.lua()->traverse_get<sol::function>("State", "exit")();
+    script_["exit"](); // Call state's lua exit function
     return true;
 }
 
