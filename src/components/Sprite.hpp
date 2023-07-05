@@ -21,8 +21,10 @@ public:
 
     SDL_Rect src_rect_;
     int      duration_;
+    float    offset_x;
+    float    offset_y;
     Frame()
-        : src_rect_{0, 0, 0, 0}, duration_{0} {};
+        : src_rect_{0, 0, 0, 0}, duration_{0}, offset_x{0.0f}, offset_y{0.0f} {};
     Frame(int x, int y, int w, int h, int duration)
         : src_rect_{x, y, w, h}, duration_{duration} {};
     Frame(std::vector<int> frame)

@@ -22,7 +22,7 @@ bool Vector2D::is_zero() const
 
 float Vector2D::size() const
 {
-    return static_cast<float>(sqrt(pow(x, 2) + pow(y, 2)));
+    return sqrtf(powf(x, 2) + powf(y, 2));
 }
 
 Vector2D Vector2D::unit()
@@ -79,6 +79,15 @@ Vector2D& Vector2D::divide(const float n)
 }
 
 // Operators =======================================================================================
+
+// Copy assignement operator
+Vector2D& Vector2D::operator=(const Vector2D& vec)
+{
+    this->x = vec.x;
+    this->y = vec.y;
+    return *this;
+}
+
 // Adding a vector to a vector by operator
 Vector2D& Vector2D::operator+=(const Vector2D& vec)
 {
@@ -146,12 +155,6 @@ Vector2D operator/(const Vector2D& vec, const float n)
 {
     Vector2D temp {vec.x / n, vec.y / n};
     return temp;
-}
-
-// Comparison
-bool operator==(const Vector2D& vec1, const Vector2D& vec2)
-{
-    return ( vec1.x == vec2.x ) && ( vec1.y == vec2.y );
 }
 
 // Stream Operators ================================================================================

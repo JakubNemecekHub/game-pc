@@ -67,7 +67,8 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     );
 
     // create "cpp.player" namespace
-    auto lua_cpp_player = lua_["cpp"]["player"].get_or_create<sol::table>();    
+    auto lua_cpp_player = lua_["cpp"]["player"].get_or_create<sol::table>(); 
+    lua_cpp_player.set_function("walk", &Player::walk, &(player->player));   
     lua_cpp_player.set_function("inventory_has_space", &Inventory::has_space, &(player->inventory));
     lua_cpp_player.set_function("inventory_add_item", &Inventory::add, &(player->inventory));
     lua_cpp_player.set_function("inventory_has_item", &Inventory::has_item, &(player->inventory));

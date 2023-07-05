@@ -23,20 +23,25 @@ class Player
 {
 private:
 
-    Sprite*     sprite_;
-    Vector2D    position;
-    Vector2D    destination;
-    bool        is_walking;
-    int         speed;
-    int         scale;
+    Sprite* sprite_;
+    Vector2D destination_;
+    bool     is_walking_;
+    float    speed_;
+
+    // Position and scale are already part of Sprite. Now I need to keep them in two separate places.
+    Vector2D position_;
+    float   scale_;
 
 public:
 
     Player() {};
     Player(AssetManager* assets, std::string sprite_name, std::string start_animation_name);
 
-    void update(RenderManager* renderer, int dt);
-    void walk(float x, float y);
+    void update(RenderManager* renderer, const int dt);
+    void position(float x, float y);    // Place player no matter what
+    void set_scale(float s);
+    void scale(float s);
+    void walk(float x, float y);        // Try to walk to given location
 
 };
 
@@ -58,7 +63,9 @@ public:
     PlayerManager() {};
     PlayerManager(LogManager* log, AssetManager* assets, ItemManager* items);
 
-    bool startUp(std::string sprite_name, std::string start_animation_name, std::string inventory_sprite_name);
+    bool startUp(std::string sprite_name, std::string start_animation_name,
+                 float x, float y, float s,
+                 std::string inventory_sprite_name);
     bool shutDown();
     void update(RenderManager* renderer, int dt);
 

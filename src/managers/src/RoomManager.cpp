@@ -75,7 +75,7 @@ void RoomManager::update(RenderManager* renderer, int dt)
 }
 
 
-// bool RoomManager::walkable(float x, float y) { return active_room_->walkable(x, y); }
+bool RoomManager::walkable(float x, float y) { return active_room_->walkable(x, y); }
 GameObject* RoomManager::get_object(float x, float y) { return active_room_->get_object(x, y); }
 void RoomManager::remove_item(std::string id) { active_room_->remove_item(id); }
 

@@ -137,12 +137,11 @@ auto Room::relative_coordinates(float x, float y)
 }
 
 
-// // Return true if given point in the room's walk area.
-// bool Room::walkable(float x, float y)
-// {
-//     auto [room_x, room_y] = relative_coordinates(x, y);
-//     return walk_area_.point_in_polygon(room_x, room_y);
-// }
+// Return true if given point in the room's walk area.
+bool Room::walkable(float x, float y)
+{
+    return walk_area_.clicked(x, y);
+}
 
 
 void Room::update(RenderManager* renderer, int dt)

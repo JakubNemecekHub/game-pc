@@ -27,6 +27,7 @@ public:
     Vector2D& divide(const float n);            // Division by number (scaling)
 
     // Operators
+    Vector2D& operator=(const Vector2D& vec);
     Vector2D& operator+=(const Vector2D& vec);
     Vector2D& operator-=(const Vector2D& vec);
     Vector2D& operator*=(const float n);
@@ -39,7 +40,13 @@ public:
     friend Vector2D operator*(const float n, const Vector2D& vec);
     friend float operator*(const Vector2D& vec1, const Vector2D& vec2);
     friend Vector2D operator/(const Vector2D& vec, const float n);
-    friend bool operator==(const Vector2D& vec1, const Vector2D& vec2);
+    // Comparison operators
+    bool operator==(const Vector2D& vec) const { return (this->x == vec.x) && (this->y == vec.y); }
+    bool operator!=(const Vector2D& vec) const { return (this->x != vec.x) || (this->y != vec.y); }
+    bool operator<(const Vector2D& vec)  const { return this->size() < vec.size();                }
+    bool operator>(const Vector2D& vec)  const { return this->size() > vec.size();                }
+    bool operator<=(const Vector2D& vec) const { return this->size() <= vec.size();               }
+    bool operator>=(const Vector2D& vec) const { return this->size() >= vec.size();               }
 
     // Other Methods
 
