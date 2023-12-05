@@ -50,12 +50,19 @@ void RoomManager::load_rooms_()
     while ( !rooms_meta.empty() )
     {
         fs::directory_entry entry { rooms_meta.front() };
-        YAML::Node room_data      { YAML::LoadFile(entry.path().string()) };
-        std::string id            { room_data["id"].as<std::string>() };
-        rooms_.emplace(std::piecewise_construct,
-                      std::forward_as_tuple(id),
-                      std::forward_as_tuple(room_data, items_, assets_));
-        log_->log("Room \"", id, "\" created.");
+        try
+        {
+            YAML::Node room_data { YAML::LoadFile(entry.path().string()) };
+            std::string id       { room_data["id"].as<std::string>() };
+            rooms_.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(id),
+                        std::forward_as_tuple(room_data, items_, assets_));
+            log_->log("Room \"", id, "\" created.");
+        }
+        catch(const YAML::ParserException& e)
+        {
+            log_->error("Cannot parse file", entry.path().string(), ", Reason: ", e.msg);
+        }
         rooms_meta.pop();
     }
     log_->log("Rooms loaded.");

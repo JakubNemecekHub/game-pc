@@ -24,13 +24,20 @@ bool ItemManager::startUp()
     while ( !items_meta.empty() )
     {
         fs::directory_entry entry { items_meta.front() };
-        std::string id            { base_name(entry)   };
-        YAML::Node item_data      { YAML::LoadFile(entry.path().string()) };
-        item_data["id"] = id;
-        items_.emplace(std::piecewise_construct,
-                std::forward_as_tuple(id),
-                std::forward_as_tuple(item_data, assets_));
-        log_->log("Item \"", id, "\" created.");
+        try
+        {
+            std::string id       { base_name(entry)   };
+            YAML::Node item_data { YAML::LoadFile(entry.path().string()) };
+            item_data["id"] = id;
+            items_.emplace(std::piecewise_construct,
+                    std::forward_as_tuple(id),
+                    std::forward_as_tuple(item_data, assets_));
+            log_->log("Item \"", id, "\" created.");
+        }
+        catch(const YAML::ParserException& e)
+        {
+            log_->error("Cannot parse file", entry.path().string(), ", Reason: ", e.msg);
+        }
         items_meta.pop();
     }
     log_->log("Item Manager Started.");

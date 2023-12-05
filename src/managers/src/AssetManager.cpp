@@ -40,12 +40,19 @@ void AssetManager::load_frames_(std::queue<fs::directory_entry>& paths)
     {
         fs::directory_entry entry { paths.front() };
         std::string id { base_name(entry) };
-        YAML::Node data = YAML::LoadFile(entry.path().string());
-        std::vector<std::vector<int>> frames_meta { data["frames"].as<std::vector<std::vector<int>>>() };
-        std::vector<Frame> frames;
-        for ( auto& frame_meta : frames_meta ) frames.emplace_back(frame_meta);
-        frames_.insert(std::make_pair(id, frames));
-        log_->log("Loaded frames ", entry.path().string());
+        try
+        {
+            YAML::Node data = YAML::LoadFile(entry.path().string());
+            std::vector<std::vector<int>> frames_meta { data["frames"].as<std::vector<std::vector<int>>>() };
+            std::vector<Frame> frames;
+            for ( auto& frame_meta : frames_meta ) frames.emplace_back(frame_meta);
+            frames_.insert(std::make_pair(id, frames));
+            log_->log("Loaded frames ", entry.path().string());
+        }
+        catch(const YAML::ParserException& e)
+        {
+            log_->error("Cannot parse file", entry.path().string(), ", Reason: ", e.msg);
+        }
         paths.pop();
     }
 }
@@ -90,9 +97,16 @@ void AssetManager::load_sprites_(std::queue<fs::directory_entry>& paths)
     {
         fs::directory_entry entry { paths.front() };
         std::string id { base_name(entry) };
-        YAML::Node data = YAML::LoadFile(entry.path().string());
-        for (auto sprite_data : data) create_sprite_(sprite_data);
-        log_->log("Created Sprites", entry.path().string());
+        try
+        {
+            YAML::Node data = YAML::LoadFile(entry.path().string());
+            for (auto sprite_data : data) create_sprite_(sprite_data);
+            log_->log("Created Sprites", entry.path().string());
+        }
+        catch(const YAML::ParserException& e)
+        {
+            log_->error("Cannot parse file", entry.path().string(), ", Reason: ", e.msg);
+        }
         paths.pop();
     }
 }
