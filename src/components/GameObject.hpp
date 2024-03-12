@@ -25,10 +25,10 @@ public:
 
     virtual  void x(float x) = 0;
     virtual  void y(float y) = 0;
-    virtual  void position(float x, float y) = 0;
+    virtual  void position(Vector2D position) = 0;
     virtual float x() = 0;
     virtual float y() = 0;
-    virtual  void move(float dx, float dy) = 0;
+    virtual  void move(Vector2D direction) = 0;
     virtual  void set_scale(float s) = 0;
     virtual  void scale(float s) = 0;
     virtual float scale() = 0;
@@ -37,7 +37,7 @@ public:
     virtual void depiction(std::string id) = 0;
 
     virtual  void update(RenderManager* renderer, int dt) = 0;
-    virtual  bool clicked(float x, float y) = 0;
+    virtual  bool clicked(Vector2D position) = 0;
 
     virtual void write(SerializationManager* io) = 0;
 
@@ -55,10 +55,10 @@ public:
 
      void x(float x) override;
      void y(float y) override;
-     void position(float x, float y) override;
+     void position(Vector2D position) override;
     float x() override;
     float y() override;
-     void move(float dx, float dy) override;
+     void move(Vector2D direction) override;
      void set_scale(float s) override;
      void scale(float s) override;
     float scale() override;
@@ -67,7 +67,7 @@ public:
     void depiction(std::string id) override;
 
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(float x, float y) override;
+    bool clicked(Vector2D position) override;
 
     void write(SerializationManager* io) override;
 
@@ -86,10 +86,10 @@ public:
 
      void x(float x) override;
      void y(float y) override;
-     void position(float x, float y) override;
+     void position(Vector2D position) override;
     float x() override;
     float y() override;
-     void move(float dx, float dy) override;
+     void move(Vector2D direction) override;
      void set_scale(float s) override;
      void scale(float s) override;
     float scale() override;
@@ -98,7 +98,7 @@ public:
     void depiction(std::string id) override;
 
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(float x, float y) override;
+    bool clicked(Vector2D position) override;
 
     void write(SerializationManager* io) override;
 
@@ -117,10 +117,10 @@ public:
 
      void x(float x) override;
      void y(float y) override;
-     void position(float x, float y) override;
+     void position(Vector2D position) override;
     float x() override;
     float y() override;
-     void move(float dx, float dy) override;
+     void move(Vector2D direction) override;
      void set_scale(float s) override;
      void scale(float s) override;
     float scale() override;
@@ -131,7 +131,7 @@ public:
     Polygon* get();
 
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(float x, float y) override;
+    bool clicked(Vector2D position) override;
 
     void write(SerializationManager* io) override;
 
@@ -153,10 +153,10 @@ public:
 
      void x(float x) override;
      void y(float y) override;
-     void position(float x, float y) override;
+     void position(Vector2D position) override;
     float x() override;
     float y() override;
-     void move(float dx, float dy) override;
+     void move(Vector2D direction) override;
      void set_scale(float s) override;
      void scale(float s) override;
     float scale() override;
@@ -165,7 +165,7 @@ public:
     void depiction(std::string id) override;
 
     void update(RenderManager* renderer, int dt) override;
-    bool clicked(float x, float y) override;
+    bool clicked(Vector2D position) override;
 
     void write(SerializationManager* io) override;
 
@@ -189,21 +189,21 @@ public:
     inline bool state()               { return state_;      }
     inline void state(bool new_state) { state_ = new_state; }
 
-    inline  void x(float x)                 { form_->x(x);             }
-    inline  void y(float y)                 { form_->y(y);             }
-    inline  void position(float x, float y) { form_->position(x, y);   }
-    inline float x()                        { return form_->x();       }
-    inline float y()                        { return form_->y();       }
-    inline  void move(float dx, float dy)   { form_->move(dx, dy);     }
-    inline  void set_scale(float s)         { form_->set_scale(s);     }
-    inline  void scale(float s)             { form_->scale(s);         }
-    inline float scale()                    { return form_->scale();   }
-    inline  void z_index(int z)             { form_->z_index(z);       }
-    inline   int z_index()                  { return form_->z_index(); }
-    inline  void depiction(std::string id)  { form_->depiction(id);    }
-    
+    inline  void x(float x)                  { form_->x(x);               }
+    inline  void y(float y)                  { form_->y(y);               }
+    inline  void position(Vector2D position) { form_->position(position); }
+    inline float x()                         { return form_->x();         }
+    inline float y()                         { return form_->y();         }
+    inline  void move(Vector2D direction)    { form_->move(direction);    }
+    inline  void set_scale(float s)          { form_->set_scale(s);       }
+    inline  void scale(float s)              { form_->scale(s);           }
+    inline float scale()                     { return form_->scale();     }
+    inline  void z_index(int z)              { form_->z_index(z);         }
+    inline   int z_index()                   { return form_->z_index();   }
+    inline  void depiction(std::string id)   { form_->depiction(id);      }
+
     virtual void update(RenderManager* renderer, int dt) = 0;
-    inline bool clicked(float x, float y) { return form_->clicked(x, y) && state_; }
+    inline bool clicked(Vector2D position) { return form_->clicked(position) && state_; }
 
     // Game Logic
 
@@ -217,4 +217,3 @@ public:
     inline void show_attributes() { form_->debug = true; }
 
 };
- 

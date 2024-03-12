@@ -36,22 +36,22 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     auto lua_cpp = lua_["cpp"].get_or_create<sol::table>();
 
     // create "cpp.game" namespace
-    auto lua_cpp_game = lua_["cpp"]["game"].get_or_create<sol::table>();  
+    auto lua_cpp_game = lua_["cpp"]["game"].get_or_create<sol::table>();
     lua_cpp_game.set_function("start_manager_item", &ItemManager::startUp, items);
     lua_cpp_game.set_function("start_manager_room", &RoomManager::startUp, rooms);
     lua_cpp_game.set_function("start_manager_player", &PlayerManager::startUp, player);
 
     // create "cpp.window" namespace
-    auto lua_cpp_window = lua_["cpp"]["window"].get_or_create<sol::table>();  
+    auto lua_cpp_window = lua_["cpp"]["window"].get_or_create<sol::table>();
     lua_cpp_window.set_function("close", &WindowManager::close, window);
 
     // create "cpp.state" namespace
-    auto lua_cpp_state = lua_["cpp"]["state"].get_or_create<sol::table>();  
+    auto lua_cpp_state = lua_["cpp"]["state"].get_or_create<sol::table>();
     lua_cpp_state.set_function("next", &StateManager::next, state);
     lua_cpp_state.set_function("save", &RoomManager::save, rooms);
 
     // create "cpp.text" namespace
-    auto lua_cpp_text  = lua_["cpp"]["text"].get_or_create<sol::table>();   
+    auto lua_cpp_text  = lua_["cpp"]["text"].get_or_create<sol::table>();
     lua_cpp_text.set_function("player", &TextManager::submit_player, text);
     lua_cpp_text.set_function("label", &TextManager::submit_label, text);
     lua_cpp_text.set_function("free", &TextManager::submit_free, text);
@@ -67,8 +67,8 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     );
 
     // create "cpp.player" namespace
-    auto lua_cpp_player = lua_["cpp"]["player"].get_or_create<sol::table>(); 
-    lua_cpp_player.set_function("walk", &Player::walk, &(player->player));   
+    auto lua_cpp_player = lua_["cpp"]["player"].get_or_create<sol::table>();
+    lua_cpp_player.set_function("walk", &Player::walk, &(player->player));
     lua_cpp_player.set_function("inventory_has_space", &Inventory::has_space, &(player->inventory));
     lua_cpp_player.set_function("inventory_add_item", &Inventory::add, &(player->inventory));
     lua_cpp_player.set_function("inventory_has_item", &Inventory::has_item, &(player->inventory));
@@ -77,7 +77,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     lua_cpp_player.set_function("inventory_hide", &Inventory::hide, &(player->inventory));
 
     // create "cpp.room" namespace
-    auto lua_cpp_rooms = lua_["cpp"]["room"].get_or_create<sol::table>();    
+    auto lua_cpp_rooms = lua_["cpp"]["room"].get_or_create<sol::table>();
     lua_cpp_rooms.set_function("remove_item", &RoomManager::remove_item, rooms);
     lua_cpp_rooms.set_function("activate_room", &RoomManager::activate_room, rooms);
 
@@ -95,7 +95,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     type_item["y"] = sol::property(sol::resolve<float()>(&Item::y), sol::resolve<void(float)>(&Item::y));
     type_item["move"] = &Item::move;
     type_item["scale"] = sol::property(sol::resolve<float()>(&Item::scale), sol::resolve<void(float)>(&Item::scale));
-    type_item["absolute_scale"] = &Item::set_scale; 
+    type_item["absolute_scale"] = &Item::set_scale;
     // Item Specific stuff
     type_item["observation"] = &Item::observation;
     type_item["pick_observation"] = &Item::pick_observation;
@@ -108,7 +108,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     type_door["y"] = sol::property(sol::resolve<float()>(&Door::y), sol::resolve<void(float)>(&Door::y));
     type_door["move"] = &Item::move;
     type_door["scale"] = sol::property(sol::resolve<float()>(&Door::scale), sol::resolve<void(float)>(&Door::scale));
-    type_door["absolute_scale"] = &Door::set_scale; 
+    type_door["absolute_scale"] = &Door::set_scale;
     // Door Specific stuff
     type_door["locked"] = &Door::locked;
     type_door["unlock"] = &Door::unlock;
@@ -125,7 +125,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     type_hot_spot["y"] = sol::property(sol::resolve<float()>(&HotSpot::y), sol::resolve<void(float)>(&HotSpot::y));
     type_hot_spot["move"] = &HotSpot::move;
     type_hot_spot["scale"] = sol::property(sol::resolve<float()>(&HotSpot::scale), sol::resolve<void(float)>(&HotSpot::scale));
-    type_hot_spot["absolute_scale"] = &HotSpot::set_scale; 
+    type_hot_spot["absolute_scale"] = &HotSpot::set_scale;
     // Hot Spot Specific stuff
     type_hot_spot["observation"] = &HotSpot::observation;
     type_hot_spot["use_observation"] = &HotSpot::use_observation;
@@ -142,6 +142,12 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     sol::usertype<WalkArea> type_walkarea = lua_.new_usertype<WalkArea>("cpp_walkarea");
     type_walkarea["get"] = &WalkArea::get;
 
+    // Vector2D user type
+    sol::usertype<Vector2D> type_vector2D = lua_.new_usertype<Vector2D>("cpp_vector2D", sol::constructors<Vector2D(float, float)>());
+    type_vector2D["x"] = &Vector2D::x;
+    type_vector2D["y"] = &Vector2D::y;
+    type_vector2D["add"] = sol::resolve<Vector2D&(float, float)>(&Vector2D::add);
+
     // Mouse::BUTTON enumeration
     lua_.new_enum("BUTTON",
         "NONE", Mouse::BUTTON::NONE,
@@ -150,21 +156,13 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     );
     // Mouse::Status user type
     sol::usertype<Mouse::Status> type_mouse = lua_.new_usertype<Mouse::Status>("cpp_mouse");
-    type_mouse.set("x", sol::readonly(&Mouse::Status::x));
-    type_mouse.set("y", sol::readonly(&Mouse::Status::y));
-    type_mouse.set("xrel", sol::readonly(&Mouse::Status::xrel));
-    type_mouse.set("yrel", sol::readonly(&Mouse::Status::yrel));
+    type_mouse.set("position", sol::readonly(&Mouse::Status::position));
+    type_mouse.set("relative", sol::readonly(&Mouse::Status::relative));
     type_mouse.set("b", sol::readonly(&Mouse::Status::b));
 
     // Polygon user type
     sol::usertype<Polygon> type_polygon = lua_.new_usertype<Polygon>("cpp_polygon");
     type_polygon["closest_vertex"] = &Polygon::closest_vertex;
-
-    // Vector2D user type
-    sol::usertype<Vector2D> type_vector2D = lua_.new_usertype<Vector2D>("cpp_vector2D");
-    type_vector2D["x"] = &Vector2D::x;
-    type_vector2D["y"] = &Vector2D::y;
-    type_vector2D["add"] = sol::resolve<Vector2D&(float, float)>(&Vector2D::add);
 
     return true;
 }

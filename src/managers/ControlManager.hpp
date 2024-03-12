@@ -60,10 +60,10 @@ public:
         }
         return Mouse::Status
         {
-            static_cast<float>(x), static_cast<float>(y),
-            static_cast<float>(event.motion.xrel), static_cast<float>(event.motion.yrel),
+            { static_cast<float>(x), static_cast<float>(y) },
+            { static_cast<float>(event.motion.xrel), static_cast<float>(event.motion.yrel) },
             b
         };
     }
-    
+
 };

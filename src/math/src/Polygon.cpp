@@ -81,7 +81,7 @@ void Polygon::clear()
 
 
 // Return True if a given point is inside polygon.
-bool Polygon::point_in_polygon(float x, float y)
+bool Polygon::point_in_polygon(Vector2D pos)
 {
     /*
         Casting a ray in the -x direction and then checking
@@ -97,12 +97,12 @@ bool Polygon::point_in_polygon(float x, float y)
         // Check if the point lies in the y-range of the two vertices
         // if not, we don't need to check the crossing with this edge
         if (
-                (vertices[i].y <= y && vertices[j].y > y) ||    // This two lines check if point inside the vertices y range
-                (vertices[j].y <= y && vertices[i].y > y) &&
-                (vertices[j].x <= x || vertices[i].x <= y)      // Check only vertices on the left side of point
+                (vertices[i].y <= pos.y && vertices[j].y > pos.y) ||    // This two lines check if point inside the vertices y range
+                (vertices[j].y <= pos.y && vertices[i].y > pos.y) &&
+                (vertices[j].x <= pos.x || vertices[i].x <= pos.y)      // Check only vertices on the left side of point
             )
         {
-            if ( vertices[i].x + (y - vertices[i].y)/(vertices[j].y - vertices[i].y)*(vertices[j].x - vertices[i].x) <= x)
+            if ( vertices[i].x + (pos.y - vertices[i].y)/(vertices[j].y - vertices[i].y)*(vertices[j].x - vertices[i].x) <= pos.x)
             {
                 odd_nodes = !odd_nodes;
             }
@@ -116,30 +116,21 @@ bool Polygon::point_in_polygon(float x, float y)
 // Scale polygon by a given value.
 void Polygon::scale(float _scale, bool _in_place)
 {
-    // get the initial position of the firts vertex
-    const float initial_x = this->x();
-    const float initial_y = this->y();
-    for ( Vector2D &vertex: vertices )
+
+    const Vector2D initial {this->x(), this->y()};                          // Get the initial position of the First vertex
+    for ( Vector2D &vertex: vertices ) vertex *= _scale;                    // Scale all vertices
+    if (_in_place)
     {
-        vertex.x *= _scale;
-        vertex.y *= _scale;
+        const Vector2D delta = initial - Vector2D{this->x(), this->y()};    // Compute deltas
+        this->move(delta);                                                  // Move polygon back to its original position
     }
-    // Compute deltas
-    const float delta_x = initial_x - this->x();
-    const float delta_y = initial_y - this->y();
-    // Move polygon back
-    if (_in_place) this->move(delta_x, delta_y);
 }
 
 
 // Move polygon by a given distance.
-void Polygon::move(float dx, float dy)
+void Polygon::move(Vector2D direction)
 {
-    for ( Vector2D &vertex : vertices )
-    {
-        vertex.x += dx;
-        vertex.y += dy;
-    }
+    for ( Vector2D &vertex : vertices ) vertex += direction;
 }
 
 // Return the square of the distance
@@ -178,22 +169,30 @@ float Polygon::y()
     auto point = std::min_element(vertices.begin(), vertices.end(), [](auto a, auto b) { return a.y < b.y; });
     return point->y;
 }
+void Polygon::position(Vector2D position)
+{
+    this->x(position.x);
+    this->y(position.y);
+    // TO DO: Identify error in the code below
+    // Vector2D direction = position - Vector2D{this->x(), this->y()};
+    // move(direction);
+}
 void Polygon::x(float x)
 {
     float dx = x - this->x();
-    move(dx, 0);
+    move(Vector2D{dx, 0});
 }
 void Polygon::y(float y)
 {
     float dy = y - this->y();
-    move(0, dy);
+    move(Vector2D{0, dy});
 }
- 
+
 
 /*
     Render scaled and moved version of polygon.
 */
-void Polygon::render(SDL_Renderer* renderer) const
+void Polygon::render(SDL_Renderer* renderer, Camera camera) const
 {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
     size_t i, j;
@@ -201,10 +200,10 @@ void Polygon::render(SDL_Renderer* renderer) const
     j = this->size() - 1;
     for ( i = 0; i < this->size(); i++ )
     {
-        x1 = static_cast<int>(vertices[j].x * visual.scale + visual.dx);
-        y1 = static_cast<int>(vertices[j].y * visual.scale + visual.dy);
-        x2 = static_cast<int>(vertices[i].x * visual.scale + visual.dx);
-        y2 = static_cast<int>(vertices[i].y * visual.scale + visual.dy);
+        x1 = static_cast<int>(vertices[j].x * camera.zoom - camera.position.x);
+        y1 = static_cast<int>(vertices[j].y * camera.zoom - camera.position.y);
+        x2 = static_cast<int>(vertices[i].x * camera.zoom - camera.position.x);
+        y2 = static_cast<int>(vertices[i].y * camera.zoom - camera.position.y);
         SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
         gfx::square_filled(renderer, x1, y1, 6);
         j = i;

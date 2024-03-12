@@ -13,6 +13,7 @@
 class RenderManager;
 class AssetManager;
 class SerializationManager;
+class Camera;
 
 
 class Frame
@@ -45,7 +46,7 @@ public:
     virtual void reset() = 0;
     virtual void render(SDL_Renderer* renderer, SDL_FRect destination) = 0;
     virtual void destroy() = 0;
-    
+
 };
 
 class Animation : public Depiction
@@ -64,8 +65,8 @@ public:
     Animation(std::string id, bool loop, AssetManager* assets);
     Animation(const Animation& source);
     Animation* clone() override;
-    int w() override; 
-    int h() override; 
+    int w() override;
+    int h() override;
 
     void update(int dt) override;
     void reset() override;
@@ -86,8 +87,8 @@ public:
     Texture(SDL_Texture* texture);
     Texture(std::string id, AssetManager* assets);
     Texture* clone() override;
-    int w() override; 
-    int h() override; 
+    int w() override;
+    int h() override;
 
     void update(int dt) override;
     void reset() override;
@@ -107,7 +108,7 @@ private:
     float       scale_;
     SDL_FRect   dest_rect_;
     int         z_index_;
-    
+
     std::unordered_map<std::string, std::unique_ptr<Depiction>> depictions_;
     std::string current_depiction_id_;
     Depiction* current_depiction_;
@@ -122,17 +123,17 @@ public:
     void add_depiction(std::string id, bool loop, AssetManager* assets);    // Add Animation depiction
 
     void update(RenderManager* renderer, int dt);
-    void render(SDL_Renderer* renderer);
+    void render(SDL_Renderer* renderer, Camera camera);
 
     void depiction(std::string id);
     void reset();
 
     // Setters
 
-    void position(float x, float y);
+    void position(Vector2D position);
     void x(float x);
     void y(float y);
-    void move(float dx, float dy);
+    void move(Vector2D direction);
     void dimensions(float w, float h);
     void match_dimensions();
     void set_scale(float s);

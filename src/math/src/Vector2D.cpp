@@ -3,6 +3,7 @@
 #include <iostream> // ostream
 #include <math.h>   // sqrt
 
+#include "../managers/RenderManager.hpp"
 #include "../utils/SDL_GFX.hpp"
 
 // Constructor ====================================================================================
@@ -168,11 +169,11 @@ std::ostream& operator<<(std::ostream& os, const Vector2D& vec)
 /*
     Render scaled and moved version of vector.
 */
-void Vector2D::render(SDL_Renderer* renderer) const
+void Vector2D::render(SDL_Renderer* renderer, Camera camera) const
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, SDL_ALPHA_OPAQUE);
-    int x2 { static_cast<int>(x * visual.scale + visual.dx) };
-    int y2 { static_cast<int>(y * visual.scale + visual.dy) };
+    int x2 { static_cast<int>(x * camera.zoom - camera.position.x) };
+    int y2 { static_cast<int>(y * camera.zoom - camera.position.y) };
     SDL_RenderDrawLine(renderer, 0, 0, x2, y2);
     gfx::square_filled(renderer, x2, y2, 6);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);

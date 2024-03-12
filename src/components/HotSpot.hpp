@@ -22,7 +22,6 @@ protected:
 public:
 
     HotSpot(YAML::Node data, AssetManager* assets);
-    HotSpot(YAML::Node data, AssetManager* assets, float room_x, float room_y, float room_scale);
     ~HotSpot() {};
 
     void update(RenderManager* renderer, int dt) override;

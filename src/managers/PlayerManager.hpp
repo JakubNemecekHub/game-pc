@@ -38,10 +38,10 @@ public:
     Player(AssetManager* assets, std::string sprite_name, std::string start_animation_name);
 
     void update(RenderManager* renderer, const int dt);
-    void position(float x, float y);    // Place player no matter what
+    void position(Vector2D position);    // Place player no matter what
     void set_scale(float s);
     void scale(float s);
-    void walk(float x, float y);        // Try to walk to given location
+    void walk(Vector2D position);        // Try to walk to given location
 
 };
 

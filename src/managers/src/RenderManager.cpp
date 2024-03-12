@@ -156,7 +156,7 @@ void RenderManager::render_sprite()
         while ( !render_queues_[i].empty() )
         {
             MyType::Object object { render_queues_[i].front() };
-            object.render(renderer_);
+            object.render(renderer_, camera_);
             render_queues_[i].pop();
         }
     }

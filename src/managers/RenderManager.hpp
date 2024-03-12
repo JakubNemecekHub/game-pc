@@ -17,6 +17,23 @@
 
 class Sprite;
 
+class Camera
+{
+public:
+    float zoom;
+    Vector2D position;
+    Camera()
+        : zoom{1.0f}, position{0, 0} {}
+
+    inline void update(float zoom, Vector2D position)
+    {
+        this->zoom = zoom;
+        this->position = position;
+    }
+
+};
+
+
 namespace MyType
 {
 
@@ -29,17 +46,17 @@ namespace MyType
 class Object
 {
 public:
- 
+
     // Define the abstract class (or interface) of the objects this wrapper can hold
     struct Concept
     {
         virtual ~Concept() {}
         // Pure virtual functions
-        virtual void render(SDL_Renderer* renderer) const = 0;
+        virtual void render(SDL_Renderer* renderer, Camera camera) const = 0;
     };
-    
+
     // Methods delegating call to the object itself
-    void render(SDL_Renderer* renderer) const { object->render(renderer); }
+    void render(SDL_Renderer* renderer, Camera camera) const { object->render(renderer, camera); }
 
     // What is this?
     template<typename T>
@@ -47,11 +64,11 @@ public:
     {
         Model(T* t) // cont T& t
             : object{t} {}
-        void render(SDL_Renderer* renderer) const override { object->render(renderer); }
+        void render(SDL_Renderer* renderer, Camera camera) const override { object->render(renderer, camera); }
     private:
         T* object;
     };
-    
+
     std::shared_ptr<Concept> object; // This holds the object itself
 
     // Templated constructor
@@ -61,7 +78,6 @@ public:
 };
 
 } // namespace
-
 
 
 class RenderManager
@@ -76,7 +92,10 @@ private:
 
     void render_sprite();
 
+
 public:
+
+    Camera camera_;
 
     RenderManager() {};
     RenderManager(LogManager* log);
@@ -99,9 +118,10 @@ public:
 
     // Helper functions.
 
+    void update_camera(float zoom, Vector2D position) {camera_.update(zoom, position); }
     void scale_full_h(Sprite* sprite);
     void center_horizontally(Sprite* sprite);
     void center_vertically(Sprite* sprite);
     int get_screen_width();
-    
+
 };

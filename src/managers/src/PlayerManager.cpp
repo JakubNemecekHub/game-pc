@@ -11,7 +11,7 @@
     sprite_ = assets->sprite(id);
     sprite_->depiction(start_animation_name); // sprite_->animation(ANIMATION::IDLE);
     // Set position
-    sprite_->position(this->position_.x, this->position_.y);
+    sprite_->position(this->position_);
     // Set dimensions
     sprite_->match_dimensions();
 }
@@ -26,9 +26,9 @@ void Player::update(RenderManager* renderer, const int dt)
         // These two should be given by sprite's offset. Offset is the position of a "walk point" on the sprite (E.g. the pixel, whose coordinates
         // are indicated by mouse click position.)
         const Vector2D destination  { destination_ - Vector2D{half_width, y_offset} };  // Destination of the player's sprite, calculated from the desired
-                                                                                        // click coordinates and sprite's offset 
+                                                                                        // click coordinates and sprite's offset
         const Vector2D route        { destination - position_                       };  // Total distance to the destination
-              Vector2D step         { (destination - position_).unit() * speed_     };  // This tick' step 
+              Vector2D step         { (destination - position_).unit() * speed_     };  // This tick' step
         if ( step > route )
         {
             step = route;
@@ -36,21 +36,21 @@ void Player::update(RenderManager* renderer, const int dt)
             sprite_->depiction("idle");
         }
         position_ += step;
-        sprite_->position(position_.x, position_.y);
+        sprite_->position(position_);
     }
     sprite_->update(renderer, dt);
 }
 
 
-void Player::position(float x, float y) { position_.x = x; position_.y = y; sprite_->position(x, y); }
+void Player::position(Vector2D position) { position_= position; sprite_->position(position); }
 void Player::set_scale(float s) { scale_ = s; sprite_->set_scale(s); }
 void Player::scale(float s) { scale_ *= s; sprite_->scale(s); }
 
 
-void Player::walk(float x, float y)
+void Player::walk(Vector2D position)
 {
-    destination_.x = x;
-    destination_.y = y;
+    destination_.x = position.x;
+    destination_.y = position.y;
     is_walking_ = true;
     sprite_->depiction("walk");
 }
@@ -71,7 +71,7 @@ bool PlayerManager::startUp(std::string sprite_name, std::string start_animation
     // Create player
     player = Player(assets_, sprite_name, start_animation_name);
     inventory.startUp(items_);
-    player.position(x, y);
+    player.position(Vector2D{x, y});
     player.set_scale(s);
     // Initialize inventor's GUI
     inventory.ini_gui(assets_, renderer_, inventory_sprite_name);

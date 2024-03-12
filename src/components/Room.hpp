@@ -10,6 +10,7 @@
 #include "Ambient.hpp"
 #include "WalkArea.hpp"
 #include "../math/Polygon.hpp"
+#include "../math/Vector2D.hpp"
 
 class Sprite;
 class GameObject;
@@ -35,7 +36,7 @@ public:
     void update(RenderManager* renderer, int dt);
 
     inline void reserve(size_t count) { animations_.reserve(count); }
-    Ambient* get_animation(float x, float y);
+    Ambient* get_animation(Vector2D position);
 
 };
 
@@ -70,15 +71,13 @@ private:
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<GameObject>>> objects_;
     WalkArea walk_area_;
 
-
-
-    // Methods
-
-    auto relative_coordinates(float x, float y);
+    // Camera
+    float camera_zoom_;
+    Vector2D camera_position_;
 
     // DEBUG
 
-    DEBUG_STATE debug_ { DEBUG_STATE::NORMAL }; 
+    DEBUG_STATE debug_ { DEBUG_STATE::NORMAL };
 
 public:
 
@@ -89,8 +88,8 @@ public:
     // Methods
 
            void update(RenderManager* renderer, int dt);
-           bool walkable(float x, float y);
-    GameObject* get_object(float x, float y);
+           bool walkable(Vector2D position);
+    GameObject* get_object(Vector2D position);
            void remove_item(std::string id);
 
     void save(SerializationManager* io);

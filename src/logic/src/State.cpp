@@ -20,16 +20,17 @@ void State::load_sprite_(std::pair<sol::object, sol::object> sprite_data)
     bool fill = data.get_or("fill", false);
     if ( fill )
     {
-        sprite->position(0, 0);
+        sprite->position(Vector2D{0, 0});
         sprite->scale_full_h();
         sprite->center();
     }
     else
     {
+        // TO DO: load x, y as a Vector2D
         float x = data.get<float>("x");
         float y = data.get<float>("y");
         float s = data.get<float>("scale");
-        sprite->position(x, y);
+        sprite->position(Vector2D{x, y});
         sprite->scale(s);
     }
 }
@@ -82,10 +83,10 @@ void State::input_keyboard_(SDL_Event& event)
 }
 
 
-GameObject* State::get_join_object_(float x, float y)
+GameObject* State::get_join_object_(Vector2D position)
 {
-    for (auto& button : buttons_ ) if ( button.clicked(x, y) ) return &button;
-    if (game_) return managers_->rooms.get_object(x, y);
+    for (auto& button : buttons_ ) if ( button.clicked(position) ) return &button;
+    if (game_) return managers_->rooms.get_object(position);
     return nullptr;
 }
 
@@ -93,7 +94,11 @@ GameObject* State::get_join_object_(float x, float y)
 void State::input_mouse_(SDL_Event& event)
 {
     Mouse::Status mouse = managers_->control.mouse_transform(event);
-    GameObject* object { get_join_object_(mouse.x, mouse.y) };
+    // Transform from Screen space to World space
+    mouse.position += managers_->renderer.camera_.position;
+    mouse.position /= managers_->renderer.camera_.zoom;
+    mouse.relative /= managers_->renderer.camera_.zoom;
+    GameObject* object { get_join_object_(mouse.position) };
     switch (event.type)
     {
     case SDL_MOUSEMOTION:
@@ -134,7 +139,7 @@ void State::update(int dt)
 
     std::ranges::for_each(sprites_, [&](Sprite* sprite) { sprite->update(&(managers_->renderer), dt); });   // Update sprites
     std::ranges::for_each(buttons_, [&](Button& button) { button.update(&(managers_->renderer), dt); });    // Update buttons
-    
+
     if ( !game_ ) return;
     // If we are in a gamestate, then update RoomManager, PlayerManager, and textManager
     managers_->rooms.update(&(managers_->renderer), dt);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../math/Vector2D.hpp"
+
 
 namespace Mouse
 {
@@ -13,10 +15,8 @@ enum class BUTTON
 
 struct Status
 {
-    float x;
-    float y;
-    float xrel;
-    float yrel;
+    Vector2D position;
+    Vector2D relative;
     BUTTON b;
 };
 

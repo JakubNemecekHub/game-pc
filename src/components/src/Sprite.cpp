@@ -201,9 +201,14 @@ void Sprite::reset()
 }
 
 
-void Sprite::render(SDL_Renderer* renderer)
+void Sprite::render(SDL_Renderer* renderer, Camera camera)
 {
-    current_depiction_->render(renderer, dest_rect_);
+    SDL_FRect dest_rect;
+    dest_rect.x = dest_rect_.x * camera.zoom - camera.position.x;
+    dest_rect.y = dest_rect_.y * camera.zoom - camera.position.y;
+    dest_rect.w = dest_rect_.w * camera.zoom;
+    dest_rect.h = dest_rect_.h * camera.zoom;
+    current_depiction_->render(renderer, dest_rect);
 }
 
 
@@ -224,12 +229,11 @@ void Sprite::match_dimensions()
     Set Sprite's position to given coordinates.
     Also changes destination rectangle for renderer.
 */
-void Sprite::position(float x, float y)
+void Sprite::position(Vector2D position)
 {
-    position_.x = x;
-    position_.y = y;
-    dest_rect_.x = x;
-    dest_rect_.y = y;
+    position_ = position;
+    dest_rect_.x = position.x;
+    dest_rect_.y = position.y;
 }
 void Sprite::x(float x) {position_.x = x; dest_rect_.x = x;}
 void Sprite::y(float y) {position_.y = y; dest_rect_.y = y;}
@@ -239,16 +243,12 @@ void Sprite::y(float y) {position_.y = y; dest_rect_.y = y;}
     Move Sprite by given values from its current position.
     Also changes destination rectangle for renderer.
 */
-void Sprite::move(float dx, float dy)
+void Sprite::move(Vector2D direction)
 {
-    // int final_x { static_cast<int>(position_.x) + dx };
-    // int final_y { static_cast<int>(position_.y) + dy };
-    float final_x { position_.x + dx };
-    float final_y { position_.y + dy };
-    position_.x = final_x;
-    position_.y = final_y;
-    dest_rect_.x = final_x;
-    dest_rect_.y = final_y;
+
+    position_ += direction;
+    dest_rect_.x = position_.x;  // TO DO: we care about dest_rect_ only when rendering -> Move somewhere else?
+    dest_rect_.y = position_.y;
 }
 
 

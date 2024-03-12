@@ -28,7 +28,7 @@ void RoomAnimations::load(YAML::Node data, AssetManager* assets)
         animations_.at(i).scale(data[i]["scale"].as<float>());
         float x { data[i]["position"][0].as<float>() };
         float y { data[i]["position"][1].as<float>() };
-        animations_.at(i).position(x, y);
+        animations_.at(i).position(Vector2D{x, y});
     }
 }
 
@@ -45,11 +45,11 @@ void RoomAnimations::update(RenderManager* renderer, int dt)
 }
 
 
-Ambient* RoomAnimations::get_animation(float x, float y)
+Ambient* RoomAnimations::get_animation(Vector2D position)
 {
     for ( auto& animation : animations_ )
     {
-        if ( animation.clicked(x, y) )
+        if ( animation.clicked(position) )
         {
             return &animation;
         }
@@ -67,14 +67,12 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
     sprite_ = assets->sprite(id);
-    sprite_->scale_full_h();
-    sprite_->center_horizontally();
     sprite_->z_index(0);
-    // Load walk area polygon
-    walk_area_.scale(sprite_->scale());
-    float x = walk_area_.x() * sprite_->scale() + sprite_->x();
-    float y = walk_area_.y() * sprite_->scale() + sprite_->y();
-    walk_area_.position(x, y);
+    // Load default camera
+    camera_zoom_ = data["camera"]["zoom"].as<float>();
+    // TO DO: load as Vector2D
+    camera_position_.x = data["camera"]["position"].as<std::vector<float>>()[0];
+    camera_position_.y = data["camera"]["position"].as<std::vector<float>>()[1];
 
     // Load HotSpots
     for ( auto hot_spot : data["hot_spots"] )
@@ -83,9 +81,8 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
         objects_["hot_spots"].emplace(
             std::piecewise_construct,
             std::forward_as_tuple(id),
-            std::forward_as_tuple(std::make_shared<HotSpot>(hot_spot, assets, sprite_->x(), sprite_->y(), sprite_->scale()))
+            std::forward_as_tuple(std::make_shared<HotSpot>(hot_spot, assets))
         );
-
     }
 
     // Load Doors
@@ -97,7 +94,6 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
             std::forward_as_tuple(id),
             std::forward_as_tuple(std::make_shared<Door>(door, assets, sprite_->x(), sprite_->y(), sprite_->scale()))
         );
-
     }
 
     // Items
@@ -107,10 +103,10 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
         Item* item { items->get(id) };
         item->set_use(true);
         item->state(item_data["state"].as<bool>());
-        std::vector<int> position { item_data["position"].as<std::vector<int>>() };
+        std::vector<int> position { item_data["position"].as<std::vector<int>>() };  // TO DO: load as Vector2D
         float item_scale { item_data["scale"].as<float>() };
         float room_scale { sprite_->scale() };
-        item->position(position[0] * room_scale + sprite_->x(), position[1] * room_scale);
+        item->position(Vector2D{position[0] * room_scale + sprite_->x(), position[1] * room_scale});
         item->scale(room_scale * item_scale);
         items_.insert(std::make_pair(id, item));
     }
@@ -125,27 +121,17 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
 }
 
 
-// Transform coordinates to room's coordinates.
-auto Room::relative_coordinates(float x, float y)
-{
-    struct result { float room_x; float room_y; };
-    return result
-    {
-        (x - sprite_->x()) / sprite_->scale(),
-        y / sprite_->scale()   
-    };
-}
-
-
 // Return true if given point in the room's walk area.
-bool Room::walkable(float x, float y)
+bool Room::walkable(Vector2D position)
 {
-    return walk_area_.clicked(x, y);
+    return walk_area_.clicked(position);
 }
 
 
 void Room::update(RenderManager* renderer, int dt)
 {
+    // Update camera
+    renderer->update_camera(camera_zoom_, camera_position_);
     // Register background
     renderer->submit(sprite_);
     for ( auto& item : items_ )
@@ -183,18 +169,18 @@ void Room::update(RenderManager* renderer, int dt)
 }
 
 
-GameObject* Room::get_object(float x, float y)
+GameObject* Room::get_object(Vector2D position)
 {
 
     // Order: Item -> Door -> Hot Spot -> Walkarea
 
     for ( auto& item : items_ )
-        if ( item.second->clicked(x, y) && item.second->state() ) return item.second;
+        if ( item.second->clicked(position) && item.second->state() ) return item.second;
     for ( auto& door : objects_["doors"] )
-        if ( door.second->clicked(x, y) && door.second->state() ) return door.second.get();
+        if ( door.second->clicked(position) && door.second->state() ) return door.second.get();
     for ( auto& hot_spot : objects_["hot_spots"] )
-        if ( hot_spot.second->clicked(x, y) && hot_spot.second->state() ) return hot_spot.second.get();
-    if ( walk_area_.clicked(x, y) && walk_area_.state() ) return &walk_area_;
+        if ( hot_spot.second->clicked(position) && hot_spot.second->state() ) return hot_spot.second.get();
+    if ( walk_area_.clicked(position) && walk_area_.state() ) return &walk_area_;
     return nullptr;
 
 }

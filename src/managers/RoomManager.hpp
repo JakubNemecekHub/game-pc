@@ -16,6 +16,8 @@ class SerializationManager;
 #include "../components/Door.hpp"
 #include "../components/HotSpot.hpp"
 
+#include "../math/Vector2D.hpp"
+
 
 class RoomManager
 {
@@ -41,8 +43,8 @@ public:
 
     void activate_room(const std::string& room_id);
     void update(RenderManager* renderer, int dt);
-    bool walkable(float x, float y);
-    GameObject* get_object(float x, float y);
+    bool walkable(Vector2D position);
+    GameObject* get_object(Vector2D position);
     void remove_item(std::string id);
 
     void save();

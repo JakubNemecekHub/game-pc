@@ -70,7 +70,7 @@ void RoomManager::load_rooms_()
 
 
 void RoomManager::activate_room(const std::string& id)
-{  
+{
     if (auto it = rooms_.find(id); it != rooms_.end()) active_room_ = &(it->second);
     else log_->error("Cannot activate missing room \"", id, "\"");
 }
@@ -82,8 +82,8 @@ void RoomManager::update(RenderManager* renderer, int dt)
 }
 
 
-bool RoomManager::walkable(float x, float y) { return active_room_->walkable(x, y); }
-GameObject* RoomManager::get_object(float x, float y) { return active_room_->get_object(x, y); }
+bool RoomManager::walkable(Vector2D position) { return active_room_->walkable(position); }
+GameObject* RoomManager::get_object(Vector2D position) { return active_room_->get_object(position); }
 void RoomManager::remove_item(std::string id) { active_room_->remove_item(id); }
 
 

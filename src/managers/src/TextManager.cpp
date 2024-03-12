@@ -84,7 +84,8 @@ SDL_Texture* TextManager::create_texture_(std::string text, COLOR color)
 }
 
 
-void TextManager::transform(std::unique_ptr<Sprite>& sprite, float x, float y)
+// Transform the position and scale of a text texture relative to World space
+void TextManager::transform(std::unique_ptr<Sprite>& sprite, Vector2D position)
 {
     sprite->match_dimensions();
     /*
@@ -98,12 +99,32 @@ void TextManager::transform(std::unique_ptr<Sprite>& sprite, float x, float y)
     int screen_width { renderer_->get_screen_width() };
     float final_x, final_y;
     final_x = screen_width - sprite->w();
-    if ( final_x > x )
+    if ( final_x > position.x )
     {
-        final_x = x;
+        final_x = position.x;
     }
-    final_y = y - sprite->h();
-    sprite->position(final_x, final_y);
+    final_y = position.y - sprite->h() / renderer_->camera_.zoom;
+    sprite->position(Vector2D{final_x, final_y});
+    sprite->scale(1 / renderer_->camera_.zoom);
+    renderer_->submit(sprite.get());
+}
+
+
+// Transform the position and scale of a text texture relative to Screen space
+void TextManager::transform_screen(std::unique_ptr<Sprite>& sprite, Vector2D position)
+{
+    sprite->match_dimensions();
+    int screen_width { renderer_->get_screen_width() };
+    float final_x, final_y;
+    final_x = screen_width - (sprite->w() - renderer_->camera_.position.x) / renderer_->camera_.zoom;
+    if ( final_x > position.x )
+    {
+        final_x = position.x;
+    }
+    // final_x = (x + renderer_->camera_.position.x - sprite->w());
+    final_y = (position.y + renderer_->camera_.position.y - (sprite->h() * 0.9f));
+    sprite->position(Vector2D{final_x, final_y});
+    sprite->scale(1 / renderer_->camera_.zoom);
     renderer_->submit(sprite.get());
 }
 
@@ -116,7 +137,7 @@ Sprite* TextManager::create_sprite(std::string text, COLOR color)
 }
 
 
-void TextManager::submit_player(std::string text, float x, float y, COLOR color)
+void TextManager::submit_player(std::string text, Vector2D position, COLOR color)
 {
     if ( std::get<0>(text_player_) )
     {
@@ -125,12 +146,12 @@ void TextManager::submit_player(std::string text, float x, float y, COLOR color)
     SDL_Texture* text_texture = create_texture_(text, color);
     std::get<0>(text_player_) = std::make_unique<Sprite>(text_texture, 1.0f, 3);
     std::get<0>(text_player_)->depiction("text");
-    transform(std::get<0>(text_player_), x, y);
+    transform(std::get<0>(text_player_), position);
     std::get<1>(text_player_) = 0;
 }
 
 
-void TextManager::submit_label(std::string id, std::string text, float x, float y, COLOR color)
+void TextManager::submit_label(std::string id, std::string text, Vector2D position, COLOR color)
 {
     SDL_Texture* text_texture = create_texture_(text, color);
     if ( text_label_.count(id) == 1) clean_label(id);
@@ -138,17 +159,17 @@ void TextManager::submit_label(std::string id, std::string text, float x, float 
                         std::forward_as_tuple(id),
                         std::forward_as_tuple(std::make_unique<Sprite>(text_texture, 1.0f, 3)));
     text_label_.at(id)->depiction("text");
-    transform(text_label_.at(id), x, y);
+    transform_screen(text_label_.at(id), position);
 }
 
 
-void TextManager::submit_free(std::string text, float x, float y, COLOR color)
+void TextManager::submit_free(std::string text, Vector2D position, COLOR color)
 {
     SDL_Texture* text_texture = create_texture_(text, color);                       // Create Sprite from text
     text_free_.emplace_back(std::make_unique<Sprite>(text_texture, 1.0f, 3), 0);    // Insert new Sprite into list
     std::unique_ptr<Sprite>& sprite { std::get<0>(text_free_.back()) };
     sprite->depiction("text");
-    transform(sprite, x, y);                                                       // Set Sprite's dimensions
+    transform(sprite, position);                                                    // Set Sprite's dimensions
 }
 
 
@@ -178,7 +199,7 @@ void TextManager::update(int dt)
     for ( auto& text : text_free_ )                                                                 // Update remaining text
     {
         renderer_->submit(std::get<0>(text).get());
-        std::get<1>(text) += dt; 
+        std::get<1>(text) += dt;
     }
 }
 

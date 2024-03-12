@@ -12,6 +12,7 @@ extern "C" {
 #include <sol/sol.hpp>
 
 #include "../utils/Mouse.hpp"
+#include "../math/Vector2D.hpp"
 
 class Sprite;
 class Managers;
@@ -42,7 +43,7 @@ private:
     void load_sprite_(std::pair<sol::object, sol::object> sprite_data);
     void load_button_(std::pair<sol::object, sol::object> sprite);
 
-    GameObject* get_join_object_(float x, float y);
+    GameObject* get_join_object_(Vector2D position);
 
     void input_keyboard_(SDL_Event& event);
     void input_mouse_(SDL_Event& event);
@@ -77,8 +78,8 @@ public:
             break;
         }
     }
-    void update(int dt); 
-    void render(); 
+    void update(int dt);
+    void render();
 
     inline void visit_click(Item* item, Mouse::Status mouse)         { script_["lua_visit_click_item"](item, mouse);         }
     inline void visit_click(Door* door, Mouse::Status mouse)         { script_["lua_visit_click_door"](door, mouse);         }

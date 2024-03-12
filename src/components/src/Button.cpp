@@ -12,7 +12,7 @@ Button::Button(std::string label, Sprite* sprite, float x, float y, float scale,
     : action{action}
 {
     form_ = std::make_unique<ButtonForm>(sprite, vertices, text, label);
-    form_->position(x, y);
+    form_->position(Vector2D{x, y});
     form_->scale(scale);
 }
 

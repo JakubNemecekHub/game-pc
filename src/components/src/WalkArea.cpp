@@ -12,7 +12,7 @@ WalkArea::WalkArea(std::string id, std::vector<std::vector<float>> vertices, flo
     : WalkArea(id, vertices)
 {
     form_->scale(room_scale);
-    form_->move(room_x, room_y);
+    form_->move(Vector2D{room_x, room_y});
 }
 
 void WalkArea::update(RenderManager* renderer, int dt)

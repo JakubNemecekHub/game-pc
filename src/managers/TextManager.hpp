@@ -43,7 +43,7 @@ private:
 
     RenderManager*          renderer_;
     LogManager*             log_;
-    
+
     std::string             font_file_;
     int                     font_size_;
     TTF_Font*               font_;              // .ttf font to use to display text
@@ -56,7 +56,8 @@ private:
 
 public:
     SDL_Texture* create_texture_(std::string text, COLOR color);
-    void transform(std::unique_ptr<Sprite>& sprite, float x, float y);
+    void transform(std::unique_ptr<Sprite>& sprite, Vector2D position);
+    void transform_screen(std::unique_ptr<Sprite>& sprite, Vector2D position);
 
     TextManager() {};
     TextManager(LogManager* log, RenderManager* renderer, YAML::Node ini);
@@ -65,15 +66,15 @@ public:
     bool ShutDown();
 
     void update(int dt);
-    
+
     Sprite* create_sprite(std::string text, COLOR color=COLOR::BEIGE);
 
-    void submit_player(std::string text, float x, float y, COLOR color=COLOR::BEIGE);
-    void submit_label(std::string id, std::string text, float x, float y, COLOR color=COLOR::BEIGE);
-    void submit_free(std::string text, float x, float y, COLOR color=COLOR::BEIGE);
+    void submit_player(std::string text, Vector2D position, COLOR color=COLOR::BEIGE);
+    void submit_label(std::string id, std::string text, Vector2D position, COLOR color=COLOR::BEIGE);
+    void submit_free(std::string text, Vector2D position, COLOR color=COLOR::BEIGE);
     void clean();
     void clean_player();
     void clean_label();               // Clean all labels
     void clean_label(std::string id); // Clean specific label
-    
+
 };

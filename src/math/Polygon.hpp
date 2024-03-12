@@ -5,7 +5,8 @@
 #include <SDL2/SDL.h>
 
 #include "Vector2D.hpp"
-#include "Visual.hpp"
+
+class Camera;
 
 typedef std::vector<std::vector<float>> Vertices;
 
@@ -34,20 +35,20 @@ public:
     void add_vertices(std::vector<Vector2D> vertices);
     void add_vertices(std::vector<std::vector<float>> vertices);
     void clear();
-    bool point_in_polygon(float x, float y);
+    bool point_in_polygon(Vector2D position);
     void scale(float _scale, bool _in_place = false);
-    void move (float dx, float dy);
+    void move (Vector2D direction);
 
     Vector2D* closest_vertex(float x, float y, float threshold);
 
     // "Position" of a polygon is a top left corner of its envelope rectangle
     float x();
     float y();
+    void position(Vector2D position);
     void x(float x);
     void y(float y);
 
     // Rendering methods
-    Visual visual;
-    void render(SDL_Renderer* renderer) const;
-    
+    void render(SDL_Renderer* renderer, Camera camera) const;
+
 };
