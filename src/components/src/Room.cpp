@@ -130,8 +130,6 @@ bool Room::walkable(Vector2D position)
 
 void Room::update(RenderManager* renderer, int dt)
 {
-    // Update camera
-    renderer->update_camera(camera_zoom_, camera_position_);
     // Register background
     renderer->submit(sprite_);
     for ( auto& item : items_ )

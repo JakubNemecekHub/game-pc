@@ -23,14 +23,15 @@ public:
     float zoom;
     Vector2D position;
     Camera()
-        : zoom{1.0f}, position{0, 0} {}
+        : zoom{10.0f}, position{-100, 0} {}
 
     inline void update(float zoom, Vector2D position)
     {
         this->zoom = zoom;
         this->position = position;
     }
-
+    inline void move(Vector2D direction) { position += direction; }
+    inline void set_zoom(float zoom) { this->zoom *= zoom; }
 };
 
 
@@ -118,7 +119,7 @@ public:
 
     // Helper functions.
 
-    void update_camera(float zoom, Vector2D position) {camera_.update(zoom, position); }
+    void update_camera(float zoom, Vector2D position) { camera_.update(zoom, position); }
     void scale_full_h(Sprite* sprite);
     void center_horizontally(Sprite* sprite);
     void center_vertically(Sprite* sprite);

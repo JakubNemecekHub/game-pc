@@ -17,7 +17,7 @@ Managers::Managers()
         std::cerr << "Cannot initialize game. " << e.what() << "\n";
         exit(EXIT_FAILURE);
     }
-    
+
     // Start Log Manager as soon as possible
     log = LogManager(ini["log"]);
     log.startUp();
@@ -41,7 +41,7 @@ Managers::Managers()
     text.startUp();
     serial.startUp();
     control.startUp();
-    script.startUp(source_path, &state, &text, &player, &rooms, &window, &serial, &items, &assets);
+    script.startUp(source_path, &state, &text, &player, &rooms, &window, &serial, &items, &assets, &renderer);
 
     log.log("All Managers started.");
 }

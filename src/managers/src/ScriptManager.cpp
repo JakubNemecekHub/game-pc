@@ -7,6 +7,7 @@
 #include "RoomManager.hpp"
 #include "RoomManager.hpp"
 #include "WindowManager.hpp"
+#include "RenderManager.hpp"
 #include "../logic/State.hpp"
 #include "../components/Item.hpp"
 #include "../components/Door.hpp"
@@ -25,7 +26,7 @@ ScriptManager::ScriptManager(LogManager* log)
     Bind necessary C++ functions and member functions into "cpp" table in Lua state
 */
 bool ScriptManager::startUp(std::string source_path, StateManager* state, TextManager* text, PlayerManager* player, RoomManager* rooms,
-                            WindowManager* window, SerializationManager* io, ItemManager* items, AssetManager* assets)
+                            WindowManager* window, SerializationManager* io, ItemManager* items, AssetManager* assets, RenderManager* renderer)
 {
 
     source_path_ = source_path + "/lgc/";
@@ -44,6 +45,11 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     // create "cpp.window" namespace
     auto lua_cpp_window = lua_["cpp"]["window"].get_or_create<sol::table>();
     lua_cpp_window.set_function("close", &WindowManager::close, window);
+
+    // create "cpp.camera" namespace
+    auto lua_cpp_camera = lua_["cpp"]["camera"].get_or_create<sol::table>();
+    lua_cpp_camera.set_function("move", &Camera::move, &(renderer->camera_));
+    lua_cpp_camera.set_function("zoom", &Camera::set_zoom, &(renderer->camera_));
 
     // create "cpp.state" namespace
     auto lua_cpp_state = lua_["cpp"]["state"].get_or_create<sol::table>();
