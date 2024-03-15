@@ -92,7 +92,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
         objects_["doors"].emplace(
             std::piecewise_construct,
             std::forward_as_tuple(id),
-            std::forward_as_tuple(std::make_shared<Door>(door, assets, sprite_->x(), sprite_->y(), sprite_->scale()))
+            std::forward_as_tuple(std::make_shared<Door>(door, assets))
         );
     }
 
@@ -187,6 +187,12 @@ GameObject* Room::get_object(Vector2D position)
 void Room::remove_item(std::string id)
 {
     if ( !items_.erase(id) ) objects_.erase(id);
+}
+
+std::tuple<float, Vector2D> Room::door_camera(std::string door_id)
+{
+    if (auto it = objects_["doors"].find(door_id); it != objects_["doors"].end())
+    return static_cast<Door*>(objects_["doors"].at(door_id).get())->camera();       // This is iffy :(
 }
 
 

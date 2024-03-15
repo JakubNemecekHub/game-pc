@@ -92,6 +92,8 @@ public:
     GameObject* get_object(Vector2D position);
            void remove_item(std::string id);
 
+    std::tuple<float, Vector2D> door_camera(std::string door_id);
+
     void save(SerializationManager* io);
 
     // DEBUG

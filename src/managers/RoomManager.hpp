@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <tuple>
 
 #include <SDL2/SDL.h>
 
@@ -16,7 +17,7 @@ class SerializationManager;
 #include "../components/Door.hpp"
 #include "../components/HotSpot.hpp"
 
-#include "../math/Vector2D.hpp"
+class Vector2D;
 
 
 class RoomManager
@@ -41,7 +42,7 @@ public:
     bool startUp(std::string id);
     bool shutDown();
 
-    void activate_room(const std::string& room_id);
+    std::tuple<float, Vector2D> activate_room(const std::string& room_id, const std::string& entrance_id);
     void update(RenderManager* renderer, int dt);
     bool walkable(Vector2D position);
     GameObject* get_object(Vector2D position);

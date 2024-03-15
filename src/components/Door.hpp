@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 
 #include <yaml-cpp/yaml.h>
 
@@ -10,6 +11,7 @@
 class State;
 class AssetManager;
 class RenderManager;
+class Vector2D;
 
 
 class Door : public GameObject
@@ -22,10 +24,14 @@ protected:
     std::vector<std::string> locked_observations_;
     std::string              key_id_;
 
+    // Camera
+    // Set Renderer's camera to these values after entering room through this door.
+    Vector2D position_;
+    float zoom_;
+
 public:
 
     Door(YAML::Node data, AssetManager* assets);
-    Door(YAML::Node data, AssetManager* assets, float room_x, float room_y, float room_scale);
     ~Door() {};
 
     void update(RenderManager* renderer, int dt) override;
@@ -39,5 +45,7 @@ public:
 
     void accept_click(State* handler, Mouse::Status mouse) override;
     void accept_over(State* handler, Mouse::Status mouse) override;
+
+    std::tuple<float, Vector2D> camera();
 
 };

@@ -5,6 +5,7 @@
 #include "../logic/State.hpp"
 #include "../../managers/AssetManager.hpp"
 #include "../../managers/RenderManager.hpp"
+#include "../../math/Vector2D.hpp"
 
 
 Door::Door(YAML::Node data, AssetManager* assets)
@@ -32,16 +33,9 @@ Door::Door(YAML::Node data, AssetManager* assets)
     {
         form_ = std::make_unique<Trigger>(vertices);
     }
-}
-
-
-Door::Door(YAML::Node data, AssetManager* assets, float room_x, float room_y, float room_scale)
-    : Door(data, assets)
-{
-    form_->scale(room_scale);
-    float x = form_->x() * room_scale + room_x;
-    float y = form_->y() * room_scale + room_x; // TO DO: Check this!
-    form_->position(Vector2D{x, y});
+    // camera setting
+    zoom_ = data["camera"]["zoom"].as<float>();
+    position_ = data["camera"]["position"].as<Vector2D>();
 }
 
 
@@ -65,3 +59,8 @@ std::string Door::locked_observation()
 
 void Door::accept_click(State* handler, Mouse::Status mouse) { handler->visit_click(this, mouse); }
 void Door::accept_over(State* handler, Mouse::Status mouse) { handler->visit_over(this, mouse); }
+
+std::tuple<float, Vector2D> Door::camera()
+{
+    return std::make_tuple(zoom_, position_);
+}

@@ -23,7 +23,7 @@ public:
     float zoom;
     Vector2D position;
     Camera()
-        : zoom{10.0f}, position{-100, 0} {}
+        : zoom{1.0f}, position{0, 0} {}
 
     inline void update(float zoom, Vector2D position)
     {
@@ -31,7 +31,13 @@ public:
         this->position = position;
     }
     inline void move(Vector2D direction) { position += direction; }
-    inline void set_zoom(float zoom) { this->zoom *= zoom; }
+    inline void set(float zoom, Vector2D position)
+    {
+        this->zoom = zoom;
+        this->position = position;
+    }
+    inline void set_zoom(float zoom)            { this->zoom *= zoom;        }
+    inline void set_position(Vector2D position) { this->position = position; }
 };
 
 

@@ -10,6 +10,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "../../math/Polygon.hpp"
+#include "../../math/Vector2D.hpp"
 
 namespace fs = std::filesystem;
 
@@ -26,7 +27,7 @@ bool RoomManager::startUp(std::string id)
 {
     log_->log("Starting Room Manager.");
     load_rooms_();
-    activate_room(id);
+    activate_room(id, "None");
     log_->log("Room Manager Started.");
     return true;
 }
@@ -69,10 +70,11 @@ void RoomManager::load_rooms_()
 }
 
 
-void RoomManager::activate_room(const std::string& id)
+std::tuple<float, Vector2D> RoomManager::activate_room(const std::string& room_id, const std::string& entrance_id)
 {
-    if (auto it = rooms_.find(id); it != rooms_.end()) active_room_ = &(it->second);
-    else log_->error("Cannot activate missing room \"", id, "\"");
+    if (auto it = rooms_.find(room_id); it != rooms_.end()) active_room_ = &(it->second);
+    else log_->error("Cannot activate missing room \"", room_id, "\"");
+    return active_room_->door_camera(entrance_id);
 }
 
 

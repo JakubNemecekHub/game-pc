@@ -31,7 +31,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
 
     source_path_ = source_path + "/lgc/";
 
-    lua_.open_libraries(sol::lib::base, sol::lib::package); // TO DO: Check what libraries we need
+    lua_.open_libraries(sol::lib::base, sol::lib::package, sol::lib::string, sol::lib::table); // TO DO: Check what libraries we need
     // Set up managers' member functions
     // create "cpp" namespace
     auto lua_cpp = lua_["cpp"].get_or_create<sol::table>();
@@ -49,7 +49,9 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     // create "cpp.camera" namespace
     auto lua_cpp_camera = lua_["cpp"]["camera"].get_or_create<sol::table>();
     lua_cpp_camera.set_function("move", &Camera::move, &(renderer->camera_));
+    lua_cpp_camera.set_function("set", &Camera::set, &(renderer->camera_));
     lua_cpp_camera.set_function("zoom", &Camera::set_zoom, &(renderer->camera_));
+    lua_cpp_camera.set_function("position", &Camera::set_position, &(renderer->camera_));
 
     // create "cpp.state" namespace
     auto lua_cpp_state = lua_["cpp"]["state"].get_or_create<sol::table>();
