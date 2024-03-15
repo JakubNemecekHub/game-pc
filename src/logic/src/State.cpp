@@ -26,7 +26,6 @@ void State::load_sprite_(std::pair<sol::object, sol::object> sprite_data)
     }
     else
     {
-        // TO DO: load x, y as a Vector2D
         float x = data.get<float>("x");
         float y = data.get<float>("y");
         float s = data.get<float>("scale");
