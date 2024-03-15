@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <SDL2/SDL.h>
+#include <yaml-cpp/yaml.h>
 
 
 class Camera;
@@ -58,3 +59,33 @@ public:
     // Rendering methods
     void render(SDL_Renderer* renderer, Camera camera) const;
 };
+
+// YAML converter for my Vector2D class
+namespace YAML
+{
+
+template<>
+struct convert<Vector2D>
+{
+
+    static Node encode(const Vector2D& rhs)
+    {
+        Node node;
+        node.push_back(rhs.x);
+        node.push_back(rhs.y);
+        return node;
+    }
+
+    static bool decode(const Node& node, Vector2D& rhs)
+    {
+        if(!node.IsSequence() || node.size() != 2)
+        {
+            return false;
+        }
+        rhs.x = node[0].as<float>();
+        rhs.y = node[1].as<float>();
+        return true;
+    }
+};
+
+};  // namespace
