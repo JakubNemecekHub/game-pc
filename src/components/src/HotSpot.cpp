@@ -16,11 +16,11 @@ HotSpot::HotSpot(YAML::Node data, AssetManager* assets)
     // Form, could be RigidBody or Trigger
     // Sprite doesn't have to be in yaml file
     // Polygon on the other hand must be always present
-    Vertices vertices = data["click_area"].as<Vertices>();
+    Polygon trigger { data["click_area"].as<Polygon>() };
     if (data["sprite"])
     {
         Sprite* sprite = assets->sprite(data["sprite"].as<std::string>());
-        form_ = std::make_unique<RigidBody>(sprite, vertices);
+        form_ = std::make_unique<RigidBody>(sprite, trigger);
         Vector2D position { data["position"].as<Vector2D>() };
         float hot_spot_scale { data["scale"].as<float>() };
         form_->position(position);
@@ -28,7 +28,7 @@ HotSpot::HotSpot(YAML::Node data, AssetManager* assets)
     }
     else
     {
-        form_ = std::make_unique<Trigger>(vertices);
+        form_ = std::make_unique<Trigger>(trigger);
     }
 }
 

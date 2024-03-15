@@ -18,7 +18,7 @@ Item::Item(YAML::Node data, AssetManager* assets)
     pick_observation_ = data["pick_observation"].as<std::string>();
     // Form, should be RigidBody
     // Others do not make much sense.
-    form_ = std::make_unique<RigidBody>(assets->sprite(id_), data["click_area"].as<std::vector<std::vector<float>>>());
+    form_ = std::make_unique<RigidBody>(assets->sprite(id_), data["click_area"].as<Polygon>());
 }
 
 

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <SDL2/SDL.h>
+#include <yaml-cpp/yaml.h>
 
 #include "Vector2D.hpp"
 
@@ -52,3 +53,36 @@ public:
     void render(SDL_Renderer* renderer, Camera camera) const;
 
 };
+
+// YAML converter for my Polygon class
+namespace YAML
+{
+
+template<>
+struct convert<Polygon>
+{
+
+    static Node encode(const Polygon& rhs)
+    {
+        Node node;
+        for(const auto& vertex : rhs.vertices)
+        {
+            node.push_back(vertex);
+        }
+        return node;
+    }
+
+    static bool decode(const Node& node, Polygon& rhs)
+    {
+        if (!node.IsSequence()) return false;
+
+        for (const auto& vertexNode : node)
+        {
+            rhs.add_vertex(vertexNode.as<Vector2D>());
+        }
+        return true;
+    }
+
+};
+
+};  // namespace

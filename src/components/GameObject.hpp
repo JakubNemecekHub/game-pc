@@ -14,7 +14,6 @@ class TextManager;
 class SerializationManager;
 class State;
 class Sprite;
-class Polygon;
 
 
 class Form
@@ -82,7 +81,7 @@ private:
 
 public:
 
-    RigidBody(Sprite* sprite, std::vector<std::vector<float>> vertices);
+    RigidBody(Sprite* sprite, Polygon trigger);
 
      void x(float x) override;
      void y(float y) override;
@@ -113,7 +112,7 @@ private:
 
 public:
 
-    Trigger(std::vector<std::vector<float>> vertices);
+    Trigger(Polygon trigger);
 
      void x(float x) override;
      void y(float y) override;
@@ -148,8 +147,7 @@ private:
 
 public:
 
-    ButtonForm(Sprite* sprite, std::vector<std::vector<float>> vertices,
-               TextManager* text, std::string label);
+    ButtonForm(Sprite* sprite, Polygon trigger, TextManager* text, std::string label);
 
      void x(float x) override;
      void y(float y) override;

@@ -43,11 +43,8 @@ void Body::write(SerializationManager* io)
 /********************************************************************************
     RIGID BODY
 ********************************************************************************/
-RigidBody::RigidBody(Sprite* sprite, std::vector<std::vector<float>> vertices)
-    : sprite_{sprite}
-{
-    click_area_.add_vertices(vertices);
-}
+RigidBody::RigidBody(Sprite* sprite, Polygon trigger)
+    : sprite_{sprite}, click_area_{trigger} {}
 
 void RigidBody::x(float x)
 {
@@ -120,10 +117,9 @@ void RigidBody::write(SerializationManager* io)
 /********************************************************************************
     TRIGGER
 ********************************************************************************/
-Trigger::Trigger(std::vector<std::vector<float>> vertices)
-{
-   click_area_.add_vertices(vertices);
-}
+Trigger::Trigger(Polygon trigger)
+   : click_area_{trigger} {}
+
 void Trigger::x(float x) { click_area_.x(x); }
 void Trigger::y(float y) { click_area_.y(y); }
 void Trigger::position(Vector2D position) { click_area_.position(position); }
@@ -172,11 +168,9 @@ void Trigger::write(SerializationManager* io)
 /********************************************************************************
     BUTTON FORM
 ********************************************************************************/
-ButtonForm::ButtonForm(Sprite* sprite, std::vector<std::vector<float>> vertices,
-           TextManager* text, std::string label)
-    : sprite_{sprite}, label_{label}
+ButtonForm::ButtonForm(Sprite* sprite, Polygon trigger, TextManager* text, std::string label)
+    : sprite_{sprite}, click_area_{trigger}, label_{label}
 {
-    click_area_.add_vertices(vertices);
     // Set up a textual label inside the Sprite.
    sprite_->match_dimensions(); // TO DO: Do it in the AssetManager
    label_sprite_ = std::make_unique<Sprite>(text->create_texture_(label_, COLOR::BEIGE), 1.0f, 3);

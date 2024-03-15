@@ -5,7 +5,6 @@
 #include <yaml-cpp/yaml.h>
 
 #include "GameObject.hpp"
-// #include "../math/Polygon.hpp" // To use Vertices typedef
 
 class State;
 class Polygon;
@@ -16,8 +15,7 @@ class WalkArea : public GameObject
 // Shall only have Trigger Form
 public:
 
-    WalkArea(std::string id, std::vector<std::vector<float>> vertices);
-    WalkArea(std::string id, std::vector<std::vector<float>> vertices, float room_x, float room_y, float room_scale);
+    WalkArea(std::string id, Polygon polygon);
 
     Polygon* get()
     {

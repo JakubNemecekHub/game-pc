@@ -1,18 +1,13 @@
 #include "../Walkarea.hpp"
 
 #include "../logic/State.hpp"
+#include "../../math/Polygon.hpp"
 
 
-WalkArea::WalkArea(std::string id, std::vector<std::vector<float>> vertices)
+WalkArea::WalkArea(std::string id, Polygon polygon)
     : GameObject("wa_" + id, true)
 {
-    form_ = std::make_unique<Trigger>(vertices);
-}
-WalkArea::WalkArea(std::string id, std::vector<std::vector<float>> vertices, float room_x, float room_y, float room_scale)
-    : WalkArea(id, vertices)
-{
-    form_->scale(room_scale);
-    form_->move(Vector2D{room_x, room_y});
+    form_ = std::make_unique<Trigger>(polygon);
 }
 
 void WalkArea::update(RenderManager* renderer, int dt)

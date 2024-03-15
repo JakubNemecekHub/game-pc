@@ -62,7 +62,7 @@ Ambient* RoomAnimations::get_animation(Vector2D position)
     Loads room's data based on info in the room data dictionary.
 */
 Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
-    : walk_area_{data["id"].as<std::string>(), data["walkarea"].as<std::vector<std::vector<float>>>()}
+    : walk_area_{data["id"].as<std::string>(), data["walkarea"].as<Polygon>()}
 {
     // Load room background Texture
     std::string id { data["id"].as<std::string>() };
