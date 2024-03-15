@@ -154,7 +154,7 @@ bool ScriptManager::startUp(std::string source_path, StateManager* state, TextMa
     sol::usertype<Vector2D> type_vector2D = lua_.new_usertype<Vector2D>("cpp_vector2D", sol::constructors<Vector2D(float, float)>());
     type_vector2D["x"] = &Vector2D::x;
     type_vector2D["y"] = &Vector2D::y;
-    type_vector2D["add"] = sol::resolve<Vector2D&(float, float)>(&Vector2D::add);
+    type_vector2D["add"] = &Vector2D::operator+=;
 
     // Mouse::BUTTON enumeration
     lua_.new_enum("BUTTON",

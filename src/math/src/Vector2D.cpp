@@ -33,55 +33,9 @@ Vector2D Vector2D::unit()
     return temp;
 }
 
-// Adding a vector to a vector
-Vector2D& Vector2D::add(const Vector2D& vec)
-{
-    this->x += vec.x;
-    this->y += vec.y;
-    return *this;
-}
-Vector2D& Vector2D::add(const float x, const float y)
-{
-    this->x += x;
-    this->y += y;
-    return *this;
-}
-
-// Subtracting a vector from vector
-Vector2D& Vector2D::subtract(const Vector2D& vec)
-{
-    this->x -= vec.x;
-    this->y -= vec.y;
-    return *this;
-}
-
-// Multiplication by number (scaling)
-Vector2D& Vector2D::multiply(const float n)
-{
-    this->x *= n;
-    this->y *= n;
-    return *this;
-}
-
-// Multiplication by vector (dot product)
-float Vector2D::multiply(const Vector2D& vec) const
-{
-    float dot_product {0};
-    dot_product = (this->x * vec.x) + (this->y * vec.y);
-    return dot_product;
-}
-
-// Division by number (scaling)
-Vector2D& Vector2D::divide(const float n)
-{
-    this->x /= n;
-    this->y /= n;
-    return *this;
-}
-
 // Operators =======================================================================================
 
-// Copy assignement operator
+// Copy assignment operator
 Vector2D& Vector2D::operator=(const Vector2D& vec)
 {
     this->x = vec.x;
@@ -92,25 +46,33 @@ Vector2D& Vector2D::operator=(const Vector2D& vec)
 // Adding a vector to a vector by operator
 Vector2D& Vector2D::operator+=(const Vector2D& vec)
 {
-    return this->add(vec);
+    this->x += vec.x;
+    this->y += vec.y;
+    return *this;
 }
 
 // Subtracting a vector from vector by operator
 Vector2D& Vector2D::operator-=(const Vector2D& vec)
 {
-    return this->subtract(vec);
+    this->x -= vec.x;
+    this->y -= vec.y;
+    return *this;
 }
 
 // Multiplication by number (scaling)  by operator
 Vector2D& Vector2D::operator*=(const float n)
 {
-    return this->multiply(n);
+    this->x *= n;
+    this->y *= n;
+    return *this;
 }
 
 // Division by number (scaling)  by operator
 Vector2D& Vector2D::operator/=(const float n)
 {
-    return this->divide(n);
+    this->x /= n;
+    this->y /= n;
+    return *this;
 }
 
 // Friend Operators ================================================================================
@@ -149,7 +111,9 @@ Vector2D operator*(const float n, const Vector2D& vec)
 // Multiplication by vector (dot product)
 float operator*(const Vector2D& vec1, const Vector2D& vec2)
 {
-    return vec1.multiply(vec2);
+    float dot_product {0};
+    dot_product = (vec1.x * vec2.x) + (vec1.y * vec2.y);
+    return dot_product;
 }
 
 Vector2D operator/(const Vector2D& vec, const float n)
