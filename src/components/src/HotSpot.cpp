@@ -21,9 +21,9 @@ HotSpot::HotSpot(YAML::Node data, AssetManager* assets)
     {
         Sprite* sprite = assets->sprite(data["sprite"].as<std::string>());
         form_ = std::make_unique<RigidBody>(sprite, vertices);
-        std::vector<float> position { data["position"].as<std::vector<float>>() };  // TO DO: load as Vector2D
+        Vector2D position { data["position"].as<Vector2D>() };
         float hot_spot_scale { data["scale"].as<float>() };
-        form_->position(Vector2D{position[0], position[1]});
+        form_->position(position);
         form_->set_scale(hot_spot_scale);
     }
     else

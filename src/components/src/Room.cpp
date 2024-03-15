@@ -70,9 +70,7 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
     sprite_->z_index(0);
     // Load default camera
     camera_zoom_ = data["camera"]["zoom"].as<float>();
-    // TO DO: load as Vector2D
-    camera_position_.x = data["camera"]["position"].as<std::vector<float>>()[0];
-    camera_position_.y = data["camera"]["position"].as<std::vector<float>>()[1];
+    camera_position_ = data["camera"]["position"].as<Vector2D>();
 
     // Load HotSpots
     for ( auto hot_spot : data["hot_spots"] )
@@ -103,11 +101,10 @@ Room::Room(YAML::Node data, ItemManager* items, AssetManager* assets)
         Item* item { items->get(id) };
         item->set_use(true);
         item->state(item_data["state"].as<bool>());
-        std::vector<int> position { item_data["position"].as<std::vector<int>>() };  // TO DO: load as Vector2D
-        float item_scale { item_data["scale"].as<float>() };
-        float room_scale { sprite_->scale() };
-        item->position(Vector2D{position[0] * room_scale + sprite_->x(), position[1] * room_scale});
-        item->scale(room_scale * item_scale);
+        float item_scale  { item_data["scale"].as<float>()       };
+        Vector2D position { item_data["position"].as<Vector2D>() };
+        item->position(position);
+        item->scale(item_scale);
         items_.insert(std::make_pair(id, item));
     }
 
